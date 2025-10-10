@@ -1,11 +1,59 @@
 <html>
+    <style>
+        .navigation {
+            display: flex;
+            justify-content: flex-end; 
+            gap: 15px;                 
+            padding: 20px;             
+        }
+
+        .navigation a {
+            padding: 10px 20px;
+            background-color: #000;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+         .image-container {
+            position: relative;     
+            display: flex;
+            justify-content: center;
+        }
+        .image-container img {
+            width: 700px;
+            height: auto;
+        }
+        .place_order_button {
+            position: absolute;     
+            top: 75%;               
+            left: 50%;              
+            transform: translate(-50%, -50%);
+            padding: 15px 25px;
+            font-size: 18px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+    </style>
     <head>
-        <title> ShipMe </title>
+        <title> Home Page </title>
     </head>
     <body>
-       <a href="http://localhost/shipping_website/CW1-web-design/shippingInfo.html"> Shipping info</a>
-       <a href="http://localhost/shipping_website/CW1-web-design/PlaceOrder.html"> Place Order</a>
-       <a href="http://localhost/shipping_website/CW1-web-design/Login.html"> Sign In</a>
-       <a href="http://localhost/shipping_website/CW1-web-design/Registration.html"> Sign Up</a>
+        <header>
+            <div class="navigation">
+                <a href="http://localhost/shipping_website/CW1-web-design/Login.html"> Sign In</a>
+            </div>
+        </header>
+       <div class="image-container">
+            <img src="Home_page_plane.jpeg" alt="Plane">
+            <a href="http://localhost/shipping_website/CW1-web-design/PlaceOrder.html" class="place_order_button"> Place Order </a>
+            <img src="Home_page_ship.jpeg" alt="Ship">
+        </div>
     </body>
 </html>
+
