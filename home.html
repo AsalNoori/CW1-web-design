@@ -1,20 +1,5 @@
 <html>
     <style>
-        .navigation {
-            display: flex;
-            justify-content: flex-end; 
-            gap: 15px;                 
-            padding: 20px;             
-        }
-
-        .navigation a {
-            padding: 10px 20px;
-            background-color: #000;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
         .tracking-input {
             width: 200px;
             padding: 10px;
@@ -79,18 +64,18 @@
         <title> Home Page </title>
     </head>
     <body>
-        <header>
-            <div class="navigation">
-                <a href="http://localhost/shipping_website/CW1-web-design/Login.html"> Sign In</a>
-            </div>
-        </header>
+        <div id="header"></div>
 
-       
+        <script>
+          fetch("header.html")
+            .then(response => response.text())
+            .then(data => {
+              document.getElementById("header").innerHTML = data;
+            });
+        </script>
 
        <div class="image-container">
             <img src="Home_page_plane.jpeg" alt="Plane">
-
-
 
             <div class="tracking-container">
                 <label for="tracking-input">Tracking ID:</label>
@@ -98,8 +83,7 @@
                 <button class="submit-trackingID">Enter</button>
             </div>
 
-
-            <a href="http://localhost/shipping_website/CW1-web-design/PlaceOrder.html" class="place_order_button"> Place Order </a>
+            <a href="http://localhost/shipping/CW1-web-design/PlaceOrder.html" class="place_order_button"> Place Order </a>
             <img src="Home_page_ship.jpeg" alt="Ship">
         </div>
     </body>
