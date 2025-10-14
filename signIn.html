@@ -7,9 +7,29 @@
     <title>Sign In Page</title>
 
     <style>
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #ffffff;
+            color: #007bff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+    
+        .home-btn:hover {
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #0e64e6;
+            background-color: #0b2244;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -100,6 +120,7 @@
     </style>
     </head>
 <body>
+    <a href="home.html" class="home-btn">Back to Home</a>
     <div class="container">
         <form class="login-form">
             <h2>Welcome Back!</h2>
@@ -118,7 +139,7 @@
             
             <p class="switch-link">
                 Don't have an account? 
-                <a href="sign up.html">Register here</a> 
+                <a href="signUp.html">Register here</a> 
             </p>
 
         </form>

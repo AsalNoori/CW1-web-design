@@ -3,8 +3,29 @@
 <head>
     <title>Ship me</title>
     <style>
+    
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #ffffff;
+            color: #007bff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+    
+        .home-btn:hover {
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
        body {
-    background-color: #0e64e6; 
+    background-color: #0b2244; 
     display: flex;
     justify-content: center;
     padding: 20px;
@@ -129,7 +150,7 @@ select {
     </style>
 </head>
 <body>
-
+    <a href="home.html" class="home-btn">Back to Home</a>
     <form class="sleek-form shipping-form" action="/action_page.php" method="POST">
         
         <h2 class="section-title">Sender Information</h2>
@@ -255,7 +276,7 @@ select {
             <input type="text" id="r_add3" name="r_add3" placeholder="City" style="margin-top: 10px;">
         </div>
 
-        <button type="submit" class="submit-button">
+        <button type="button" class="submit-button" onclick="window.location.href='payment.html'">
             <span class="arrow-icon">→</span> Get Quote & Book Shipment
         </button>
 

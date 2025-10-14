@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #ffffff;
+            color: #007bff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+    
+        .home-btn:hover {
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0b2244;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-form h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Total Section */
+        .total-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .total-label {
+            display: block;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .total-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Payment Tabs */
+        .payment-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border-right: 1px solid #ccc;
+        }
+
+        .tab:last-child {
+            border-right: none;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff; 
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .input-group {
+            flex: 1;
+        }
+
+        /* Cash on Delivery Section */
+        .cod-section {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .cod-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .cod-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .cod-section p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* Pay Button */
+        .pay-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pay-button:hover {
+            background-color: #0056b3;
+        }
+
+        .button-icon {
+            font-size: 20px;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+
+        /* Loading Animation */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .loading .button-text::after {
+            content: '';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            width: 16px;
+            height: 16px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .tab {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html" class="home-btn">Back to Home</a>
+    <div class="container">
+        <form class="payment-form" id="paymentForm">
+            <h2>💳 Payment</h2>
+            
+            <div class="total-section">
+                <span class="total-label">Total Amount</span>
+                <span class="total-amount">$107.99</span>
+            </div>
+
+            <div class="payment-tabs">
+                <button class="tab active" data-payment="card">💳 Card</button>
+                <button class="tab" data-payment="cod">🚚 Cash on Delivery</button>
+            </div>
+
+            <div id="cardForm">
+                <div class="input-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="text" id="expiryDate" placeholder="MM/YY" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="cardName">Name on Card</label>
+                    <input type="text" id="cardName" placeholder="John Doe" required>
+                </div>
+            </div>
+
+            <div id="codForm" class="hidden">
+                <div class="cod-section">
+                    <div class="cod-icon">🚚</div>
+                    <h3>Cash on Delivery</h3>
+                    <p>Pay with cash when your order is delivered to your doorstep</p>
+                </div>
+                <div class="input-group">
+                    <label for="deliveryAddress">Delivery Address</label>
+                    <input type="text" id="deliveryAddress" placeholder="Enter your full address" required>
+                </div>
+                <div class="input-group">
+                    <label for="contactNumber">Contact Number</label>
+                    <input type="text" id="contactNumber" placeholder="Your phone number" required>
+                </div>
+            </div>
+
+            <button type="submit" class="pay-button">
+                <span class="button-text">Pay $107.99</span>
+                <span class="button-icon">💳</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        let currentPaymentMethod = 'card';
+
+        function generateTrackingID() {
+            const prefix = 'TRK';
+            const timestamp = Date.now().toString().slice(-6);
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `${prefix}${timestamp}${random}`;
+        }
+
+        function switchPaymentMethod(method) {
+            currentPaymentMethod = method;
+            console.log('Payment method switched to:', method);
+            
+            // Hide all forms
+            document.getElementById('cardForm').classList.add('hidden');
+            document.getElementById('codForm').classList.add('hidden');
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected form and activate tab
+            if (method === 'card') {
+                document.getElementById('cardForm').classList.remove('hidden');
+                document.querySelector('[data-payment="card"]').classList.add('active');
+            } else if (method === 'cod') {
+                document.getElementById('codForm').classList.remove('hidden');
+                document.querySelector('[data-payment="cod"]').classList.add('active');
+            }
+        }
+
+        function processPayment(event) {
+            event.preventDefault();
+            
+            console.log('Processing payment with method:', currentPaymentMethod);
+            
+            const payButton = document.querySelector('.pay-button');
+            const buttonText = payButton.querySelector('.button-text');
+            const originalText = buttonText.textContent;
+            
+            // Show loading state
+            payButton.classList.add('loading');
+            buttonText.textContent = 'Processing...';
+            payButton.disabled = true;
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                // Reset button
+                payButton.classList.remove('loading');
+                buttonText.textContent = originalText;
+                payButton.disabled = false;
+                
+                // Generate tracking ID
+                const trackingID = generateTrackingID();
+                
+                // Show order completion message
+                if (currentPaymentMethod === 'card') {
+                    alert(`✅ Order Completed!\n\nAmount: $107.99\nPayment Method: Credit/Debit Card\nStatus: Payment Successful\nTracking ID: ${trackingID}\n\nYour order is being processed and will be shipped soon!`);
+                } else if (currentPaymentMethod === 'cod') {
+                    alert(`✅ Order Completed!\n\nAmount: $107.99\nPayment Method: Cash on Delivery\nStatus: Order Confirmed\nTracking ID: ${trackingID}\n\nYour order will be delivered to your address. Please keep the exact amount ready for payment upon delivery.`);
+                }
+                
+                // Reset form
+                document.getElementById('paymentForm').reset();
+            }, 2000);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            
+            // Add click listeners to tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const paymentMethod = this.getAttribute('data-payment');
+                    console.log('Tab clicked:', paymentMethod);
+                    switchPaymentMethod(paymentMethod);
+                });
+            });
+            
+            // Add submit listener to form
+            document.getElementById('paymentForm').addEventListener('submit', processPayment);
+            
+            // Add interactive effects to inputs
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                    this.parentElement.style.transition = 'transform 0.2s ease';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Add click effect to tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+            
+            console.log('Initialization complete');
+        });
+    </script>
+</body>
+</html>
