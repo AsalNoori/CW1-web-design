@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Shipping Type</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0b2244;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      color: white;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 40px;
+      color: #ffffff;
+    }
+
+    .choice-buttons {
+      display: flex;
+      gap: 40px;
+    }
+
+    .choice-button {
+      background-color: #007bff;
+      color: white;
+      padding: 20px 40px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .choice-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    .home-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #ffffff;
+      color: #007bff;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+    }
+
+    .home-btn:hover {
+      background-color: #007bff;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <a href="home.html" class="home-btn">Back to Home</a>
+
+  <h1>Are you shipping as an Individual or a Business?</h1>
+
+  <div class="choice-buttons">
+    <button class="choice-button" onclick="window.location.href='individualForm.html'">Individual</button>
+    <button class="choice-button" onclick="window.location.href='businessForm.html'">Business</button>
+  </div>
+</body>
+</html>
