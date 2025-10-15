@@ -5,24 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Page</title>
     <style>
+        .logo {
+        position: fixed;
+        top: 20px;
+        left: 40px;
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        height: 80px;
+      }
+
         .home-btn {
             position: fixed;
-            top: 20px;
-            left: 20px;
-            background-color: #ffffff;
-            color: #007bff;
+            top: 40px;
+            right: 20px;
+            background-color: #007bff;
+            color: #ffffff;
             text-decoration: none;
             padding: 10px 15px;
             border-radius: 8px;
             font-weight: bold;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
-        }
-    
-        .home-btn:hover {
-            background-color: #007bff;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         body {
@@ -243,6 +250,7 @@
     </style>
 </head>
 <body>
+    <img src="logo.jpeg" alt="Company Logo" class="logo">
     <a href="home.html" class="home-btn">Back to Home</a>
     <div class="container">
         <form class="payment-form" id="paymentForm">
