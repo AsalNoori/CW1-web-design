@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ship me - Business</title>
+    <style>
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        body {
+            background-color: #0b2244; 
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .sleek-form {
+            width: 100%;
+            max-width: 800px; 
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 30px;
+        }
+
+        .section-title {
+            color: #2f7bcd;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e1e1e1;
+        }
+
+        .field-group {
+            display: flex;
+            gap: 20px; 
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .half-width {
+            flex: 1; 
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], 
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px; 
+            background-color: #f7f7f9; 
+            font-size: 16px;
+            color: #333;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            height: 45px; 
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1); 
+            background-color: #fff;
+        }
+
+        .dimensions-group input {
+            flex: 1; 
+        }
+
+        select {
+            background-position: right 10px center;
+            padding-right: 35px;
+        }
+
+        .submit-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #007bff; 
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 28px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            margin-top: 30px;
+            width: auto; 
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3; 
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .arrow-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background-color: #fff;
+            color: #007bff;
+            font-size: 20px;
+            line-height: 1;
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html" class="home-btn">Back to Home</a>
+
+    <form class="sleek-form shipping-form" action="/action_page.php" method="POST">
+
+        <h2 class="section-title">Business & Sender Information</h2>
+        
+        <div class="field-group">
+            <div class="form-group half-width">
+                <label for="business_name">Business Name</label>
+                <input type="text" id="business_name" name="business_name" required>
+            </div>
+            <div class="form-group half-width">
+                <label for="tax_id">Business Registration / Tax ID</label>
+                <input type="text" id="tax_id" name="tax_id" required>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="form-group half-width">
+                <label for="s_phone">Phone</label>
+                <input type="tel" id="s_phone" name="s_phone" required>
+            </div>
+            <div class="form-group half-width">
+                <label for="s_email">Email</label>
+                <input type="email" id="s_email" name="s_email" required>
+            </div>
+        </div>
+
+        <h2 class="section-title">Package Details</h2>
+        <label for="dimensions">Dimensions (cm)</label>
+        <div class="field-group dimensions-group">
+            <input type="number" id="height" name="height" placeholder="Height" min="1" required>
+            <input type="number" id="length" name="length" placeholder="Length" min="1" required>
+            <input type="number" id="width" name="width" placeholder="Width" min="1" required>
+        </div>
+
+        <div class="form-group half-width">
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" name="weight" placeholder="e.g. 5.5" step="1" min="0.1" required>
+        </div>
+
+        <h2 class="section-title">Shipping Route</h2>
+        <div class="field-group">
+            <div class="form-group half-width">
+                <label for="orig">Origin</label>
+                <select name="orig" id="orig" required>
+                    <option value="" disabled selected>Select Origin Country</option>
+                    <option value="bhr">Bahrain</option>
+                    <option value="cyp">Cyprus</option>
+                    <option value="egy">Egypt</option>
+                    <option value="irn">Iran</option>
+                    <option value="irq">Iraq</option>
+                    <option value="isr">Israel</option>
+                    <option value="jor">Jordan</option>
+                    <option value="kwt">Kuwait</option>
+                    <option value="lbn">Lebanon</option>
+                    <option value="omn">Oman</option>
+                    <option value="pse">Palestine</option>
+                    <option value="qat">Qatar</option>
+                    <option value="sau">Saudi Arabia</option>
+                    <option value="syr">Syria</option>
+                    <option value="tur">Turkey</option>
+                    <option value="are">United Arab Emirates</option>
+                    <option value="yem">Yemen</option>
+                </select>
+            </div>
+
+            <div class="form-group half-width">
+                <label for="des">Destination</label>
+                <select name="des" id="des" required>
+                    <option value="" disabled selected>Select Destination Country</option>
+                    <option value="bhr">Bahrain</option>
+                    <option value="cyp">Cyprus</option>
+                    <option value="egy">Egypt</option>
+                    <option value="irn">Iran</option>
+                    <option value="irq">Iraq</option>
+                    <option value="isr">Israel</option>
+                    <option value="jor">Jordan</option>
+                    <option value="kwt">Kuwait</option>
+                    <option value="lbn">Lebanon</option>
+                    <option value="omn">Oman</option>
+                    <option value="pse">Palestine</option>
+                    <option value="qat">Qatar</option>
+                    <option value="sau">Saudi Arabia</option>
+                    <option value="syr">Syria</option>
+                    <option value="tur">Turkey</option>
+                    <option value="are">United Arab Emirates</option>
+                    <option value="yem">Yemen</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="form-group half-width">
+                <label for="shipping_method">Shipping Method</label>
+                <select name="shipping_method" id="shipping_method" required>
+                    <option value="" disabled selected>Select Shipping Method</option>
+                    <option value="air">Air</option>
+                    <option value="sea">Sea</option>
+                </select>
+            </div>
+        </div>
+
+        <h2 class="section-title">Receiver Information</h2>
+
+        <div class="field-group">
+            <div class="form-group half-width">
+                <label for="r_fname">First Name</label>
+                <input type="text" id="r_fname" name="r_fname"required>
+            </div>
+            <div class="form-group half-width">
+                <label for="r_lname">Last Name</label>
+                <input type="text" id="r_lname" name="r_lname" required>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="form-group half-width">
+                <label for="r_phone">Phone</label>
+                <input type="tel" id="r_phone" name="r_phone" required>
+            </div>
+            <div class="form-group half-width">
+                <label for="r_email">Email</label>
+                <input type="email" id="r_email" name="r_email" >
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="r_add1">Address</label>
+            <input type="text" id="r_add1" name="r_add1" placeholder="Street, Building" required>
+            <input type="text" id="r_add2" name="r_add2" placeholder="Area, District" style="margin-top: 10px;">
+            <input type="text" id="r_add3" name="r_add3" placeholder="City" style="margin-top: 10px;">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+            <button type="button" class="submit-button" style="background-color: #007bff;" 
+                    onclick="window.location.href='ChooseType.html'">
+                Change Type of Shipment
+            </button>
+            <button type="button" class="submit-button" onclick="window.location.href='payment.html'">
+                Book Shipment
+            </button>
+        </div>
+    </form>
