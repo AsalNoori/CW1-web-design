@@ -8,20 +8,14 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            background-color: #ffffff;
-            color: #007bff;
+            background-color: #007bff;
+            color: #ffffff;
             text-decoration: none;
             padding: 10px 15px;
             border-radius: 8px;
             font-weight: bold;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
-        }
-    
-        .home-btn:hover {
-            background-color: #007bff;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
        body {
@@ -242,7 +236,16 @@ select {
                     <option value="yem">Yemen</option>
                 </select>
             </div>
-        
+        </div>
+        <div class="field-group">
+            <div class="form-group half-width">
+                <label for="shipping_method">Shipping Method</label>
+                <select name="shipping_method" id="shipping_method" required>
+                    <option value="" disabled selected>Select Shipping Method</option>
+                    <option value="air">Air</option>
+                    <option value="sea">Sea</option>
+                </select>
+            </div>
         </div>
 
         <h2 class="section-title">Receiver Information</h2>
@@ -264,7 +267,7 @@ select {
                 <input type="tel" id="r_phone" name="r_phone" required>
             </div>
             <div class="form-group half-width">
-                <label for="r_email">Email (Optional)</label>
+                <label for="r_email">Email</label>
                 <input type="email" id="r_email" name="r_email" >
             </div>
         </div>
@@ -276,9 +279,15 @@ select {
             <input type="text" id="r_add3" name="r_add3" placeholder="City" style="margin-top: 10px;">
         </div>
 
-        <button type="button" class="submit-button" onclick="window.location.href='payment.html'">
-            <span class="arrow-icon">→</span> Get Quote & Book Shipment
-        </button>
+        <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+            <button type="button" class="submit-button" style="background-color: #007bff;" 
+                    onclick="window.location.href='ChooseType.html'">
+                Change Type of Shipment
+            </button>
+            <button type="button" class="submit-button" onclick="window.location.href='payment.html'">
+                Book Shipment
+            </button>
+        </div>
 
     </form>
 
