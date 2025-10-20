@@ -7,41 +7,17 @@
     <title>Sign In Page</title>
 
     <style>
-        .logo {
-            position: fixed;
-            top: 20px;
-            left: 40px;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-            height: 80px;
-        }
-
-        .home-btn {
-            position: fixed;
-            top: 40px;
-            right: 20px;
-            background-color: #007bff;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-        }
-
         body {
             font-family: Arial, sans-serif;
             background-color: #0b2244;
+            margin: 0;
+        }
+
+        .main-content {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            padding: 20px 0;
         }
 
         
@@ -127,30 +103,45 @@
     </style>
     </head>
 <body>
-    <img src="logo.jpeg" alt="Company Logo" class="logo">
-    <a href="home.html" class="home-btn">Back to Home</a>
-    <div class="container">
-        <form class="login-form">
-            <h2>Welcome Back!</h2>
+    <div id="header"></div>
 
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
+    <script>
+      fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById("header").innerHTML = data;
+          // inam eyn signupe dge button log in nmiad
+          const loginBtn = document.getElementById("loginBtn");
+          if (loginBtn) {
+            loginBtn.style.display = "none";
+          }
+        });
+    </script>
 
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
+    <div class="main-content">
+        <div class="container">
+            <form class="login-form">
+                <h2>Welcome Back!</h2>
 
-            <button type="submit" class="submit-btn">Sign In</button>
-            
-            <p class="switch-link">
-                Don't have an account? 
-                <a href="signUp.html">Register here</a> 
-            </p>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
 
-        </form>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Sign In</button>
+                
+                <p class="switch-link">
+                    Don't have an account? 
+                    <a href="signUp.html">Register here</a> 
+                </p>
+
+            </form>
+        </div>
     </div>
 </body>
 </html>

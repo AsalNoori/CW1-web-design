@@ -5,29 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choose Shipping Type</title>
   <style>
-  .logo {
-    position: fixed;
-    top: 20px;
-    left: 40px;
-    text-decoration: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-weight: bold;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s;
-    height: 80px;
-  }
-    
     body {
       font-family: Arial, sans-serif;
       background-color: #0b2244;
+      margin: 0;
+      color: white;
+    }
+
+    .main-content {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      margin: 0;
-      color: white;
+      padding: 20px 0;
     }
 
     h1 {
@@ -58,31 +49,26 @@
       transform: scale(1.05);
     }
 
-    .home-btn {
-      position: fixed;
-      top: 40px;
-      right: 20px;
-      background-color: #007bff;
-      color: #ffffff;
-      text-decoration: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s;
-    }
-
   </style>
 </head>
 <body>
-  <img src="logo.jpeg" alt="Company Logo" class="logo">
-  <a href="home.html" class="home-btn">Back to Home</a>
+  <div id="header"></div>
 
-  <h1>Are you shipping as an Individual or a Business?</h1>
+  <script>
+    fetch("header.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("header").innerHTML = data;
+      });
+  </script>
 
-  <div class="choice-buttons">
-    <button class="choice-button" onclick="window.location.href='IndividualForm.html'">Individual</button>
-    <button class="choice-button" onclick="window.location.href='BusinessForm.html'">Business</button>
+  <div class="main-content">
+    <h1>Are you shipping as an Individual or a Business?</h1>
+
+    <div class="choice-buttons">
+      <button class="choice-button" onclick="window.location.href='IndividualForm.html'">Individual</button>
+      <button class="choice-button" onclick="window.location.href='BusinessForm.html'">Business</button>
+    </div>
   </div>
 </body>
 </html>

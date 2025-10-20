@@ -3,41 +3,17 @@
 <head>
     <title>Ship me</title>
     <style>
-    
-    .logo {
-        position: fixed;
-        top: 20px;
-        left: 40px;
-        text-decoration: none;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-weight: bold;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s;
-        height: 80px;
-      }
-    
-        .home-btn {
-            position: fixed;
-            top: 40px;
-            right: 20px;
-            background-color: #007bff;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+        body {
+            background-color: #0b2244;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-       body {
-    background-color: #0b2244; 
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+        .main-content {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
 
 .sleek-form {
     width: 100%;
@@ -157,9 +133,18 @@ select {
     </style>
 </head>
 <body>
-    <img src="logo.jpeg" alt="Company Logo" class="logo">
-    <a href="home.html" class="home-btn">Back to Home</a>
-    <form class="sleek-form shipping-form" action="/action_page.php" method="POST">
+    <div id="header"></div>
+
+    <script>
+      fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById("header").innerHTML = data;
+        });
+    </script>
+
+    <div class="main-content">
+        <form class="sleek-form shipping-form" action="/action_page.php" method="POST">
         
         <h2 class="section-title">Sender Information</h2>
 
@@ -303,7 +288,8 @@ select {
             </button>
         </div>
 
-    </form>
+        </form>
+    </div>
 
 </body>
 </html>

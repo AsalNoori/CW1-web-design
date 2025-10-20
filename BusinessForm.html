@@ -3,40 +3,16 @@
 <head>
     <title>Ship me - Business</title>
     <style>
-    
-    .logo {
-        position: fixed;
-        top: 20px;
-        left: 40px;
-        text-decoration: none;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-weight: bold;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s;
-        height: 80px;
-      }
-        
-        .home-btn {
-            position: fixed;
-            top: 40px;
-            right: 20px;
-            background-color: #007bff;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+        body {
+            background-color: #0b2244;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        body {
-            background-color: #0b2244; 
+        .main-content {
             display: flex;
             justify-content: center;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px 0;
         }
 
         .sleek-form {
@@ -150,10 +126,18 @@
     </style>
 </head>
 <body>
-    <img src="logo.jpeg" alt="Company Logo" class="logo">
-    <a href="home.html" class="home-btn">Back to Home</a>
+    <div id="header"></div>
 
-    <form class="sleek-form shipping-form" action="/action_page.php" method="POST">
+    <script>
+      fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById("header").innerHTML = data;
+        });
+    </script>
+
+    <div class="main-content">
+        <form class="sleek-form shipping-form" action="/action_page.php" method="POST">
 
         <h2 class="section-title">Business & Sender Information</h2>
         
@@ -294,4 +278,5 @@
                 Book Shipment
             </button>
         </div>
-    </form>
+        </form>
+    </div>
