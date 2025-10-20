@@ -24,6 +24,18 @@
             border-radius: 5px;
         }
 
+        .navigation a.logo {
+      background: transparent;
+      padding: 0;
+      color: inherit;          
+    }
+
+    
+    .navigation a.logo img {
+      height: 80px;
+      display: block;         
+    }
+
         .navigation img {
             align-items: left;
             height: 80px;
@@ -33,7 +45,9 @@
 <body>
     <header>
         <div class="navigation">
-            <img src="logo.png" alt="Company Logo" href="Home.html">
+            <a href="Home.html" class="logo" aria-label="Home">
+               <img src="logo.png" alt="Company Logo">
+            </a>
 
             <div class="nav-links">
                 <a href="AboutUs.html">About Us</a>
