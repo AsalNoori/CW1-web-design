@@ -144,10 +144,13 @@
         .then(response => response.text())
         .then(data => {
           document.getElementById("header").innerHTML = data;
-          // soltan in se khat paying baes mishe to sign up button register nayad
           const registerBtn = document.getElementById("registerBtn");
           if (registerBtn) {
             registerBtn.style.display = "none";
+          }
+          const loginBtn = document.getElementById("loginBtn");
+          if (loginBtn) {
+            loginBtn.style.display = "none";
           }
         });
     </script>

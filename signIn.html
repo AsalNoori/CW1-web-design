@@ -110,7 +110,10 @@
         .then(response => response.text())
         .then(data => {
           document.getElementById("header").innerHTML = data;
-          // inam eyn signupe dge button log in nmiad
+          const registerBtn = document.getElementById("registerBtn");
+          if (registerBtn) {
+            registerBtn.style.display = "none";
+          }
           const loginBtn = document.getElementById("loginBtn");
           if (loginBtn) {
             loginBtn.style.display = "none";
