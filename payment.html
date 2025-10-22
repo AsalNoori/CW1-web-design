@@ -243,7 +243,7 @@
             
             <div class="total-section">
                 <span class="total-label">Total Amount</span>
-                <span class="total-amount">$107.99</span>
+                <span class="total-amount">$0.0</span>
             </div>
 
             <div class="payment-tabs">
@@ -289,7 +289,7 @@
             </div>
 
             <button type="submit" class="pay-button">
-                <span class="button-text">Pay $107.99</span>
+                <span class="button-text">Pay $0.0</span>
                 <span class="button-icon">💳</span>
             </button>
         </form>
@@ -308,18 +308,14 @@
 
         function switchPaymentMethod(method) {
             currentPaymentMethod = method;
-            console.log('Payment method switched to:', method);
             
-            // Hide all forms
             document.getElementById('cardForm').classList.add('hidden');
             document.getElementById('codForm').classList.add('hidden');
             
-            // Remove active class from all tabs
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // Show selected form and activate tab
             if (method === 'card') {
                 document.getElementById('cardForm').classList.remove('hidden');
                 document.querySelector('[data-payment="card"]').classList.add('active');
@@ -332,56 +328,41 @@
         function processPayment(event) {
             event.preventDefault();
             
-            console.log('Processing payment with method:', currentPaymentMethod);
-            
             const payButton = document.querySelector('.pay-button');
             const buttonText = payButton.querySelector('.button-text');
             const originalText = buttonText.textContent;
             
-            // Show loading state
             payButton.classList.add('loading');
             buttonText.textContent = 'Processing...';
             payButton.disabled = true;
             
-            // Simulate payment processing
             setTimeout(() => {
-                // Reset button
                 payButton.classList.remove('loading');
                 buttonText.textContent = originalText;
                 payButton.disabled = false;
                 
-                // Generate tracking ID
                 const trackingID = generateTrackingID();
                 
-                // Show order completion message
                 if (currentPaymentMethod === 'card') {
-                    alert(`✅ Order Completed!\n\nAmount: $107.99\nPayment Method: Credit/Debit Card\nStatus: Payment Successful\nTracking ID: ${trackingID}\n\nYour order is being processed and will be shipped soon!`);
+                    alert(`✅ Order Completed!\n\nAmount: ${buttonText.textContent}\nPayment Method: Credit/Debit Card\nTracking ID: ${trackingID}`);
                 } else if (currentPaymentMethod === 'cod') {
-                    alert(`✅ Order Completed!\n\nAmount: $107.99\nPayment Method: Cash on Delivery\nStatus: Order Confirmed\nTracking ID: ${trackingID}\n\nYour order will be delivered to your address. Please keep the exact amount ready for payment upon delivery.`);
+                    alert(`✅ Order Completed!\n\nAmount: ${buttonText.textContent}\nPayment Method: Cash on Delivery\nTracking ID: ${trackingID}`);
                 }
                 
-                // Reset form
                 document.getElementById('paymentForm').reset();
             }, 2000);
         }
 
-        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded, initializing...');
-            
-            // Add click listeners to tabs
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     const paymentMethod = this.getAttribute('data-payment');
-                    console.log('Tab clicked:', paymentMethod);
                     switchPaymentMethod(paymentMethod);
                 });
             });
             
-            // Add submit listener to form
             document.getElementById('paymentForm').addEventListener('submit', processPayment);
             
-            // Add interactive effects to inputs
             document.querySelectorAll('input').forEach(input => {
                 input.addEventListener('focus', function() {
                     this.parentElement.style.transform = 'scale(1.02)';
@@ -392,18 +373,21 @@
                     this.parentElement.style.transform = 'scale(1)';
                 });
             });
-            
-            // Add click effect to tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 150);
-                });
-            });
-            
-            console.log('Initialization complete');
+
+            const cost = localStorage.getItem('shipmentCost');
+            const weight = localStorage.getItem('shipmentWeight');
+
+            if (cost && weight) {
+                const totalAmount = document.querySelector('.total-amount');
+                if (totalAmount) {
+                    totalAmount.textContent = `$${parseFloat(cost).toFixed(2)}`;
+                }
+
+                const payButton = document.querySelector('.pay-button .button-text');
+                if (payButton) {
+                    payButton.textContent = `Pay $${parseFloat(cost).toFixed(2)}`;
+                }
+            }
         });
     </script>
 </body>

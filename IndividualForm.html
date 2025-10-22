@@ -367,6 +367,12 @@ select {
                 return false;
             }
             
+            const weight = parseFloat(document.getElementById('weight').value);
+            const shipmentCost = weight * 30;
+
+            localStorage.setItem('shipmentWeight', weight);
+            localStorage.setItem('shipmentCost', shipmentCost);
+            
             window.location.href = 'payment.html';
         }
         
