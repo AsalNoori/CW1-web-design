@@ -172,8 +172,9 @@
         </div>
 
         <div class="form-group half-width">
-            <label for="weight">Weight (kg)</label>
-            <input type="number" id="weight" name="weight" placeholder="e.g. 5.5" step="1" min="0.1" required>
+            <label for="weight">Weight (kg) - Max 500kg</label>
+            <input type="number" id="weight" name="weight" placeholder="e.g. 5.5" step="0.1" min="0.1" max="500" required>
+            <div id="weight-error" class="error-message" style="display: none; color: #dc3545; font-size: 14px; margin-top: 5px;"></div>
         </div>
 
         <h2 class="section-title">Shipping Route</h2>
@@ -258,14 +259,14 @@
             </div>
             <div class="form-group half-width">
                 <label for="r_email">Email</label>
-                <input type="email" id="r_email" name="r_email" >
+                <input type="email" id="r_email" name="r_email" required>
             </div>
         </div>
         
         <div class="form-group">
             <label for="r_add1">Address</label>
             <input type="text" id="r_add1" name="r_add1" placeholder="Street, Building" required>
-            <input type="text" id="r_add2" name="r_add2" placeholder="Area, District" style="margin-top: 10px;">
+            <input type="text" id="r_add2" name="r_add2" placeholder="Area, District" style="margin-top: 10px;" required>
             <input type="text" id="r_add3" name="r_add3" placeholder="City" style="margin-top: 10px;">
         </div>
 
@@ -274,9 +275,149 @@
                     onclick="window.location.href='ChooseType.html'">
                 Change Type of Shipment
             </button>
-            <button type="button" class="submit-button" onclick="window.location.href='payment.html'">
+            <button type="button" class="submit-button" onclick="validateAndProceed()">
                 Book Shipment
             </button>
         </div>
         </form>
     </div>
+
+    <script>
+        function validateAndProceed() {
+            const requiredFields = [
+                'business_name', 'tax_id', 's_phone', 's_email',
+                'height', 'length', 'width', 'weight',
+                'orig', 'des', 'shipping_method',
+                'r_fname', 'r_lname', 'r_phone', 'r_email', 'r_add1', 'r_add2', 'r_add3'
+            ];
+            
+            let isValid = true;
+            let firstEmptyField = null;
+            
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
+            });
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.style.borderColor = '#e0e0e0';
+                    field.style.backgroundColor = '#f7f7f9';
+                }
+            });
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    const value = field.value.trim();
+                    
+                    if (!value || (field.type === 'email' && !isValidEmail(value)) || 
+                        (field.type === 'tel' && !isValidPhone(value))) {
+                        
+                        isValid = false;
+                        
+                        field.style.borderColor = '#dc3545';
+                        field.style.backgroundColor = '#fff5f5';
+                        
+                        if (!firstEmptyField) {
+                            firstEmptyField = field;
+                        }
+                    } else if (fieldId === 'weight') {
+                        const weightValue = parseFloat(value);
+                        if (weightValue < 0.1 || weightValue > 500) {
+                            isValid = false;
+                            
+                            field.style.borderColor = '#dc3545';
+                            field.style.backgroundColor = '#fff5f5';
+                            
+                            const weightError = document.getElementById('weight-error');
+                            if (weightValue > 500) {
+                                weightError.textContent = 'Please enter a number less than 500 kg';
+                            } else if (weightValue < 0.1) {
+                                weightError.textContent = 'Please enter a number greater than 0.1 kg';
+                            }
+                            weightError.style.display = 'block';
+                            
+                            if (!firstEmptyField) {
+                                firstEmptyField = field;
+                            }
+                        }
+                    }
+                }
+            });
+            
+            if (!isValid) {
+                if (firstEmptyField) {
+                    firstEmptyField.focus();
+                    firstEmptyField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
+                return false;
+            }
+            
+            window.location.href = 'payment.html';
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function isValidPhone(phone) {
+            const phoneRegex = /^[\d\s\-\+\(\)]{7,}$/;
+            return phoneRegex.test(phone);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const requiredFields = [
+                'business_name', 'tax_id', 's_phone', 's_email',
+                'height', 'length', 'width', 'weight',
+                'orig', 'des', 'shipping_method',
+                'r_fname', 'r_lname', 'r_phone', 'r_email', 'r_add1', 'r_add2', 'r_add3'
+            ];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('blur', function() {
+                        const value = this.value.trim();
+                        let isValid = value && 
+                            (this.type !== 'email' || isValidEmail(value)) &&
+                            (this.type !== 'tel' || isValidPhone(value));
+                        
+                        if (this.id === 'weight' && value) {
+                            const weightValue = parseFloat(value);
+                            if (weightValue < 0.1 || weightValue > 500) {
+                                isValid = false;
+                                
+                                const weightError = document.getElementById('weight-error');
+                                if (weightValue > 500) {
+                                    weightError.textContent = 'Please enter a number less than 500 kg';
+                                } else if (weightValue < 0.1) {
+                                    weightError.textContent = 'Please enter a number greater than 0.1 kg';
+                                }
+                                weightError.style.display = 'block';
+                            } else {
+                                const weightError = document.getElementById('weight-error');
+                                weightError.style.display = 'none';
+                            }
+                        } else if (this.id === 'weight') {
+                            const weightError = document.getElementById('weight-error');
+                            weightError.style.display = 'none';
+                        }
+                        
+                        if (isValid) {
+                            this.style.borderColor = '#28a745';
+                            this.style.backgroundColor = '#f8fff8';
+                        } else {
+                            this.style.borderColor = '#e0e0e0';
+                            this.style.backgroundColor = '#f7f7f9';
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
