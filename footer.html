@@ -1,25 +1,78 @@
-<html>
-    <style>
-        .navigation {
-            display: flex;
-            justify-content: flex-end; 
-            gap: 15px;                 
-            padding: 20px;             
-        }
-
-        .navigation a {
-            padding: 10px 20px;
-            background-color: #000;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-    </style>
-    <body>
-        <header>
-            <div class="navigation">
-                <a href="http://localhost/shipping_website/CW1-web-design/Login.html"> Sign In</a>
+<footer style="background-color: #0b2244; color: white; padding: 40px 0; margin-top: 50px;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 30px;">
+            
+            
+            <div>
+                <h3 style="color: #2f7bcd; margin-bottom: 20px; font-size: 1.3em;">Ship Me</h3>
+                <p style="line-height: 1.6; margin-bottom: 15px;">
+                    Your trusted partner for reliable shipping solutions across the Middle East. 
+                    We deliver your packages safely and on time, whether by air or sea.
+                </p>
             </div>
-        </header>
-    </body>
-</html>
+
+            
+            <div>
+                <h4 style="color: #2f7bcd; margin-bottom: 20px; font-size: 1.1em;">Quick Links</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 10px;"><a href="home.html" style="color: white; text-decoration: none; transition: color 0.3s;">Home</a></li>
+                    <li style="margin-bottom: 10px;"><a href="ChooseType.html" style="color: white; text-decoration: none; transition: color 0.3s;">Book Shipment</a></li>
+                    <li style="margin-bottom: 10px;"><a href="shippingInfo.html" style="color: white; text-decoration: none; transition: color 0.3s;">Shipping Info</a></li>
+                    <li style="margin-bottom: 10px;"><a href="AboutUs.html" style="color: white; text-decoration: none; transition: color 0.3s;">About Us</a></li>
+                </ul>
+            </div>
+
+            
+            <div>
+                <h4 style="color: #2f7bcd; margin-bottom: 20px; font-size: 1.1em;">Our Services</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 10px; color: #ccc;">✈️ Air Shipping</li>
+                    <li style="margin-bottom: 10px; color: #ccc;">🚢 Sea Shipping</li>
+                    <li style="margin-bottom: 10px; color: #ccc;">📦 Package Tracking</li>
+                    <li style="margin-bottom: 10px; color: #ccc;">🏢 Business Solutions</li>
+                    <li style="margin-bottom: 10px; color: #ccc;">👤 Individual Shipping</li>
+                </ul>
+            </div>
+
+            
+            <div>
+                <h4 style="color: #2f7bcd; margin-bottom: 20px; font-size: 1.1em;">Contact Us</h4>
+                <div style="line-height: 1.8;">
+                    <p style="margin-bottom: 10px;">📧 email ndeim ke</p>
+                    <p style="margin-bottom: 10px;">📞 ????????????</p>
+                    <p style="margin-bottom: 10px;">📍 heriot watt amoozehsgah</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Section -->
+        <div style="border-top: 1px solid #2f7bcd; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <p style="margin: 0; color: #ccc;">© 2024 Ship Me. All rights reserved.</p>
+            </div>
+            <div style="display: flex; gap: 20px;">
+                <a href="privacyPolicy.html" style="color: #ccc; text-decoration: none; font-size: 0.9em;">Privacy Policy</a>
+                <a href="#" style="color: #ccc; text-decoration: none; font-size: 0.9em;">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    footer a:hover {
+        color: #2f7bcd !important;
+        transition: color 0.3s ease;
+    }
+    
+    @media (max-width: 768px) {
+        footer div[style*="grid-template-columns"] {
+            grid-template-columns: 1fr !important;
+            gap: 30px !important;
+        }
+        
+        footer div[style*="justify-content: space-between"] {
+            flex-direction: column !important;
+            text-align: center !important;
+        }
+    }
+</style>

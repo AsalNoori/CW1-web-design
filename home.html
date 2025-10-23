@@ -103,6 +103,17 @@
             <img src="Home_page_ship.jpeg" alt="Ship">
         </div>
         </div>
+
+        <div id="footer"></div>
+
+        <script>
+          fetch("footer.html")
+            .then(response => response.text())
+            .then(data => {
+              document.getElementById("footer").innerHTML = data;
+            });
+        </script>
+
         <script>
             document.getElementById('shippingForm').addEventListener('submit', function(e) {
                 e.preventDefault(); 
