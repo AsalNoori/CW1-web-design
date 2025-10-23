@@ -1,98 +1,375 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>Privacy Policy | [Your Company Name]</title>
+
     <style>
-    body {
-    font-family: Arial, sans-serif;
-    background-color: #0b2244;
-    margin: 0;
-    }
+      :root {
+        --bg: #0b2244;
+        --text: #ffffff;
+        --muted: #c9d3ea;
+        --card: rgba(255, 255, 255, 0.06);
+        --border: rgba(255, 255, 255, 0.18);
+        --link: #a7c5ff;
+        --accent: #ffffff;
+        --radius: 16px;
+        --maxw: 960px;
+      }
 
-    .main-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 0;
-}
+      /* Base */
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.6;
+      }
 
-        .tracking-input {
-            width: 200px;
-            padding: 10px;
-            border: 4px solid #000;
-            font-size: 30px;
-            background-color: #fff; 
-        }
+      /* Header/footer placeholders load via fetch() below */
+      #header,
+      #footer {
+        width: 100%;
+      }
 
-        .submit-trackingID {
-            padding: 12px 20px;
-            font-size: 25px;
-            border: 4px solid #000;
-            border-radius: 5px;
-            background-color: #000;
-            color: #fff;
-        }
+      /* Page container */
+      .page {
+        display: flex;
+        justify-content: center;
+        padding: 48px 16px 80px;
+      }
+      .content {
+        width: 100%;
+        max-width: var(--maxw);
+      }
 
-         .image-container {
-            position: relative;     
-            display: flex;
-            justify-content: center;
-        }
-        .image-container img {
-            width: 700px;
-            height: auto;
-        }
+      /* Card-style wrapper for the policy */
+      .policy {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+        backdrop-filter: blur(6px);
+      }
 
-        .tracking-container {    
-            position: absolute;
-            display: flex;
-            align-items: center;
-            top: 40%;                
-            left: 50%;
-            transform: translate(-50%, -50%);
-            gap: 15px;   
-        }
+      /* Headings */
+      h1,
+      h2,
+      h3 {
+        line-height: 1.25;
+        margin: 0 0 12px;
+      }
+      h1 {
+        font-size: 32px;
+        letter-spacing: 0.2px;
+      }
+      h2 {
+        font-size: 22px;
+        margin-top: 28px;
+      }
+      h3 {
+        font-size: 18px;
+        margin-top: 18px;
+      }
 
-        .tracking-container label {
-            font-size: 25px;
-            font-weight: bold;
-            color: #000;
-            line-height: 1;       
-        }
+      /* Meta row (last updated) */
+      .meta {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 8px 0 24px;
+      }
 
-        .place_order_button {
-            position: absolute;     
-            top: 75%;               
-            left: 50%;              
-            transform: translate(-50%, -50%);
-            padding: 15px 25px;
-            font-size: 18px;
-            background-color: #000000;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
+      /* Lists */
+      ul {
+        margin: 12px 0 18px 22px;
+        padding: 0;
+      }
+      li + li {
+        margin-top: 6px;
+      }
+
+      /* Callouts */
+      .callout {
+        border-left: 4px solid var(--accent);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 12px 14px;
+        border-radius: 8px;
+        margin: 16px 0;
+      }
+
+      /* Links */
+      a {
+        color: var(--link);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      /* Small helper classes */
+      .muted {
+        color: var(--muted);
+      }
+      .section-sep {
+        height: 1px;
+        background: var(--border);
+        border: 0;
+        margin: 28px 0;
+      }
+
+      /* Footer spacing insurance */
+      .spacer {
+        height: 24px;
+      }
+
+      /* Responsive */
+      @media (max-width: 520px) {
+        .policy {
+          padding: 20px;
         }
-        
+        h1 {
+          font-size: 26px;
+        }
+        h2 {
+          font-size: 20px;
+        }
+      }
     </style>
-    <body>
-        <div id="header"></div>
+  </head>
 
-        <script>
-          fetch("header.html")
-            .then(response => response.text())
-            .then(data => {
-              document.getElementById("header").innerHTML = data;
-            });
-        </script>
+  <body>
+    <!-- Header injected from external file -->
+    <div id="header"></div>
+    <script>
+      fetch("header.html")
+        .then((r) => r.text())
+        .then((html) => (document.getElementById("header").innerHTML = html))
+        .catch(() => {});
+    </script>
 
-        <div id="footer"></div>
+    <!-- Page content -->
+    <main class="page">
+      <div class="content">
+        <div class="policy" role="article" aria-labelledby="policy-title">
+          <h1 id="policy-title">Privacy Policy</h1>
+          <div class="meta">Last updated: Thursday, October 23, 2025</div>
 
-        <script>
-          fetch("footer.html")
-            .then(response => response.text())
-            .then(data => {
-              document.getElementById("footer").innerHTML = data;
-            });
-        </script>
-    </body>
+          <p>
+            Welcome to <strong>[Your Company Name]</strong>, a logistics and
+            delivery service operating across the Middle East. We respect your
+            privacy and are committed to protecting your personal data. This
+            Privacy Policy explains how we collect, use, disclose, and safeguard
+            your information when you visit our website, create an account,
+            sign in, place orders (including individual shipments up to
+            <strong>100&nbsp;kg</strong> and business shipments up to
+            <strong>200&nbsp;kg+</strong>), and use our services.
+          </p>
+
+          <div class="callout">
+            By creating an account, signing in, or submitting your card details
+            to pay for an order, you agree to the practices described in this
+            Policy.
+          </div>
+
+          <hr class="section-sep" />
+
+          <h2>1) Information We Collect</h2>
+          <h3>a) Account Information</h3>
+          <ul>
+            <li>Full name, email address, and phone number</li>
+            <li>Delivery and billing addresses</li>
+            <li>Business name and company details (for business users)</li>
+            <li>Login credentials (passwords are stored using industry-standard hashing)</li>
+          </ul>
+
+          <h3>b) Payment Information</h3>
+          <ul>
+            <li>
+              Credit/debit card details (processed via certified payment
+              gateways)
+            </li>
+            <li>Payment confirmations, refunds, and transaction history</li>
+          </ul>
+
+          <h3>c) Delivery Information</h3>
+          <ul>
+            <li>Package details (weight, dimensions, declared value)</li>
+            <li>Pickup and drop-off addresses and recipient details</li>
+            <li>Delivery instructions, booking notes, and proof-of-delivery data</li>
+          </ul>
+
+          <h3>d) Technical &amp; Usage Data</h3>
+          <ul>
+            <li>IP address, browser type/version, device identifiers</li>
+            <li>Cookies, pixels, and similar technologies for authentication and analytics</li>
+            <li>Logs on feature usage, errors, and performance</li>
+          </ul>
+
+          <hr class="section-sep" />
+
+          <h2>2) How We Use Your Information</h2>
+          We process personal data to:
+          <ul>
+            <li>Create and manage your account and authenticate logins</li>
+            <li>Process payments and prevent fraud</li>
+            <li>Pick up, transport, and deliver shipments</li>
+            <li>Send confirmations, invoices, and delivery notifications</li>
+            <li>Provide customer support and handle inquiries or disputes</li>
+            <li>Improve our website, apps, services, and user experience</li>
+            <li>Comply with legal, tax, and regulatory obligations</li>
+          </ul>
+
+          <hr class="section-sep" />
+
+          <h2>3) Legal Bases for Processing</h2>
+          Depending on your location, we rely on one or more of the following:
+          <ul>
+            <li>Performance of a contract (e.g., fulfilling your delivery)</li>
+            <li>Legitimate interests (e.g., site security, service improvement)</li>
+            <li>Compliance with legal obligations</li>
+            <li>Your consent (e.g., optional marketing)</li>
+          </ul>
+
+          <hr class="section-sep" />
+
+          <h2>4) Sharing Your Information</h2>
+          We do <strong>not</strong> sell or rent your personal data. We may
+          share information with:
+          <ul>
+            <li>
+              <strong>Delivery partners &amp; couriers</strong> to complete
+              shipments and provide tracking
+            </li>
+            <li>
+              <strong>Payment processors</strong> to securely process card
+              transactions
+            </li>
+            <li>
+              <strong>IT/hosting, analytics, and customer support providers</strong>
+              who help us operate our services
+            </li>
+            <li>
+              <strong>Authorities or regulators</strong> where required by law
+              or to protect rights, safety, and property
+            </li>
+          </ul>
+          Our service providers are contractually bound to use data only as
+          instructed and to protect it appropriately.
+
+          <hr class="section-sep" />
+
+          <h2>5) Card Data &amp; Payments</h2>
+          <ul>
+            <li>
+              All payments are handled through certified, PCI-DSS compliant
+              gateways. Your full card number is
+              <strong>not stored</strong> on our servers.
+            </li>
+            <li>
+              We may store tokens or references from the payment gateway to
+              manage refunds or future authorized charges (e.g., re-delivery).
+            </li>
+          </ul>
+
+          <hr class="section-sep" />
+
+          <h2>6) Security</h2>
+          We employ technical and organizational measures, including:
+          <ul>
+            <li>Encryption in transit (HTTPS/SSL/TLS)</li>
+            <li>Access controls and least-privilege policies</li>
+            <li>Secure password hashing and secret management</li>
+            <li>Monitoring and regular security reviews</li>
+          </ul>
+          No method of transmission or storage is 100% secure; we work to
+          continuously improve our protections.
+
+          <hr class="section-sep" />
+
+          <h2>7) Data Retention</h2>
+          We keep personal data only as long as necessary to provide services,
+          comply with legal/tax requirements, resolve disputes, and enforce our
+          agreements. When no longer needed, data is deleted or anonymized.
+
+          <hr class="section-sep" />
+
+          <h2>8) Your Rights</h2>
+          Subject to applicable law, you may have the right to:
+          <ul>
+            <li>Access, correct, or delete your personal data</li>
+            <li>Object to or restrict certain processing</li>
+            <li>Withdraw consent (for example, marketing)</li>
+            <li>Request a copy of your data (portability)</li>
+          </ul>
+          To exercise rights, contact us at
+          <a href="mailto:support@yourdomain.com">support@yourdomain.com</a>.
+          We may need to verify your identity before responding.
+
+          <hr class="section-sep" />
+
+          <h2>9) Cookies &amp; Similar Technologies</h2>
+          We use cookies/pixels to keep you signed in, remember preferences,
+          combat fraud, and analyze usage. You can manage cookies in your
+          browser settings; disabling some may affect functionality.
+
+          <hr class="section-sep" />
+
+          <h2>10) International Data Transfers</h2>
+          Your information may be processed in, or transferred to, locations
+          outside your country. We implement safeguards required by applicable
+          laws to protect data during such transfers.
+
+          <hr class="section-sep" />
+
+          <h2>11) Children’s Privacy</h2>
+          Our services are not directed to children under 13 (or the minimum
+          age required by local law). We do not knowingly collect data from
+          children. If you believe a child has provided data to us, please
+          contact us for deletion.
+
+          <hr class="section-sep" />
+
+          <h2>12) Changes to This Policy</h2>
+          We may update this Policy periodically. Changes take effect when
+          posted on this page. We encourage you to review it regularly.
+
+          <hr class="section-sep" />
+
+          <h2>13) Contact Us</h2>
+          <p>
+            Questions about this Privacy Policy or our data practices?
+            Reach us at:
+          </p>
+          <ul>
+            <li>
+              Email:
+              <a href="mailto:support@yourdomain.com">support@yourdomain.com</a>
+            </li>
+            <li>
+              Address: [Your Company Name], [Street], [City], [Country], Middle
+              East
+            </li>
+          </ul>
+
+          <div class="spacer"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer injected from external file -->
+    <div id="footer"></div>
+    <script>
+      fetch("footer.html")
+        .then((r) => r.text())
+        .then((html) => (document.getElementById("footer").innerHTML = html))
+        .catch(() => {});
+    </script>
+  </body>
 </html>
