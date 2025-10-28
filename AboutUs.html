@@ -8,13 +8,329 @@
                 font-family: Arial, sans-serif;
                 background-color: #0b2244;
                 margin: 0;
+                color: white;
+                line-height: 1.6;
             }
 
             .main-content {
                 display: flex;
                 justify-content: center;
-                align-items: center;
-                padding: 20px 0;
+                padding: 40px 20px;
+                min-height: calc(100vh - 200px);
+            }
+
+            .about-container {
+                width: 100%;
+                max-width: 1200px;
+            }
+
+            .hero-section {
+                text-align: center;
+                margin-bottom: 60px;
+                padding: 40px 0;
+            }
+
+            .hero-section h1 {
+                font-size: 3.5em;
+                margin: 0 0 20px 0;
+                color: #61D3F9;
+                font-weight: bold;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .hero-subtitle {
+                font-size: 1.4em;
+                color: #c9d3ea;
+                margin: 0;
+                font-weight: 300;
+            }
+
+            .content-section {
+                margin-bottom: 60px;
+                padding: 40px;
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 16px;
+                backdrop-filter: blur(6px);
+            }
+
+            .content-section h2 {
+                color: #61D3F9;
+                font-size: 2.2em;
+                margin: 0 0 30px 0;
+                text-align: center;
+                border-bottom: 2px solid #2f7bcd;
+                padding-bottom: 15px;
+            }
+
+            .content-section p {
+                font-size: 1.1em;
+                margin-bottom: 20px;
+                color: #ffffff;
+            }
+
+            .values-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 30px;
+                margin-top: 30px;
+            }
+
+            .value-card {
+                text-align: center;
+                padding: 30px 20px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .value-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(97, 211, 249, 0.2);
+            }
+
+            .value-icon {
+                font-size: 3em;
+                margin-bottom: 20px;
+            }
+
+            .value-card h3 {
+                color: #61D3F9;
+                font-size: 1.4em;
+                margin: 0 0 15px 0;
+            }
+
+            .value-card p {
+                font-size: 1em;
+                color: #c9d3ea;
+                margin: 0;
+            }
+
+            .services-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+                margin-top: 30px;
+            }
+
+            .service-card {
+                padding: 25px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                transition: transform 0.3s ease;
+            }
+
+            .service-card:hover {
+                transform: translateY(-3px);
+                background: rgba(255, 255, 255, 0.08);
+            }
+
+            .service-card h3 {
+                color: #61D3F9;
+                font-size: 1.3em;
+                margin: 0 0 15px 0;
+            }
+
+            .service-card p {
+                font-size: 1em;
+                color: #c9d3ea;
+                margin: 0;
+            }
+
+            .countries-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                margin-top: 25px;
+                justify-content: center;
+            }
+
+            .country-tag {
+                background: rgba(97, 211, 249, 0.2);
+                color: #61D3F9;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 0.9em;
+                border: 1px solid rgba(97, 211, 249, 0.3);
+                transition: all 0.3s ease;
+            }
+
+            .country-tag:hover {
+                background: rgba(97, 211, 249, 0.3);
+                transform: scale(1.05);
+            }
+
+            .features-list {
+                margin-top: 30px;
+            }
+
+            .feature-item {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 25px;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.03);
+                border-radius: 10px;
+                border-left: 4px solid #61D3F9;
+            }
+
+            .feature-icon {
+                font-size: 1.5em;
+                margin-right: 20px;
+                margin-top: 5px;
+            }
+
+            .feature-item h4 {
+                color: #61D3F9;
+                font-size: 1.2em;
+                margin: 0 0 8px 0;
+            }
+
+            .feature-item p {
+                margin: 0;
+                color: #c9d3ea;
+                font-size: 1em;
+            }
+
+            .contact-section {
+                text-align: center;
+                background: linear-gradient(135deg, rgba(97, 211, 249, 0.1), rgba(47, 123, 205, 0.1));
+            }
+
+            .contact-actions {
+                display: flex;
+                gap: 20px;
+                justify-content: center;
+                margin: 30px 0;
+                flex-wrap: wrap;
+            }
+
+            .cta-button {
+                padding: 15px 30px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 1.1em;
+                transition: all 0.3s ease;
+                display: inline-block;
+            }
+
+            .cta-button.primary {
+                background-color: #61D3F9;
+                color: #0b2244;
+            }
+
+            .cta-button.primary:hover {
+                background-color: #4bc5f0;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(97, 211, 249, 0.4);
+            }
+
+            .cta-button.secondary {
+                background-color: transparent;
+                color: #61D3F9;
+                border: 2px solid #61D3F9;
+            }
+
+            .cta-button.secondary:hover {
+                background-color: #61D3F9;
+                color: #0b2244;
+                transform: translateY(-2px);
+            }
+
+            .contact-info {
+                margin-top: 30px;
+                text-align: left;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .contact-info p {
+                margin: 10px 0;
+                font-size: 1.1em;
+            }
+
+            .contact-info strong {
+                color: #61D3F9;
+            }
+
+            @media (max-width: 768px) {
+                .hero-section h1 {
+                    font-size: 2.5em;
+                }
+
+                .hero-subtitle {
+                    font-size: 1.2em;
+                }
+
+                .content-section {
+                    padding: 25px;
+                    margin-bottom: 40px;
+                }
+
+                .content-section h2 {
+                    font-size: 1.8em;
+                }
+
+                .values-grid {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .services-grid {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .contact-actions {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .cta-button {
+                    width: 100%;
+                    max-width: 300px;
+                }
+
+                .countries-grid {
+                    justify-content: center;
+                }
+
+                .feature-item {
+                    flex-direction: column;
+                    text-align: center;
+                }
+
+                .feature-icon {
+                    margin-right: 0;
+                    margin-bottom: 10px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .main-content {
+                    padding: 20px 10px;
+                }
+
+                .hero-section {
+                    padding: 20px 0;
+                    margin-bottom: 40px;
+                }
+
+                .hero-section h1 {
+                    font-size: 2em;
+                }
+
+                .content-section {
+                    padding: 20px;
+                }
+
+                .value-card, .service-card {
+                    padding: 20px;
+                }
             }
         </style>
 
@@ -30,6 +346,165 @@
         </script>
 
         <div class="main-content">
+            <div class="about-container">
+                <div class="hero-section">
+                    <h1>About Ship Me</h1>
+                    <p class="hero-subtitle">Your Trusted Logistics Partner Across the Middle East</p>
+                </div>
+
+                <div class="content-section">
+                    <h2>Our Story</h2>
+                    <p>
+                        Founded with a vision to revolutionize shipping and logistics across the Middle East, 
+                        Ship Me has grown from a small startup into a trusted partner for thousands of customers. 
+                        We understand that every package tells a story, and we're committed to ensuring your 
+                        shipments reach their destination safely, securely, and on time.
+                    </p>
+                    <p>
+                        Whether you're sending personal items to loved ones or managing business shipments 
+                        across borders, we provide reliable air and sea freight solutions tailored to your 
+                        specific needs. Our comprehensive network spans across 18 countries in the Middle East, 
+                        connecting communities and businesses with seamless logistics solutions.
+                    </p>
+                </div>
+
+                <div class="content-section">
+                    <h2>Our Mission & Values</h2>
+                    <div class="values-grid">
+                        <div class="value-card">
+                            <div class="value-icon">🚀</div>
+                            <h3>Reliability</h3>
+                            <p>We deliver on our promises, ensuring your packages arrive safely and on time, every time.</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">🌍</div>
+                            <h3>Accessibility</h3>
+                            <p>Making shipping accessible to everyone, from individual customers to large businesses.</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">💡</div>
+                            <h3>Innovation</h3>
+                            <p>Continuously improving our technology and processes to provide better service.</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">🤝</div>
+                            <h3>Trust</h3>
+                            <p>Building lasting relationships through transparency, security, and exceptional service.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>What We Offer</h2>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <h3>✈️ Air Shipping</h3>
+                            <p>Fast and secure air freight services for urgent deliveries across the Middle East.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3>🚢 Sea Shipping</h3>
+                            <p>Cost-effective sea freight solutions for larger shipments and bulk cargo.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3>📦 Package Tracking</h3>
+                            <p>Real-time tracking system to monitor your shipments from pickup to delivery.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3>🏢 Business Solutions</h3>
+                            <p>Tailored logistics solutions for businesses with shipments up to 200kg.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3>👤 Individual Shipping</h3>
+                            <p>Personal shipping services for individuals with packages up to 100kg.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3>💳 Flexible Payment</h3>
+                            <p>Multiple payment options including credit cards and cash on delivery.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>Our Coverage</h2>
+                    <p>We proudly serve customers across 18 countries in the Middle East:</p>
+                    <div class="countries-grid">
+                        <span class="country-tag">🇧🇭 Bahrain</span>
+                        <span class="country-tag">🇨🇾 Cyprus</span>
+                        <span class="country-tag">🇪🇬 Egypt</span>
+                        <span class="country-tag">🇮🇷 Iran</span>
+                        <span class="country-tag">🇮🇶 Iraq</span>
+                        <span class="country-tag">🇮🇱 Israel</span>
+                        <span class="country-tag">🇯🇴 Jordan</span>
+                        <span class="country-tag">🇰🇼 Kuwait</span>
+                        <span class="country-tag">🇱🇧 Lebanon</span>
+                        <span class="country-tag">🇴🇲 Oman</span>
+                        <span class="country-tag">🇵🇸 Palestine</span>
+                        <span class="country-tag">🇶🇦 Qatar</span>
+                        <span class="country-tag">🇸🇦 Saudi Arabia</span>
+                        <span class="country-tag">🇸🇾 Syria</span>
+                        <span class="country-tag">🇹🇷 Turkey</span>
+                        <span class="country-tag">🇦🇪 UAE</span>
+                        <span class="country-tag">🇾🇪 Yemen</span>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>Why Choose Ship Me?</h2>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✅</span>
+                            <div>
+                                <h4>Competitive Pricing</h4>
+                                <p>Transparent pricing with no hidden fees - only $30 per kg for all shipments.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔒</span>
+                            <div>
+                                <h4>Secure Handling</h4>
+                                <p>Your packages are handled with care and protected throughout the shipping process.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📱</span>
+                            <div>
+                                <h4>Easy Online Booking</h4>
+                                <p>Simple, user-friendly platform for booking and tracking your shipments.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">⏰</span>
+                            <div>
+                                <h4>Fast Processing</h4>
+                                <p>Quick turnaround times with efficient processing and delivery systems.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🎯</span>
+                            <div>
+                                <h4>Accurate Tracking</h4>
+                                <p>Real-time tracking with unique tracking IDs for complete shipment visibility.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">💬</span>
+                            <div>
+                                <h4>Customer Support</h4>
+                                <p>Dedicated support team ready to assist you with any questions or concerns.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section contact-section">
+                    <h2>Get in Touch</h2>
+                    <p>Ready to ship with us? Have questions about our services? We're here to help!</p>
+                    <div class="contact-actions">
+                        <a href="ChooseType.html" class="cta-button primary">Book Your Shipment</a>
+                        <a href="signUp.html" class="cta-button secondary">Create Account</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="footer"></div>
