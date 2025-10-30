@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Middle East — Neon Land, Navy Sea, Hover Country Names</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js"></script>
+<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    .mapboxgl-popup {
+      padding-bottom: 8px;
+    }
+    .mapboxgl-popup-content {
+      font: 600 12px/1.2 "Helvetica Neue", Arial, sans-serif;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: rgba(10,26,63,0.92); /* navy glass */
+      color: #00e5ff; /* neon text */
+      box-shadow: 0 6px 18px rgba(0,0,0,.35);
+    }
+    .mapboxgl-popup-tip {
+      border-top-color: rgba(10,26,63,0.92) !important;
+    }
+</style>
+</head>
+<body>
+<div id="map"></div>
+ 
+<script>
+  // Use YOUR token if this one fails
+  mapboxgl.accessToken = 'pk.eyJ1IjoieG15b290IiwiYSI6ImNqOXdhMDR2OTU4dTgycXBnejAycTc2Z3AifQ.IbKaD_XfuTq69TO9b06e6A';
+ 
+  // Middle East bounds [west,south],[east,north]
+  var ME_BOUNDS = [[25, 12], [60, 38]];
+ 
+  var NAVY = '#0a1a3f';  // dark navy  (ocean + borders)
+  var NEON = '#00e5ff';  // light neon (ground)
+ 
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v9',
+    center: [45, 25],
+    zoom: 4,
+    maxBounds: ME_BOUNDS
+  });
+ 
+  map.on('load', function () {
+    // Keep view in the region
+    map.fitBounds(ME_BOUNDS, { padding: 40, linear: true });
+ 
+    var layers = map.getStyle().layers || [];
+ 
+    // 1) Hide ALL text labels (names)
+    layers.forEach(function (layer) {
+      var isSymbol = layer.type === 'symbol';
+      var hasText = layer.layout && layer.layout['text-field'];
+      if (isSymbol && hasText) {
+        try { map.setLayoutProperty(layer.id, 'visibility', 'none'); } catch(e){}
+      }
+    });
+ 
+    // 2) Hide everything except background, water, and admin boundaries
+    layers.forEach(function (layer) {
+      var id = layer.id;
+      var keep =
+        layer.type === 'background' ||
+        id.indexOf('water') > -1 ||
+        id.indexOf('admin-0-boundary') > -1 ||
+        id.indexOf('admin-1-boundary') > -1;
+      if (!keep) {
+        try { map.setLayoutProperty(id, 'visibility', 'none'); } catch(e){}
+      }
+    });
+ 
+    // 3) Recolor water to NAVY, background to NEON
+    layers.forEach(function (layer) {
+      var id = layer.id;
+      if (layer.type === 'background') {
+        map.setPaintProperty(id, 'background-color', NEON);
+      }
+      if (id.indexOf('water') > -1) {
+        if (layer.type === 'fill') {
+          map.setPaintProperty(id, 'fill-color', NAVY);
+          if (map.getPaintProperty(id, 'fill-opacity') == null) map.setPaintProperty(id, 'fill-opacity', 1);
+        }
+        if (layer.type === 'line') {
+          map.setPaintProperty(id, 'line-color', NAVY);
+          if (map.getPaintProperty(id, 'line-opacity') == null) map.setPaintProperty(id, 'line-opacity', 1);
+        }
+      }
+      // Make built-in admin boundary layers navy as a fallback (extra)
+      if ((id.indexOf('admin-0-boundary') > -1 || id.indexOf('admin-1-boundary') > -1) && layer.type === 'line') {
+        map.setPaintProperty(id, 'line-color', NAVY);
+        if (map.getPaintProperty(id, 'line-width') == null) map.setPaintProperty(id, 'line-width', 1.2);
+      }
+    });
+ 
+    // 4) Add country polygons to paint the "ground" and to get hover names
+    //    This public Mapbox tileset is available on all accounts.
+    map.addSource('countries', {
+      type: 'vector',
+      url: 'mapbox://mapbox.country-boundaries-v1'
+    });
+ 
+    // Base land fill (NEON) clipped to ME_BOUNDS via filter on bbox
+    // (The tileset is global; we just draw inside the viewport.)
+    map.addLayer({
+      id: 'country-fills',
+      type: 'fill',
+      source: 'countries',
+      'source-layer': 'country_boundaries',
+      paint: {
+        'fill-color': NEON,
+        'fill-opacity': 0.92
+      }
+    }, getTopWaterLayerId()); // insert above water
+ 
+    // Country outlines in solid NAVY (ensures crisp borders)
+    map.addLayer({
+      id: 'country-borders-navy',
+      type: 'line',
+      source: 'countries',
+      'source-layer': 'country_boundaries',
+      paint: {
+        'line-color': NAVY,
+        'line-width': 1.6
+      }
+    });
+ 
+    // Hover highlight (slightly brighter neon)
+    map.addLayer({
+      id: 'country-fills-hover',
+      type: 'fill',
+      source: 'countries',
+      'source-layer': 'country_boundaries',
+      paint: {
+        'fill-color': '#66f0ff',
+        'fill-opacity': 0.9
+      },
+      filter: ['==', 'name_en', ''] // empty until we hover
+    });
+ 
+    // Popup for hover name (only on hover; labels still hidden otherwise)
+    var popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
+ 
+    map.on('mousemove', 'country-fills', function (e) {
+      if (!e.features || !e.features.length) return;
+      var f = e.features[0];
+      var name = f.properties && (f.properties.name_en || f.properties.name);
+      var iso = f.properties && (f.properties.iso_3166_1_alpha_3 || '');
+ 
+      // Update highlight filter to this country
+      map.setFilter('country-fills-hover', ['==', 'name_en', name]);
+ 
+      // Only show popup if inside Middle East bounds
+      var lngLat = e.lngLat;
+      if (lngLat.lng < ME_BOUNDS[0][0] || lngLat.lng > ME_BOUNDS[1][0] ||
+          lngLat.lat < ME_BOUNDS[0][1] || lngLat.lat > ME_BOUNDS[1][1]) {
+        popup.remove();
+        return;
+      }
+ 
+      popup
+        .setLngLat(lngLat)
+        .setHTML(name ? name : (iso || 'Country'))
+        .addTo(map);
+    });
+ 
+    map.on('mouseleave', 'country-fills', function () {
+      map.setFilter('country-fills-hover', ['==', 'name_en', '']);
+      popup.remove();
+    });
+ 
+    // Keep panning locked to Middle East
+    map.setMaxBounds(ME_BOUNDS);
+ 
+    // Helper: find the topmost water layer to insert fills above water
+    function getTopWaterLayerId() {
+      var waterLayers = (map.getStyle().layers || []).filter(function (l) {
+        return l.id.indexOf('water') > -1;
+      });
+      // insert after the last water layer
+      return waterLayers.length ? waterLayers[waterLayers.length - 1].id : undefined;
+    }
+  });
+</script>
+</body>
+</html>
