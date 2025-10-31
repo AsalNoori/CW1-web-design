@@ -53,62 +53,51 @@
   });
  
   var didLockBounds = false;
-  var lockPhase = 'idle';
 
   map.on('load', function () {
-    // Smoothly zoom into Middle East over ~3.5 seconds after a brief render
+    // Single smooth continuous animation from world view to Middle East
     setTimeout(function () {
-      lockPhase = 'fit';
-      map.fitBounds(ME_BOUNDS, { padding: 24, linear: true, duration: 3200 });
-
-      // After animations, lock panning to a gently expanded camera bounds
-      var onMoveEnd = function () {
-        if (lockPhase === 'fit') {
-          lockPhase = 'ease';
-          // Ease in a bit closer for a tighter view
-          var targetZoom = Math.min(map.getZoom() + 1.3, 7);
-          map.easeTo({ zoom: targetZoom, duration: 1200, easing: function (t) { return t; } });
-          return;
+      // Calculate final target position
+      var targetBounds = new mapboxgl.LngLatBounds(ME_BOUNDS);
+      var targetCenter = targetBounds.getCenter();
+      var targetZoom = 5.4; // Final zoom level (allows zoom out for exploration)
+      
+      // Single smooth animation - no pauses or phases
+      map.easeTo({
+        center: targetCenter,
+        zoom: targetZoom,
+        duration: 4300,
+        easing: function (t) {
+          // Smooth ease-in-out cubic for natural motion
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
-        if (lockPhase === 'ease' && !didLockBounds) {
-          didLockBounds = true;
-          lockPhase = 'locked';
-          try {
-            // Capture current camera to restore smoothly after locking bounds
-            var currentCenter = map.getCenter();
-            var currentZoom = map.getZoom();
-            var currentBearing = map.getBearing();
-            var currentPitch = map.getPitch();
+      });
 
-            var cam = map.getBounds();
-            var spanLng = (cam.getEast() - cam.getWest());
-            var spanLat = (cam.getNorth() - cam.getSouth());
-            var bufLng = spanLng * 0.08; // 8% buffer of current view
-            var bufLat = spanLat * 0.08; // 8% buffer of current view
+      // Lock bounds during animation (near end) to prevent visible snap
+      setTimeout(function () {
+        if (!didLockBounds) {
+          didLockBounds = true;
+          try {
+            // Use the original ME_BOUNDS with significant expansion for exploration
+            var expandLng = 8; // degrees longitude buffer - allows zooming out
+            var expandLat = 8; // degrees latitude buffer
             var expanded = [
-              [cam.getWest() - bufLng, cam.getSouth() - bufLat],
-              [cam.getEast() + bufLng, cam.getNorth() + bufLat]
+              [ME_BOUNDS[0][0] - expandLng, ME_BOUNDS[0][1] - expandLat],
+              [ME_BOUNDS[1][0] + expandLng, ME_BOUNDS[1][1] + expandLat]
             ];
             map.setMaxBounds(expanded);
-
-            // Smooth out any tiny adjustment from applying bounds
-            requestAnimationFrame(function () {
-              map.easeTo({
-                center: currentCenter,
-                zoom: currentZoom,
-                bearing: currentBearing,
-                pitch: currentPitch,
-                duration: 220,
-                easing: function (t) { return t; }
-              });
-            });
           } catch (e) {
-            map.setMaxBounds(ME_BOUNDS);
+            // Fallback: expand original bounds
+            var expandLng = 8;
+            var expandLat = 8;
+            var expanded = [
+              [ME_BOUNDS[0][0] - expandLng, ME_BOUNDS[0][1] - expandLat],
+              [ME_BOUNDS[1][0] + expandLng, ME_BOUNDS[1][1] + expandLat]
+            ];
+            map.setMaxBounds(expanded);
           }
-          map.off('moveend', onMoveEnd);
         }
-      };
-      map.on('moveend', onMoveEnd);
+      }, 4000); // Lock bounds near end of animation
     }, 150);
  
     var layers = map.getStyle().layers || [];
