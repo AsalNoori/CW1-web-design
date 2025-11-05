@@ -4,7 +4,6 @@ const app = express();
 const path = require("path");
 const port = 8080;
 const cookieParser = require('cookie-parser');
-const bodyParser = require("body-parser");
 
 app.use(cookieParser());
 
