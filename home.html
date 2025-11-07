@@ -2,7 +2,7 @@
     <style>
     body {
     font-family: Arial, sans-serif;
-    background-color: #0b2244;
+    background-color: #0a1a3f;
     margin: 0;
     }
 
@@ -10,7 +10,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 0;
+    padding: 0;
 }
 
         .tracking-input {
@@ -72,6 +72,28 @@
             text-decoration: none;
             text-align: center;
         }
+        .hero-container {
+            position: relative;
+            width: 100%;
+            height: 90vh;      
+            max-height: 900px; 
+            overflow: hidden;
+        }
+
+        .hero-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+     .tracking-container,
+     .place_order_button {
+         z-index: 2;
+     }
         
     </style>
     <head>
@@ -90,8 +112,15 @@
         </script>
 
         <div class="main-content">
-        <div class="image-container">
-            <img src="Home_page_plane.jpeg" alt="Plane">
+        <div class="hero-container">
+            <div id="hero">
+                <iframe
+                  src="hero.html"
+                  class="hero-iframe"
+                  title="Hero"
+                  loading="eager"
+                ></iframe>
+            </div>
 
             <div class="tracking-container">
                 <label for="tracking-input">Tracking ID:</label>
@@ -100,7 +129,7 @@
             </div>
 
             <a href="/ChooseType" class="place_order_button"> Book Shipment </a>
-            <img src="Home_page_ship.jpeg" alt="Ship">
+            
         </div>
         </div>
 
