@@ -83,6 +83,8 @@ app.get("/IndividualForm", (req, res) => {
     res.sendFile(path.join(__dirname, "IndividualForm.html"));
 });
 
+
+
 app.get("/BusinessForm", (req, res) => {
     res.sendFile(path.join(__dirname, "BusinessForm.html"));
 });
