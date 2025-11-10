@@ -7,10 +7,18 @@
      <link rel="icon" href="logo.png" type="image/png">
 </head>
     <style>
+        :root {
+            --brand-navy: #0a1a3f;
+            --brand-blue: #1c6bff;
+            --brand-blue-dark: #0d3ec9;
+            --brand-white: #ffffff;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #0b2244;
+            background-color: var(--brand-navy);
             margin: 0;
+            color: var(--brand-white);
         }
 
         .main-content {
@@ -152,23 +160,32 @@
 
         .pay-button {
             width: 100%;
-            padding: 15px;
-            background-color: #007bff;
-            color: white;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--brand-blue) 0%, #408eff 100%);
+            color: var(--brand-white);
             border: none;
-            border-radius: 6px;
+            border-radius: 999px;
             font-size: 1.1em;
             cursor: pointer;
-            transition: background-color 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
+            font-weight: 600;
+            box-shadow: 0 20px 36px rgba(28, 107, 255, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
         .pay-button:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, var(--brand-blue-dark) 0%, var(--brand-blue) 100%);
+            box-shadow: 0 24px 40px rgba(13, 62, 201, 0.38);
+        }
+
+        .pay-button:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(28, 107, 255, 0.28), 0 20px 36px rgba(28, 107, 255, 0.35);
         }
 
         .button-icon {
@@ -409,15 +426,24 @@
                 payButton.disabled = false;
                 
                 const trackingID = generateTrackingID();
-                const cost = localStorage.getItem('shipmentCost') || '0.0';
-                
-                if (currentPaymentMethod === 'card') {
-                    alert(`✅ Order Completed!\n\nAmount: $${parseFloat(cost).toFixed(2)}\nPayment Method: Credit/Debit Card\nTracking ID: ${trackingID}`);
-                } else if (currentPaymentMethod === 'cod') {
-                    alert(`✅ Order Completed!\n\nAmount: $${parseFloat(cost).toFixed(2)}\nPayment Method: Cash on Delivery\nTracking ID: ${trackingID}`);
-                }
-                
-                document.getElementById('paymentForm').reset();
+                const costValue = localStorage.getItem('shipmentCost') || '0.0';
+                const weightValue = localStorage.getItem('shipmentWeight') || null;
+                const amount = parseFloat(costValue).toFixed(2);
+                const paymentMethod = currentPaymentMethod === 'card'
+                    ? 'Credit/Debit Card'
+                    : 'Cash on Delivery';
+
+                const orderSummary = {
+                    trackingID,
+                    amount,
+                    paymentMethod,
+                    weight: weightValue,
+                    timestamp: new Date().toISOString()
+                };
+
+                localStorage.setItem('lastOrderSummary', JSON.stringify(orderSummary));
+
+                window.location.href = 'Confrimation.html';
             }, 2000);
         }
 

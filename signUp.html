@@ -7,10 +7,18 @@
  <link rel="icon" href="logo.png" type="image/png">
 </head>
     <style>
+        :root {
+            --brand-navy: #0a1a3f;
+            --brand-blue: #1c6bff;
+            --brand-blue-dark: #0d3ec9;
+            --brand-white: #ffffff;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #0b2244;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--brand-navy);
             margin: 0;
+            color: var(--brand-white);
         }
 
         .main-content {
@@ -85,18 +93,27 @@
     
         .submit-btn {
             width: 100%;
-            padding: 15px;
-            background-color: #007bff;
-            color: white;
+            padding: 16px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--brand-blue) 0%, #408eff 100%);
+            color: var(--brand-white);
             border: none;
-            border-radius: 6px;
-            font-size: 1.1em;
+            font-size: 1.05em;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            box-shadow: 0 20px 34px rgba(28, 107, 255, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
         .submit-btn:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, var(--brand-blue-dark) 0%, var(--brand-blue) 100%);
+            box-shadow: 0 24px 38px rgba(13, 62, 201, 0.34);
+        }
+
+        .submit-btn:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(28, 107, 255, 0.28), 0 20px 34px rgba(28, 107, 255, 0.3);
         }
         .switch-link {
             text-align: center;

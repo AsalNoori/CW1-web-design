@@ -7,11 +7,18 @@
    <link rel="icon" href="logo.png" type="image/png">
 </head>
   <style>
+    :root {
+      --brand-navy: #0a1a3f;
+      --brand-blue: #1c6bff;
+      --brand-blue-dark: #0d3ec9;
+      --brand-white: #ffffff;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #0b2244;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--brand-navy);
       margin: 0;
-      color: white;
+      color: var(--brand-white);
     }
 
     .main-content {
@@ -19,38 +26,55 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      padding: 20px 0;
+      min-height: 100vh;
+      padding: 48px 20px;
+      text-align: center;
     }
 
     h1 {
-      font-size: 2em;
-      margin-bottom: 40px;
-      color: #ffffff;
+      font-size: 2.4em;
+      margin-bottom: 48px;
+      letter-spacing: 0.4px;
     }
 
     .choice-buttons {
       display: flex;
-      gap: 40px;
+      gap: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    .choice-button {
-      background-color: #007bff;
-      color: white;
-      padding: 20px 40px;
-      border: none;
-      border-radius: 12px;
+    .pill-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 44px;
+      border-radius: 999px;
       font-size: 1.2em;
-      font-weight: bold;
+      font-weight: 600;
+      color: var(--brand-white);
+      background: linear-gradient(135deg, var(--brand-blue) 0%, #4090ff 100%);
+      border: none;
       cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 20px 36px rgba(28, 107, 255, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
 
-    .choice-button:hover {
-      background-color: #0056b3;
-      transform: scale(1.05);
+    .pill-button .pill-icon {
+      font-size: 22px;
+      line-height: 1;
     }
 
+    .pill-button:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, var(--brand-blue-dark) 0%, var(--brand-blue) 100%);
+      box-shadow: 0 26px 42px rgba(13, 62, 201, 0.42);
+    }
+
+    .pill-button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(28, 107, 255, 0.28), 0 20px 36px rgba(28, 107, 255, 0.35);
+    }
   </style>
 
 <body>
@@ -68,8 +92,14 @@
     <h1>Are you shipping as an Individual or a Business?</h1>
 
     <div class="choice-buttons">
-      <button class="choice-button" onclick="window.location.href='/IndividualForm'">Individual</button>
-      <button class="choice-button" onclick="window.location.href='/BusinessForm'">Business</button>
+      <button class="pill-button" onclick="window.location.href='IndividualForm.html'">
+        <span class="pill-icon">👤</span>
+        <span>Ship as Individual</span>
+      </button>
+      <button class="pill-button" onclick="window.location.href='BusinessForm.html'">
+        <span class="pill-icon">🏢</span>
+        <span>Ship as Business</span>
+      </button>
     </div>
   </div>
 
