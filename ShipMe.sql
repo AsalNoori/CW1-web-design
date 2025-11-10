@@ -48,3 +48,5 @@ CREATE TABLE BusinessOrders (
     ShipmentCost DECIMAL(10,2),
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE IndividualOrders ADD TrackingID VARCHAR(20) UNIQUE;
+ALTER TABLE BusinessOrders ADD TrackingID VARCHAR(20) UNIQUE;
