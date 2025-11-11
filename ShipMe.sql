@@ -4,7 +4,8 @@ CREATE TABLE Users (UserID INT AUTO_INCREMENT PRIMARY KEY, FirstName VARCHAR(50)
 INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES
 ('Alice', 'Johnson', 'alice.johnson@example.com', '0501234567', 'alice123');
 CREATE TABLE IndividualOrders (
-	OrderID INT AUTO_INCREMENT PRIMARY KEY,     
+	OrderID INT AUTO_INCREMENT PRIMARY KEY, 
+	IndividualOrders TrackingID VARCHAR(20) UNIQUE;    
 	SenderFirstName VARCHAR(50) NOT NULL,     
 	SenderLastName VARCHAR(50) NOT NULL,     
 	SenderPhone VARCHAR(15) NOT NULL,     
@@ -28,6 +29,7 @@ CREATE TABLE IndividualOrders (
 );
 CREATE TABLE BusinessOrders (
     BusinessID INT AUTO_INCREMENT PRIMARY KEY,
+	IndividualOrders TrackingID VARCHAR(20) UNIQUE;
     BusinessRegistration VARCHAR(50) NOT NULL,
     SenderPhone VARCHAR(15) NOT NULL,
     SenderEmail VARCHAR(100) NOT NULL,
@@ -48,5 +50,3 @@ CREATE TABLE BusinessOrders (
     ShipmentCost DECIMAL(10,2),
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-ALTER TABLE IndividualOrders ADD TrackingID VARCHAR(20) UNIQUE;
-ALTER TABLE BusinessOrders ADD TrackingID VARCHAR(20) UNIQUE;
