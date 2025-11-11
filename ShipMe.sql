@@ -5,7 +5,7 @@ INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES
 ('Alice', 'Johnson', 'alice.johnson@example.com', '0501234567', 'alice123');
 CREATE TABLE IndividualOrders (
 	OrderID INT AUTO_INCREMENT PRIMARY KEY, 
-	IndividualOrders TrackingID VARCHAR(20) UNIQUE;    
+	TrackingID VARCHAR(20) UNIQUE,
 	SenderFirstName VARCHAR(50) NOT NULL,     
 	SenderLastName VARCHAR(50) NOT NULL,     
 	SenderPhone VARCHAR(15) NOT NULL,     
@@ -29,7 +29,7 @@ CREATE TABLE IndividualOrders (
 );
 CREATE TABLE BusinessOrders (
     BusinessID INT AUTO_INCREMENT PRIMARY KEY,
-	IndividualOrders TrackingID VARCHAR(20) UNIQUE;
+	TrackingID VARCHAR(20) UNIQUE,
     BusinessRegistration VARCHAR(50) NOT NULL,
     SenderPhone VARCHAR(15) NOT NULL,
     SenderEmail VARCHAR(100) NOT NULL,
