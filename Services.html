@@ -1,0 +1,261 @@
+<html>
+    <head>
+        <title>About Us</title>
+         <link rel="icon" href="logo.png" type="image/png">
+    </head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #0b2244;
+                margin: 0;
+                color: white;
+                line-height: 1.6;
+            }
+
+            .main-content {
+                display: flex;
+                justify-content: center;
+                padding: 40px 20px;
+                min-height: calc(100vh - 200px);
+            }
+
+            .services-container {
+                width: 100%;
+                max-width: 1200px;
+            }
+
+            .hero-section {
+                text-align: center;
+                margin-bottom: 60px;
+                padding: 40px 0;
+            }
+
+            .hero-section h1 {
+                font-size: 3.5em;
+                margin: 0 0 20px 0;
+                color: #61D3F9;
+                font-weight: bold;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .hero-subtitle {
+                font-size: 1.4em;
+                color: #c9d3ea;
+                margin: 0;
+                font-weight: 300;
+            }
+
+            .content-section {
+                margin-bottom: 60px;
+                padding: 40px;
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                border-radius: 16px;
+                backdrop-filter: blur(6px);
+            }
+
+            .content-section h2 {
+                color: #61D3F9;
+                font-size: 2.2em;
+                margin: 0 0 30px 0;
+                text-align: center;
+                border-bottom: 2px solid #2f7bcd;
+                padding-bottom: 15px;
+            }
+
+            .content-section p {
+                font-size: 1.1em;
+                margin-bottom: 20px;
+                color: #ffffff;
+            }
+
+
+            
+        
+
+          
+
+            .feature-item {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 25px;
+            }
+
+            .contact-section {
+                text-align: center;
+                background: linear-gradient(135deg, rgba(97, 211, 249, 0.1), rgba(47, 123, 205, 0.1));
+            }
+
+            .contact-actions {
+                display: flex;
+                gap: 20px;
+                justify-content: center;
+                margin: 30px 0;
+                flex-wrap: wrap;
+            }
+
+            .cta-button {
+                padding: 15px 30px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 1.1em;
+                transition: all 0.3s ease;
+                display: inline-block;
+            }
+
+            .cta-button.primary {
+                background-color: #61D3F9;
+                color: #0b2244;
+            }
+
+            .cta-button.primary:hover {
+                background-color: #4bc5f0;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(97, 211, 249, 0.4);
+            }
+
+            .cta-button.secondary {
+                background-color: transparent;
+                color: #61D3F9;
+                border: 2px solid #61D3F9;
+            }
+
+            .cta-button.secondary:hover {
+                background-color: #61D3F9;
+                color: #0b2244;
+                transform: translateY(-2px);
+            }
+
+            .contact-info {
+                margin-top: 30px;
+                text-align: left;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .contact-info p {
+                margin: 10px 0;
+                font-size: 1.1em;
+            }
+
+            .contact-info strong {
+                color: #61D3F9;
+            }
+
+            @media (max-width: 768px) {
+                .hero-section h1 {
+                    font-size: 2.5em;
+                }
+
+                .hero-subtitle {
+                    font-size: 1.2em;
+                }
+
+                .content-section {
+                    padding: 25px;
+                    margin-bottom: 40px;
+                }
+
+                .content-section h2 {
+                    font-size: 1.8em;
+                }
+
+
+              
+            }
+
+            @media (max-width: 480px) {
+                .main-content {
+                    padding: 20px 10px;
+                }
+
+                .hero-section {
+                    padding: 20px 0;
+                    margin-bottom: 40px;
+                }
+
+                .hero-section h1 {
+                    font-size: 2em;
+                }
+
+                .content-section {
+                    padding: 20px;
+                }
+
+                .value-card, .service-card {
+                    padding: 20px;
+                }
+            }
+
+                    
+            .content-section a {
+                color: white;              
+                text-decoration: none;      
+            }
+
+            .content-section a:hover {
+                text-decoration: underline; 
+            }
+
+            .content-section a:visited {
+                color: white;            
+            }
+
+        </style>
+
+    <body>
+        <div id="header"></div>
+
+        <script>
+          fetch("header.html")
+            .then(response => response.text())
+            .then(data => {
+              document.getElementById("header").innerHTML = data;
+            });
+        </script>
+
+        <div class="main-content">
+            <div class="services-container">
+                <div class="hero-section">
+                    <h1>Services</h1>
+                    <p class="hero-subtitle">Your Trusted Logistics Partner Across the Middle East</p>
+                </div>
+
+                <div class="content-section">
+                    <h2>Our Services</h2>
+                    <p>
+                    -> <a href="BusinessForm.html">Fast shipping via air or sea for businesses</a> <br><br>
+                    -> <a href="IndividualForm.html">Fast shipping via air or sea for individuals</a> <br><br>
+                    -> <a href="home.html">Track orders</a> <br><br>
+                    -> <a href="UserDashboard.html">Delete orders</a> <br><br>
+                        
+                    </p>
+        
+
+           
+                </div>
+
+                <div class="content-section contact-section">
+                    <h2>Get in Touch</h2>
+                    <p>Ready to ship with us? Have questions about our services? We're here to help!</p>
+                    <div class="contact-actions">
+                        <a href="ChooseType.html" class="cta-button primary">Book Your Shipment</a>
+                        <a href="signUp.html" class="cta-button secondary">Create Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer"></div>
+
+        <script>
+          fetch("footer.html")
+            .then(response => response.text())
+            .then(data => {
+              document.getElementById("footer").innerHTML = data;
+            });
+        </script>
+    </body>
+</html>
