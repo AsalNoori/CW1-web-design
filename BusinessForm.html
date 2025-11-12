@@ -379,9 +379,53 @@
                 return false;
             }
 
-            const weight = parseFloat(document.getElementById('weight').value);
+            const weightField = document.getElementById('weight');
+            const heightField = document.getElementById('height');
+            const lengthField = document.getElementById('length');
+            const widthField = document.getElementById('width');
+            const weight = parseFloat(weightField.value);
+            const height = parseFloat(heightField.value);
+            const length = parseFloat(lengthField.value);
+            const width = parseFloat(widthField.value);
             const shipmentCost = weight * 30;
 
+            const orderData = {
+                orderType: 'business',
+                business: {
+                    name: document.getElementById('business_name').value.trim(),
+                    registration: document.getElementById('tax_id').value.trim()
+                },
+                sender: {
+                    phone: document.getElementById('s_phone').value.trim(),
+                    email: document.getElementById('s_email').value.trim()
+                },
+                receiver: {
+                    firstName: document.getElementById('r_fname').value.trim(),
+                    lastName: document.getElementById('r_lname').value.trim(),
+                    phone: document.getElementById('r_phone').value.trim(),
+                    email: document.getElementById('r_email').value.trim(),
+                    address1: document.getElementById('r_add1').value.trim(),
+                    address2: document.getElementById('r_add2').value.trim(),
+                    address3: document.getElementById('r_add3').value.trim()
+                },
+                package: {
+                    height,
+                    length,
+                    width,
+                    weight
+                },
+                route: {
+                    origin: document.getElementById('orig').value,
+                    destination: document.getElementById('des').value,
+                    shippingMethod: document.getElementById('shipping_method').value
+                },
+                shipmentCost,
+                meta: {
+                    createdAt: new Date().toISOString()
+                }
+            };
+
+            localStorage.setItem('pendingOrder', JSON.stringify(orderData));
             localStorage.setItem('shipmentWeight', weight);
             localStorage.setItem('shipmentCost', shipmentCost);
             

@@ -149,6 +149,10 @@
                     <span>Payment Method</span>
                     <strong id="summary-method">–</strong>
                 </div>
+                <div class="summary-row" id="summary-order-type-row" style="display: none;">
+                    <span>Order Type</span>
+                    <strong id="summary-order-type">–</strong>
+                </div>
                 <div class="summary-row">
                     <span>Total Amount</span>
                     <strong id="summary-amount">$0.00</strong>
@@ -156,6 +160,14 @@
                 <div class="summary-row" id="summary-weight-row" style="display: none;">
                     <span>Shipment Weight</span>
                     <strong id="summary-weight">–</strong>
+                </div>
+                <div class="summary-row" id="summary-route-row" style="display: none;">
+                    <span>Route</span>
+                    <strong id="summary-route">–</strong>
+                </div>
+                <div class="summary-row" id="summary-receiver-row" style="display: none;">
+                    <span>Receiver</span>
+                    <strong id="summary-receiver">–</strong>
                 </div>
             </div>
 
@@ -183,13 +195,21 @@
             const amountEl = document.getElementById('summary-amount');
             const weightRow = document.getElementById('summary-weight-row');
             const weightEl = document.getElementById('summary-weight');
+            const orderTypeRow = document.getElementById('summary-order-type-row');
+            const orderTypeEl = document.getElementById('summary-order-type');
+            const routeRow = document.getElementById('summary-route-row');
+            const routeEl = document.getElementById('summary-route');
+            const receiverRow = document.getElementById('summary-receiver-row');
+            const receiverEl = document.getElementById('summary-receiver');
 
+            let trackingID = null;
             if (summaryRaw) {
                 try {
                     const data = JSON.parse(summaryRaw);
 
                     if (data.trackingID) {
                         trackingEl.textContent = data.trackingID;
+                        trackingID = data.trackingID;
                     }
 
                     if (data.paymentMethod) {
@@ -204,6 +224,11 @@
                         weightEl.textContent = `${data.weight} kg`;
                         weightRow.style.display = '';
                     }
+
+                    if (data.orderType) {
+                        orderTypeEl.textContent = data.orderType.charAt(0).toUpperCase() + data.orderType.slice(1);
+                        orderTypeRow.style.display = '';
+                    }
                 } catch (err) {
                     console.error('Unable to parse order summary', err);
                 } finally {
@@ -214,8 +239,60 @@
                 trackingEl.textContent = 'Not Available';
                 amountEl.textContent = '$0.00';
             }
+
+            async function loadOrderDetails(id) {
+                if (!id) return;
+                try {
+                    const response = await fetch(`/api/orders/${encodeURIComponent(id)}`);
+                    if (!response.ok) {
+                        throw new Error(await response.text());
+                    }
+
+                    const { orderType, route, receiver, package: pkg } = await response.json();
+
+                    if (orderType && orderTypeRow) {
+                        orderTypeEl.textContent = orderType.charAt(0).toUpperCase() + orderType.slice(1);
+                        orderTypeRow.style.display = '';
+                    }
+
+                    if (route && route.origin && route.destination) {
+                        const baseRoute = `${route.origin} → ${route.destination}`;
+                        routeEl.textContent = route.shippingMethod
+                            ? `${baseRoute} (${route.shippingMethod})`
+                            : baseRoute;
+                        routeRow.style.display = '';
+                    }
+
+                    if (receiver && receiver.firstName) {
+                        const receiverParts = [
+                            `${receiver.firstName} ${receiver.lastName || ''}`.trim()
+                        ];
+                        if (receiver.address1) {
+                            receiverParts.push(receiver.address1);
+                        }
+                        if (receiver.address2) {
+                            receiverParts.push(receiver.address2);
+                        }
+                        if (receiver.address3) {
+                            receiverParts.push(receiver.address3);
+                        }
+                        receiverEl.textContent = receiverParts.join(', ');
+                        receiverRow.style.display = '';
+                    }
+
+                    if (pkg && pkg.weight) {
+                        weightEl.textContent = `${pkg.weight} kg`;
+                        weightRow.style.display = '';
+                    }
+                } catch (error) {
+                    console.error('Unable to load order details', error);
+                }
+            }
+
+            loadOrderDetails(trackingID);
         })();
     </script>
 </body>
 </html>
+
 

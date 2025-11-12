@@ -312,6 +312,23 @@
     <script>
         let currentPaymentMethod = 'card';
         let isSwitchingTabs = false;
+        let pendingOrder = null;
+        const countryMap = {
+            bhr: 'Bahrain',
+            egy: 'Egypt',
+            irn: 'Iran',
+            irq: 'Iraq',
+            jor: 'Jordan',
+            kwt: 'Kuwait',
+            lbn: 'Lebanon',
+            omn: 'Oman',
+            pse: 'Palestine',
+            qat: 'Qatar',
+            sau: 'Saudi Arabia',
+            syr: 'Syria',
+            are: 'United Arab Emirates',
+            yem: 'Yemen'
+        };
 
         function generateTrackingID() {
             const prefix = 'SM';
@@ -394,7 +411,7 @@
             return true;
         }
 
-        function processPayment(event) {
+        async function processPayment(event) {
             event.preventDefault();
             
             if (isSwitchingTabs) {
@@ -411,6 +428,11 @@
             if (!isValid) {
                 return;
             }
+
+            if (!pendingOrder) {
+                alert('We could not find your order details. Please go back and fill the form again.');
+                return;
+            }
             
             const payButton = document.querySelector('.pay-button');
             const buttonText = payButton.querySelector('.button-text');
@@ -419,32 +441,65 @@
             payButton.classList.add('loading');
             buttonText.textContent = 'Processing...';
             payButton.disabled = true;
-            
-            setTimeout(() => {
-                payButton.classList.remove('loading');
-                buttonText.textContent = originalText;
-                payButton.disabled = false;
-                
+
+            try {
                 const trackingID = generateTrackingID();
-                const costValue = localStorage.getItem('shipmentCost') || '0.0';
-                const weightValue = localStorage.getItem('shipmentWeight') || null;
-                const amount = parseFloat(costValue).toFixed(2);
+                const costValue = typeof pendingOrder.shipmentCost === 'number'
+                    ? pendingOrder.shipmentCost
+                    : parseFloat(localStorage.getItem('shipmentCost') || '0');
+                const weightValue = pendingOrder?.package?.weight
+                    || parseFloat(localStorage.getItem('shipmentWeight') || '0');
+                const amount = parseFloat(costValue || 0).toFixed(2);
                 const paymentMethod = currentPaymentMethod === 'card'
                     ? 'Credit/Debit Card'
                     : 'Cash on Delivery';
+
+                const normalizedOrder = normalizeOrderData(pendingOrder);
+
+                const payload = {
+                    trackingID,
+                    paymentMethod,
+                    amount,
+                    orderType: pendingOrder.orderType,
+                    order: normalizedOrder
+                };
+
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const message = await response.text();
+                    throw new Error(message || 'Unable to save order. Please try again.');
+                }
 
                 const orderSummary = {
                     trackingID,
                     amount,
                     paymentMethod,
                     weight: weightValue,
+                    orderType: pendingOrder.orderType,
                     timestamp: new Date().toISOString()
                 };
 
                 localStorage.setItem('lastOrderSummary', JSON.stringify(orderSummary));
+                localStorage.removeItem('pendingOrder');
+                localStorage.removeItem('shipmentWeight');
+                localStorage.removeItem('shipmentCost');
 
                 window.location.href = 'Confrimation.html';
-            }, 2000);
+            } catch (error) {
+                console.error(error);
+                alert(error.message || 'There was a problem processing your payment. Please try again.');
+            } finally {
+                payButton.classList.remove('loading');
+                buttonText.textContent = originalText;
+                payButton.disabled = false;
+            }
         }
 
         function formatCardNumber(input) {
@@ -516,21 +571,84 @@
                 });
             });
 
-            const cost = localStorage.getItem('shipmentCost');
-            const weight = localStorage.getItem('shipmentWeight');
+            try {
+                const orderRaw = localStorage.getItem('pendingOrder');
+                pendingOrder = orderRaw ? JSON.parse(orderRaw) : null;
+            } catch (err) {
+                console.error('Unable to parse pending order', err);
+                pendingOrder = null;
+            }
 
-            if (cost && weight) {
-                const totalAmount = document.querySelector('.total-amount');
+            const totalAmount = document.querySelector('.total-amount');
+            const payButtonText = document.querySelector('.pay-button .button-text');
+            let amountToShow = null;
+
+            if (pendingOrder && typeof pendingOrder.shipmentCost === 'number') {
+                amountToShow = pendingOrder.shipmentCost;
+            } else {
+                const cost = parseFloat(localStorage.getItem('shipmentCost') || '0');
+                if (cost > 0) {
+                    amountToShow = cost;
+                }
+            }
+
+            if (amountToShow !== null) {
                 if (totalAmount) {
-                    totalAmount.textContent = `$${parseFloat(cost).toFixed(2)}`;
+                    totalAmount.textContent = `$${amountToShow.toFixed(2)}`;
                 }
 
-                const payButton = document.querySelector('.pay-button .button-text');
-                if (payButton) {
-                    payButton.textContent = `Pay $${parseFloat(cost).toFixed(2)}`;
+                if (payButtonText) {
+                    payButtonText.textContent = `Pay $${amountToShow.toFixed(2)}`;
                 }
             }
         });
+
+        function normalizeOrderData(order) {
+            if (!order) return null;
+
+            const normalized = JSON.parse(JSON.stringify(order));
+
+            if (normalized.route) {
+                const { origin, destination, shippingMethod } = normalized.route;
+                normalized.route.origin = countryMap[origin] || origin;
+                normalized.route.destination = countryMap[destination] || destination;
+                normalized.route.shippingMethod = shippingMethod === 'sea'
+                    ? 'Sea'
+                    : shippingMethod === 'air'
+                        ? 'Air'
+                        : shippingMethod;
+            }
+
+            if (normalized.orderType === 'individual' && normalized.sender) {
+                normalized.sender.firstName = capitalize(normalized.sender.firstName);
+                normalized.sender.lastName = capitalize(normalized.sender.lastName);
+            }
+
+            if (normalized.receiver) {
+                normalized.receiver.firstName = capitalize(normalized.receiver.firstName);
+                normalized.receiver.lastName = capitalize(normalized.receiver.lastName);
+            }
+
+            if (normalized.business) {
+                normalized.business.name = titleCase(normalized.business.name);
+            }
+
+            return normalized;
+        }
+
+        function capitalize(value) {
+            if (!value) return value;
+            return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+
+        function titleCase(value) {
+            if (!value) return value;
+            return value
+                .split(' ')
+                .filter(Boolean)
+                .map(capitalize)
+                .join(' ');
+        }
     </script>
 
     <div id="footer"></div>
