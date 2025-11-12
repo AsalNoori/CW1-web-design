@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #0a1a3f;
+            color: #ffffff;
+        }
+
+        .main-content {
+            min-height: calc(100vh - 160px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+        }
+
+        .confirmation-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 48px 42px;
+            width: 100%;
+            max-width: 520px;
+            text-align: center;
+            box-shadow: 0 28px 48px rgba(4, 15, 38, 0.45);
+            backdrop-filter: blur(10px);
+        }
+
+        .status-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .confirmation-card h1 {
+            font-size: 2.4em;
+            margin: 0 0 12px;
+        }
+
+        .confirmation-card .lead {
+            font-size: 1.05em;
+            margin-bottom: 32px;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .summary {
+            text-align: left;
+            background: rgba(10, 26, 63, 0.6);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-size: 1em;
+        }
+
+        .summary-row + .summary-row {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .summary-row span {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .summary-row strong {
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+
+        .pill-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 32px;
+            border-radius: 999px;
+            font-size: 1.05em;
+            font-weight: 600;
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(135deg, #1c6bff 0%, #408eff 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 22px 36px rgba(28, 107, 255, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .pill-button .pill-icon {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .pill-button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #0d3ec9 0%, #1c6bff 100%);
+            box-shadow: 0 26px 42px rgba(13, 62, 201, 0.4);
+        }
+
+        .pill-button:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(28, 107, 255, 0.28), 0 22px 36px rgba(28, 107, 255, 0.35);
+        }
+
+        @media (max-width: 600px) {
+            .confirmation-card {
+                padding: 34px 24px;
+            }
+
+            .confirmation-card h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+
+    <script>
+        fetch("header.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("header").innerHTML = data;
+            });
+    </script>
+
+    <main class="main-content">
+        <div class="confirmation-card">
+            <div class="status-icon">✅</div>
+            <h1>Order Completed!</h1>
+            <p class="lead">Thank you for booking with Ship Me. Keep your tracking details handy to follow your shipment.</p>
+
+            <div class="summary">
+                <div class="summary-row">
+                    <span>Tracking ID</span>
+                    <strong id="summary-tracking">–</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Payment Method</span>
+                    <strong id="summary-method">–</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Total Amount</span>
+                    <strong id="summary-amount">$0.00</strong>
+                </div>
+                <div class="summary-row" id="summary-weight-row" style="display: none;">
+                    <span>Shipment Weight</span>
+                    <strong id="summary-weight">–</strong>
+                </div>
+            </div>
+
+            <a href="home.html" class="pill-button">
+                <span class="pill-icon">📦</span>
+                <span>Track Your Order</span>
+            </a>
+        </div>
+    </main>
+
+    <div id="footer"></div>
+    <script>
+        fetch("footer.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("footer").innerHTML = data;
+            });
+    </script>
+
+    <script>
+        (function () {
+            const summaryRaw = localStorage.getItem('lastOrderSummary');
+            const trackingEl = document.getElementById('summary-tracking');
+            const methodEl = document.getElementById('summary-method');
+            const amountEl = document.getElementById('summary-amount');
+            const weightRow = document.getElementById('summary-weight-row');
+            const weightEl = document.getElementById('summary-weight');
+
+            if (summaryRaw) {
+                try {
+                    const data = JSON.parse(summaryRaw);
+
+                    if (data.trackingID) {
+                        trackingEl.textContent = data.trackingID;
+                    }
+
+                    if (data.paymentMethod) {
+                        methodEl.textContent = data.paymentMethod;
+                    }
+
+                    if (data.amount) {
+                        amountEl.textContent = `$${parseFloat(data.amount).toFixed(2)}`;
+                    }
+
+                    if (data.weight) {
+                        weightEl.textContent = `${data.weight} kg`;
+                        weightRow.style.display = '';
+                    }
+                } catch (err) {
+                    console.error('Unable to parse order summary', err);
+                } finally {
+                    localStorage.removeItem('lastOrderSummary');
+                }
+            } else {
+                methodEl.textContent = '—';
+                trackingEl.textContent = 'Not Available';
+                amountEl.textContent = '$0.00';
+            }
+        })();
+    </script>
+</body>
+</html>
+
