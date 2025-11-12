@@ -1,0 +1,115 @@
+<html>
+<head>
+    <title>Cancellation</title>
+</head>
+<style>
+    body {
+            font-family: Arial, sans-serif;
+            background-color: #0b2244;
+            margin: 0;
+            color: white;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background-color: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 12px;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        th { background-color: #1c6bff; color: white; }
+        .cancel-btn { background-color: #e63946; border: none; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        .cancel-btn:hover { background-color: #b71c1c; }
+        .cancelled-label { color: #ffdd57; font-weight: bold; }
+</style>
+<body>
+    <div id="header"></div>
+
+    <div class="container">
+        <h1>My Orders</h1>
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Tracking ID</th>
+                    <th>Amount ($)</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Order Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="ordersBody">
+                <tr><td colspan="7" style="text-align:center;">Loading orders...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="footer"></div>
+
+    <script>
+        fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("header").innerHTML = data;
+        });
+
+        fetch("footer.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("footer").innerHTML = data;
+            });
+
+        const email = localStorage.getItem("loggedInEmail");
+
+        fetch(`/getOrders?email=${encodeURIComponent(email)}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById("ordersBody");
+                    tbody.innerHTML = "";
+            
+                    data.forEach(order => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${order.OrderID}</td>
+                            <td>${order.TrackingID || "—"}</td>
+                            <td>${order.ShipmentCost?.toFixed(2) || "—"}</td>
+                            <td>${order.Origin}</td>
+                            <td>${order.Destination}</td>
+                            <td>${new Date(order.OrderDate).toLocaleString()}</td>
+                            <td><button class="cancel-btn" onclick="cancelOrder(${order.OrderID})">Cancel</button></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(err => {
+                    console.error("Error fetching orders:", err);
+                    document.getElementById("ordersBody").innerHTML =
+                        "<tr><td colspan='7' style='text-align:center;'>Error loading orders.</td></tr>";
+                });
+
+                function cancelOrder(orderId) {
+            if (confirm("Are you sure you want to cancel this order?")) {
+                fetch(`/cancelOrder/${orderId}`, { method: "DELETE" })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Order cancelled successfully!");
+                            location.reload();
+                        } else {
+                            alert("Failed to cancel order.");
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Cancel error:", err);
+                        alert("Error cancelling order.");
+                    });
+            }
+        }
+
+    </script>
+
+</body>
+</html>
