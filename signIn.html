@@ -141,7 +141,7 @@
 
     <div class="main-content">
         <div class="container">
-            <form class="login-form" id="loginForm" method="POST" action="/SignIn">
+            <form class="login-form" id="loginForm">
                 <h2>Welcome Back!</h2>
 
                 <div class="input-group">
@@ -173,6 +173,37 @@
         .then(data => {
           document.getElementById("footer").innerHTML = data;
         });
+    </script>
+
+    <script>
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+    
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+    
+        fetch("/SignIn", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                localStorage.setItem("loggedInEmail", email);
+                alert("Login successful! You are now signed in.");
+                const loginBtn = document.getElementById("loginBtn");
+                if (loginBtn) loginBtn.textContent = "Logout";
+    
+            } else {
+                alert("Invalid email or password. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error("Error during login:", error);
+            alert("Something went wrong. Please try again later.");
+        });
+    });
     </script>
 </body>
 </html>
