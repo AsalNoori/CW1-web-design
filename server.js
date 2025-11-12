@@ -270,6 +270,111 @@ app.post('/api/orders', (req, res) => {
     }
 });
 
+app.get('/api/orders', (req, res) => {
+    const { type } = req.query || {};
+    const normalizedType = (type || '').toLowerCase();
+
+    let query = '';
+
+    if (normalizedType === 'individual') {
+        query = `
+            SELECT 
+                'individual' AS orderType,
+                TrackingID AS trackingID,
+                CONCAT_WS(' ', SenderFirstName, SenderLastName) AS senderName,
+                CONCAT_WS(' ', ReceiverFirstName, ReceiverLastName) AS receiverName,
+                NULL AS businessName,
+                Origin AS origin,
+                Destination AS destination,
+                ShippingMethod AS shippingMethod,
+                Weight AS weight,
+                ShipmentCost AS shipmentCost,
+                PaymentMethod AS paymentMethod,
+                OrderDate AS orderDate
+            FROM IndividualOrders
+            ORDER BY OrderDate DESC
+        `;
+    } else if (normalizedType === 'business') {
+        query = `
+            SELECT 
+                'business' AS orderType,
+                TrackingID AS trackingID,
+                BusinessName AS senderName,
+                CONCAT_WS(' ', ReceiverFirstName, ReceiverLastName) AS receiverName,
+                BusinessName AS businessName,
+                Origin AS origin,
+                Destination AS destination,
+                ShippingMethod AS shippingMethod,
+                Weight AS weight,
+                ShipmentCost AS shipmentCost,
+                PaymentMethod AS paymentMethod,
+                OrderDate AS orderDate
+            FROM BusinessOrders
+            ORDER BY OrderDate DESC
+        `;
+    } else {
+        query = `
+            SELECT *
+            FROM (
+                SELECT 
+                    'individual' AS orderType,
+                    TrackingID AS trackingID,
+                    CONCAT_WS(' ', SenderFirstName, SenderLastName) AS senderName,
+                    CONCAT_WS(' ', ReceiverFirstName, ReceiverLastName) AS receiverName,
+                    NULL AS businessName,
+                    Origin AS origin,
+                    Destination AS destination,
+                    ShippingMethod AS shippingMethod,
+                    Weight AS weight,
+                    ShipmentCost AS shipmentCost,
+                    PaymentMethod AS paymentMethod,
+                    OrderDate AS orderDate
+                FROM IndividualOrders
+                UNION ALL
+                SELECT 
+                    'business' AS orderType,
+                    TrackingID AS trackingID,
+                    BusinessName AS senderName,
+                    CONCAT_WS(' ', ReceiverFirstName, ReceiverLastName) AS receiverName,
+                    BusinessName AS businessName,
+                    Origin AS origin,
+                    Destination AS destination,
+                    ShippingMethod AS shippingMethod,
+                    Weight AS weight,
+                    ShipmentCost AS shipmentCost,
+                    PaymentMethod AS paymentMethod,
+                    OrderDate AS orderDate
+                FROM BusinessOrders
+            ) AS combined
+            ORDER BY combined.orderDate DESC
+        `;
+    }
+
+    con.query(query, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Failed to fetch orders.');
+        }
+
+        const serialized = results.map(row => ({
+            orderType: row.orderType,
+            trackingID: row.trackingID,
+            senderName: row.senderName || null,
+            receiverName: row.receiverName || null,
+            businessName: row.businessName || null,
+            origin: row.origin || null,
+            destination: row.destination || null,
+            shippingMethod: row.shippingMethod || null,
+            weight: row.weight != null ? Number(row.weight) : null,
+            shipmentCost: row.shipmentCost != null ? Number(row.shipmentCost) : null,
+            paymentMethod: row.paymentMethod || null,
+            orderDate: row.orderDate
+        }));
+
+        res.json(serialized);
+    });
+});
+
 app.get('/api/orders/:trackingID', (req, res) => {
     const trackingID = req.params.trackingID;
 
