@@ -54,6 +54,26 @@ app.post("/SignIn", function(req, res) {
     });
 });
 
+app.get("/getOrders", (req, res) => {
+    const email = req.query.email;
+    if (!email) return res.status(400).json({ error: "Email is required" });
+
+    const sql = `
+        SELECT OrderID, TrackingID, ShipmentCost, Origin, Destination, OrderDate, Status
+        FROM individualOrders
+        WHERE SenderEmail = ?
+        ORDER BY OrderDate DESC
+    `;
+
+    con.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
+});
+
 app.get("/SignUp", (req, res) => {
     res.sendFile(path.join(__dirname, "signUp.html"));
 });
