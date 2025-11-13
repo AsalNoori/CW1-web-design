@@ -24,9 +24,9 @@ CREATE TABLE IndividualOrders (
     Origin VARCHAR(50) NOT NULL,     
     Destination VARCHAR(50) NOT NULL,     
     ShippingMethod ENUM('Air', 'Sea') NOT NULL,     
-    ShipmentCost DECIMAL(10,2),
+    ShipmentCost DECIMAL(10,2) NOT NULL,
     PaymentMethod ENUM('Credit/Debit Card', 'Cash on Delivery') NOT NULL,
-    OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE TABLE BusinessOrders (
     BusinessID INT AUTO_INCREMENT PRIMARY KEY,
@@ -49,7 +49,7 @@ CREATE TABLE BusinessOrders (
     Origin VARCHAR(50) NOT NULL,
     Destination VARCHAR(50) NOT NULL,
     ShippingMethod ENUM('Air', 'Sea') NOT NULL,
-    ShipmentCost DECIMAL(10,2),
+    ShipmentCost DECIMAL(10,2) NOT NULL,
     PaymentMethod ENUM('Credit/Debit Card', 'Cash on Delivery') NOT NULL,
-    OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
