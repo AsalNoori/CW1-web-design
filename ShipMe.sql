@@ -4,7 +4,7 @@ CREATE TABLE Users (UserID INT AUTO_INCREMENT PRIMARY KEY, FirstName VARCHAR(50)
 INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES ('Alice', 'Johnson', 'alice.johnson@example.com', '0501234567', 'alice123');
 INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES ('Admin', 'Admin', 'admin@ShipMe.com', '0234567890', 'admin123');
 CREATE TABLE IndividualOrders (
-    OrderID INT AUTO_INCREMENT PRIMARY KEY, 
+    IndividualID INT AUTO_INCREMENT PRIMARY KEY, 
     TrackingID VARCHAR(20) UNIQUE NOT NULL,
     SenderFirstName VARCHAR(50) NOT NULL,     
     SenderLastName VARCHAR(50) NOT NULL,     
