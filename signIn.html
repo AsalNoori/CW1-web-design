@@ -192,7 +192,7 @@
         .then(data => {
             if (data.success) {
                 localStorage.setItem("loggedInEmail", email);
-                alert("Login successful! You are now signed in.");
+                window.location.href = "Account.html";
                 const loginBtn = document.getElementById("loginBtn");
                 if (loginBtn) loginBtn.textContent = "Logout";
     
