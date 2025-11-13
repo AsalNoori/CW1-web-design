@@ -7,23 +7,11 @@
       content="width=device-width, initial-scale=1"
     />
     <title>Privacy Policy | [Your Company Name]</title>
-      <link rel="icon" href="logo.png" type="image/png">
+    <link rel="icon" href="logo.png" type="image/png">
   </head>
 
     <style>
-      :root {
-        --bg: #0b2244;
-        --text: #ffffff;
-        --muted: #c9d3ea;
-        --card: rgba(255, 255, 255, 0.06);
-        --border: rgba(255, 255, 255, 0.18);
-        --link: #a7c5ff;
-        --accent: #ffffff;
-        --radius: 16px;
-        --maxw: 960px;
-      }
-
-      /* Base */
+      
       * {
         box-sizing: border-box;
       }
@@ -31,19 +19,17 @@
       body {
         margin: 0;
         padding: 0;
-        background-color: var(--bg);
-        color: var(--text);
+        background-color: #0b2244;
+        color: #ffffff;
         font-family: Arial, Helvetica, sans-serif;
         line-height: 1.6;
       }
 
-      /* Header/footer placeholders load via fetch() below */
       #header,
       #footer {
         width: 100%;
       }
 
-      /* Page container */
       .page {
         display: flex;
         justify-content: center;
@@ -51,19 +37,17 @@
       }
       .content {
         width: 100%;
-        max-width: var(--maxw);
+        max-width: 960px;
       }
 
-      /* Card-style wrapper for the policy */
       .policy {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 16px;
         padding: 28px;
         backdrop-filter: blur(6px);
       }
 
-      /* Headings */
       h1,
       h2,
       h3 {
@@ -83,14 +67,12 @@
         margin-top: 18px;
       }
 
-      /* Meta row (last updated) */
       .meta {
-        color: var(--muted);
+        color: #c9d3ea;
         font-size: 14px;
         margin: 8px 0 24px;
       }
 
-      /* Lists */
       ul {
         margin: 12px 0 18px 22px;
         padding: 0;
@@ -99,39 +81,34 @@
         margin-top: 6px;
       }
 
-      /* Callouts */
       .callout {
-        border-left: 4px solid var(--accent);
+        border-left: 4px solid #ffffff;
         background: rgba(255, 255, 255, 0.05);
         padding: 12px 14px;
         border-radius: 8px;
         margin: 16px 0;
       }
 
-      /* Links */
       a {
-        color: var(--link);
+        color: #a7c5ff;
         text-decoration: underline;
         text-underline-offset: 2px;
       }
 
-      /* Small helper classes */
       .muted {
-        color: var(--muted);
+        color: #c9d3ea;
       }
       .section-sep {
         height: 1px;
-        background: var(--border);
+        background: rgba(255, 255, 255, 0.18);
         border: 0;
         margin: 28px 0;
       }
 
-      /* Footer spacing insurance */
       .spacer {
         height: 24px;
       }
 
-      /* Responsive */
       @media (max-width: 520px) {
         .policy {
           padding: 20px;
@@ -147,7 +124,7 @@
 
 
   <body>
-    <!-- Header injected from external file -->
+
     <div id="header"></div>
     <script>
       fetch("header.html")
@@ -365,7 +342,7 @@
       </div>
     </main>
 
-    <!-- Footer injected from external file -->
+
     <div id="footer"></div>
     <script>
       fetch("footer.html")
