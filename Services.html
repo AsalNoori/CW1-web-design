@@ -70,8 +70,72 @@
             }
 
 
-            
+                            
+            .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+            margin-bottom: 60px; /* ← add this */
+           }
+
+
+        .service-card {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(97, 211, 249, 0.25);
+        }
+
+        .service-card h3 a {
+            font-weight: bold;
+            color: #61D3F9;
+            text-decoration: none;
+            font-size: 1.25em;
+        }
+
+        .service-card h3 a:hover {
+            text-decoration: underline;
+        }
+
+        .service-card p {
+            color: #dfe7f4;
+            margin-top: 10px;
+            font-size: 1em;
+            line-height: 1.5;
+        }
         
+
+        .countries-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                margin-top: 25px;
+                justify-content: center;
+            }
+
+            .country-tag {
+                background: rgba(97, 211, 249, 0.2);
+                color: #61D3F9;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 0.9em;
+                border: 1px solid rgba(97, 211, 249, 0.3);
+                transition: all 0.3s ease;
+            }
+
+            .country-tag:hover {
+                background: rgba(97, 211, 249, 0.3);
+                transform: scale(1.05);
+            }
+
 
           
 
@@ -143,6 +207,8 @@
             .contact-info strong {
                 color: #61D3F9;
             }
+ 
+          
 
             @media (max-width: 768px) {
                 .hero-section h1 {
@@ -223,17 +289,59 @@
                     <p class="hero-subtitle">Your Trusted Logistics Partner Across the Middle East</p>
                 </div>
 
-                <div class="content-section">
-                    <h2>Our Services</h2>
-                    <p>
-                    -> <a href="BusinessForm.html">Fast shipping via air or sea for businesses</a> <br><br>
-                    -> <a href="IndividualForm.html">Fast shipping via air or sea for individuals</a> <br><br>
-                    -> <a href="home.html">Track orders</a> <br><br>
-                    -> <a href="UserDashboard.html">Delete orders</a> <br><br>
-                        
-                    </p>
+                    
         
 
+                <div class="content-section">
+                    <h2>What We Offer</h2>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <h3><a href="ChooseType.html">✈️ Air Shipping</a></h3>
+                            <p>Fast and secure air freight services for urgent deliveries across the Middle East.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3><a href="ChooseType.html">🚢 Sea Shipping</a></h3>
+                            <p>Cost-effective sea freight solutions for larger shipments and bulk cargo.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3><a href="home.html">📦 Package Tracking</a></h3>
+                            <p>Real-time tracking system to monitor your shipments from pickup to delivery.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3><a href="BusinessForm.html">🏢 Business Solutions</a></h3>
+                            <p>Tailored logistics solutions for businesses with shipments up to 200kg.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3><a href="IndividualForm.html">👤 Individual Shipping</a></h3>
+                            <p>Personal shipping services for individuals with packages up to 100kg.</p>
+                        </div>
+                        <div class="service-card">
+                            <h3><a href="ChooseType.html">💳 Flexible Payment</a></h3>
+                            <p>Multiple payment options including credit cards and cash on delivery.</p>
+                        </div>
+                    </div>
+                
+
+                <div class="content-section">
+                    <h2>Our Coverage</h2>
+                    <p>We proudly serve customers across 18 countries in the Middle East:</p>
+                    <div class="countries-grid">
+                        <span class="country-tag">🇧🇭 Bahrain</span>
+                        <span class="country-tag">🇪🇬 Egypt</span>
+                        <span class="country-tag">🇮🇷 Iran</span>
+                        <span class="country-tag">🇮🇶 Iraq</span>
+                        <span class="country-tag">🇯🇴 Jordan</span>
+                        <span class="country-tag">🇰🇼 Kuwait</span>
+                        <span class="country-tag">🇱🇧 Lebanon</span>
+                        <span class="country-tag">🇴🇲 Oman</span>
+                        <span class="country-tag">🇵🇸 Palestine</span>
+                        <span class="country-tag">🇶🇦 Qatar</span>
+                        <span class="country-tag">🇸🇦 Saudi Arabia</span>
+                        <span class="country-tag">🇸🇾 Syria</span>
+                        <span class="country-tag">🇦🇪 UAE</span>
+                        <span class="country-tag">🇾🇪 Yemen</span>
+                    </div>
+                </div>
            
                 </div>
 
