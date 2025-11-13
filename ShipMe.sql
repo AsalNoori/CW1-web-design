@@ -5,7 +5,7 @@ INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES ('A
 INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES ('Admin', 'Admin', 'admin@ShipMe.com', '0234567890', 'admin123');
 CREATE TABLE IndividualOrders (
     OrderID INT AUTO_INCREMENT PRIMARY KEY, 
-    TrackingID VARCHAR(20) UNIQUE,
+    TrackingID VARCHAR(20) UNIQUE NOT NULL,
     SenderFirstName VARCHAR(50) NOT NULL,     
     SenderLastName VARCHAR(50) NOT NULL,     
     SenderPhone VARCHAR(15) NOT NULL,     
@@ -16,7 +16,7 @@ CREATE TABLE IndividualOrders (
     ReceiverEmail VARCHAR(100) NOT NULL,     
     ReceiverAddress1 VARCHAR(100) NOT NULL,     
     ReceiverAddress2 VARCHAR(100) NOT NULL,     
-    ReceiverAddress3 VARCHAR(100),     
+    ReceiverAddress3 VARCHAR(100) NOT NULL,     
     Height DECIMAL(6,2) NOT NULL,     
     Length DECIMAL(6,2) NOT NULL,     
     Width DECIMAL(6,2) NOT NULL,     
@@ -30,7 +30,7 @@ CREATE TABLE IndividualOrders (
 );
 CREATE TABLE BusinessOrders (
     BusinessID INT AUTO_INCREMENT PRIMARY KEY,
-    TrackingID VARCHAR(20) UNIQUE,
+    TrackingID VARCHAR(20) UNIQUE NOT NULL,
     BusinessName VARCHAR(100) NOT NULL,
     BusinessRegistration VARCHAR(50) NOT NULL,
     SenderPhone VARCHAR(15) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE BusinessOrders (
     ReceiverEmail VARCHAR(100) NOT NULL,
     ReceiverAddress1 VARCHAR(100) NOT NULL,
     ReceiverAddress2 VARCHAR(100) NOT NULL,
-    ReceiverAddress3 VARCHAR(100),
+    ReceiverAddress3 VARCHAR(100) NOT NULL,
     Height DECIMAL(6,2) NOT NULL,
     Length DECIMAL(6,2) NOT NULL,
     Width DECIMAL(6,2) NOT NULL,
