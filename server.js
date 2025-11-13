@@ -29,6 +29,43 @@ con.connect(function(err) {
     console.log("Connected!");
 });
 
+const SESSION_MAX_AGE = 24 * 60 * 60 * 1000;
+const ADMIN_CREDENTIALS = { email: 'admin', password: 'admin', name: 'Admin' };
+
+function setSessionCookies(res, { role, name, userId }) {
+    const options = { maxAge: SESSION_MAX_AGE };
+    if (role) {
+        res.cookie('userRole', role, options);
+    }
+    if (name) {
+        res.cookie('userName', name, options);
+    }
+    if (userId) {
+        res.cookie('userId', userId, options);
+    } else {
+        res.clearCookie('userId');
+    }
+}
+
+function clearSessionCookies(res) {
+    res.clearCookie('userRole');
+    res.clearCookie('userName');
+    res.clearCookie('userId');
+}
+
+function getSession(req) {
+    const { userRole, userName, userId } = req.cookies || {};
+    if (!userRole) {
+        return { authenticated: false };
+    }
+    return {
+        authenticated: true,
+        role: userRole,
+        name: userName || null,
+        userId: userId || null
+    };
+}
+
 app.get("/", function(req, res) {
     res.sendFile(path.join(__dirname, "home.html"));
   });
@@ -37,46 +74,56 @@ app.get("/SignIn", (req, res) => {
     res.sendFile(path.join(__dirname, "signIn.html"));
 });
 
-app.post("/SignIn", function(req, res) {
-    const { email, password } = req.body;
+app.post("/SignIn", (req, res) => {
+    const { email, password } = req.body || {};
+    const expectsJson =
+        req.xhr ||
+        (req.headers.accept && req.headers.accept.includes("application/json")) ||
+        (req.headers['content-type'] && req.headers['content-type'].includes("application/json"));
 
     if (!email || !password) {
-        return res.status(400).json({ success: false, message: "Missing fields" });
+        const message = "Email and password are required.";
+        return expectsJson
+            ? res.status(400).json({ success: false, message })
+            : res.status(400).send(message);
     }
-    const sql = "SELECT FirstName FROM Users WHERE Email = ? AND Password = ?";
-    con.query(sql, [email, password], (err, results) => {
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const isAdminLogin =
+        (normalizedEmail === ADMIN_CREDENTIALS.email || normalizedEmail === 'admin@shipme.com') &&
+        password === ADMIN_CREDENTIALS.password;
+
+    if (isAdminLogin) {
+        setSessionCookies(res, { role: 'admin', name: ADMIN_CREDENTIALS.name });
+        if (expectsJson) {
+            return res.json({ success: true, redirect: '/AdminDashboard' });
+        }
+        return res.redirect('/AdminDashboard');
+    }
+
+    const sql = "SELECT UserID, FirstName, LastName, Email FROM Users WHERE LOWER(Email) = ? AND Password = ?";
+    con.query(sql, [normalizedEmail, password], (err, results) => {
         if (err) {
-            console.error("Database Error", err);
-            return res.status(500).json({ success: false, message: "Database error" });
+            console.error(err);
+            const message = "Unable to sign in right now.";
+            return expectsJson
+                ? res.status(500).json({ success: false, message })
+                : res.status(500).send(message);
         }
 
         if (results.length > 0) {
-            const firstName = results[0].FirstName;
-            res.cookie("firstName", firstName, { maxAge: 24*60*60*1000 });
-            return res.json({ success: true, firstName, message: `Welcome, ${firstName}` });
-        } else {
-            return res.status(401).json({ success: false, message: "Invalid email or password" });
+            const user = results[0];
+            setSessionCookies(res, { role: 'user', name: user.FirstName, userId: user.UserID });
+            if (expectsJson) {
+                return res.json({ success: true, redirect: '/' });
+            }
+            return res.redirect('/');
         }
-    });
-});
 
-app.get("/getOrders", (req, res) => {
-    const email = req.query.email;
-    if (!email) return res.status(400).json({ error: "Email is required" });
-
-    const sql = `
-        SELECT OrderID, TrackingID, ShipmentCost, Origin, Destination, OrderDate, Status
-        FROM individualOrders
-        WHERE SenderEmail = ?
-        ORDER BY OrderDate DESC
-    `;
-
-    con.query(sql, [email], (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: "Database error" });
-        }
-        res.json(results);
+        const message = "Invalid email or password.";
+        return expectsJson
+            ? res.status(401).json({ success: false, message })
+            : res.status(401).send(message);
     });
 });
 
@@ -85,17 +132,28 @@ app.get("/SignUp", (req, res) => {
 });
 
 app.post("/SignUp", (req, res) => {
-    const { firstName, lastName, email, phone, password } = req.body;
-  
+    const { firstName, lastName, email, phone, password } = req.body || {};
+
+    if (!firstName || !lastName || !email || !phone || !password) {
+        return res.status(400).send("All fields are required.");
+    }
+
     const sql = "INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES (?, ?, ?, ?, ?)";
     con.query(sql, [firstName, lastName, email, phone, password], (err, result) => {
       if (err) {
         console.error(err);
-        return res.send("Error registering user");
+        return res.status(500).send("Error registering user");
       }
-      res.send(`User ${firstName} registered successfully! <a href="/SignIn">Sign in</a>`);
+
+      setSessionCookies(res, { role: 'user', name: firstName, userId: result.insertId });
+      res.redirect('/');
     });
-  });
+});
+
+app.post("/Logout", (req, res) => {
+    clearSessionCookies(res);
+    res.redirect('/');
+});
 
 app.get("/PrivacyPolicy", (req, res) => {
     res.sendFile(path.join(__dirname, "privacyPolicy.html"));
@@ -120,7 +178,27 @@ app.get("/ChooseType", (req, res) => {
 });
 
 app.get("/AdminDashboard", (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated || session.role !== 'admin') {
+        return res.redirect('/SignIn');
+    }
     res.sendFile(path.join(__dirname, "AdminDashboard.html"));
+});
+
+app.get("/Account", (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated || session.role !== 'user') {
+        return res.redirect('/SignIn');
+    }
+    res.sendFile(path.join(__dirname, "Account.html"));
+});
+
+app.get("/Orders", (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated || session.role !== 'user') {
+        return res.redirect('/SignIn');
+    }
+    res.sendFile(path.join(__dirname, "Orders.html"));
 });
 
 app.get("/AboutUs", (req, res) => {
@@ -129,8 +207,170 @@ app.get("/AboutUs", (req, res) => {
 
 const PAYMENT_METHODS = new Set(['Credit/Debit Card', 'Cash on Delivery']);
 
+app.get('/api/session', (req, res) => {
+    res.json(getSession(req));
+});
+
+app.get('/api/me', (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated) {
+        return res.status(401).send('Not signed in.');
+    }
+
+    if (session.role === 'admin') {
+        return res.json({
+            role: 'admin',
+            name: ADMIN_CREDENTIALS.name,
+            email: 'admin@shipme.com'
+        });
+    }
+
+    if (!session.userId) {
+        return res.status(401).send('User session expired.');
+    }
+
+    const sql = `
+        SELECT UserID, FirstName, LastName, Email, PhoneNumber
+        FROM Users
+        WHERE UserID = ?
+        LIMIT 1
+    `;
+
+    con.query(sql, [session.userId], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Failed to load profile.');
+        }
+
+        if (!results.length) {
+            clearSessionCookies(res);
+            return res.status(404).send('User not found.');
+        }
+
+        const user = results[0];
+        res.json({
+            role: 'user',
+            id: user.UserID,
+            firstName: user.FirstName,
+            lastName: user.LastName,
+            email: user.Email,
+            phone: user.PhoneNumber
+        });
+    });
+});
+
+app.get('/api/my/orders', (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated || session.role !== 'user' || !session.userId) {
+        return res.status(401).send('Please sign in.');
+    }
+
+    const userId = session.userId;
+
+    const sql = `
+        SELECT 
+            io.TrackingID AS trackingID,
+            'individual' AS orderType,
+            io.Origin AS origin,
+            io.Destination AS destination,
+            io.ShippingMethod AS shippingMethod,
+            io.Weight AS weight,
+            io.ShipmentCost AS shipmentCost,
+            io.PaymentMethod AS paymentMethod,
+            io.OrderStatus AS status,
+            io.OrderDate AS orderDate
+        FROM IndividualOrders io
+        WHERE io.UserID = ?
+        UNION ALL
+        SELECT 
+            bo.TrackingID AS trackingID,
+            'business' AS orderType,
+            bo.Origin AS origin,
+            bo.Destination AS destination,
+            bo.ShippingMethod AS shippingMethod,
+            bo.Weight AS weight,
+            bo.ShipmentCost AS shipmentCost,
+            bo.PaymentMethod AS paymentMethod,
+            bo.OrderStatus AS status,
+            bo.OrderDate AS orderDate
+        FROM BusinessOrders bo
+        WHERE bo.UserID = ?
+        ORDER BY orderDate DESC
+    `;
+
+    con.query(sql, [userId, userId], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send(err.sqlMessage || 'Failed to load orders.');
+        }
+
+        res.json(results.map((row, index) => ({
+            id: `${row.orderType}-${index}`,
+            trackingID: row.trackingID,
+            orderType: row.orderType,
+            origin: row.origin,
+            destination: row.destination,
+            shippingMethod: row.shippingMethod,
+            weight: row.weight,
+            shipmentCost: row.shipmentCost,
+            paymentMethod: row.paymentMethod,
+            status: row.status,
+            orderDate: row.orderDate
+        })));
+    });
+});
+
+app.post('/api/orders/:trackingID/cancel', (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated || session.role !== 'user' || !session.userId) {
+        return res.status(401).send('Please sign in.');
+    }
+
+    const { trackingID } = req.params;
+    if (!trackingID) {
+        return res.status(400).send('Tracking ID is required.');
+    }
+
+    const updateIndividual = `
+        UPDATE IndividualOrders
+        SET OrderStatus = 'Cancelled'
+        WHERE TrackingID = ? AND UserID = ? AND OrderStatus IN ('Pending', 'In-Transit')
+    `;
+
+    con.query(updateIndividual, [trackingID, session.userId], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Unable to cancel order.');
+        }
+
+        if (result.affectedRows > 0) {
+            return res.json({ trackingID, status: 'Cancelled' });
+        }
+
+        const updateBusiness = `
+            UPDATE BusinessOrders
+            SET OrderStatus = 'Cancelled'
+            WHERE TrackingID = ? AND UserID = ? AND OrderStatus IN ('Pending', 'In-Transit')
+        `;
+
+        con.query(updateBusiness, [trackingID, session.userId], (bizErr, bizResult) => {
+            if (bizErr) {
+                console.error(bizErr);
+                return res.status(500).send('Unable to cancel order.');
+            }
+
+            if (bizResult.affectedRows > 0) {
+                return res.json({ trackingID, status: 'Cancelled' });
+            }
+
+            res.status(404).send('Order not found or cannot be cancelled.');
+        });
+    });
+});
+
 app.post('/api/orders', (req, res) => {
     const { orderType, trackingID, order, paymentMethod, amount } = req.body || {};
+    const session = getSession(req);
 
     if (!trackingID || !orderType || !order) {
         return res.status(400).send('Missing order data.');
@@ -141,6 +381,9 @@ app.post('/api/orders', (req, res) => {
     }
 
     const shipmentCost = order.shipmentCost || parseFloat(amount) || 0;
+    const sessionUserId = session.role === 'user' ? session.userId : null;
+    const userId = order.userId || sessionUserId || null;
+    const status = order.status || 'Pending';
 
     if (orderType === 'individual') {
         const sender = order.sender || {};
@@ -151,6 +394,7 @@ app.post('/api/orders', (req, res) => {
         const insertSql = `
             INSERT INTO IndividualOrders (
                 TrackingID,
+                UserID,
                 SenderFirstName,
                 SenderLastName,
                 SenderPhone,
@@ -170,13 +414,15 @@ app.post('/api/orders', (req, res) => {
                 Destination,
                 ShippingMethod,
                 ShipmentCost,
-                PaymentMethod
+                PaymentMethod,
+                OrderStatus
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
             trackingID,
+            userId,
             sender.firstName,
             sender.lastName,
             sender.phone,
@@ -196,13 +442,14 @@ app.post('/api/orders', (req, res) => {
             route.destination,
             route.shippingMethod,
             shipmentCost,
-            paymentMethod
+            paymentMethod,
+            status
         ];
 
         con.query(insertSql, values, (err) => {
             if (err) {
                 console.error(err);
-                return res.status(500).send('Failed to save individual order.');
+                return res.status(500).send(err.sqlMessage || 'Failed to save individual order.');
             }
             res.status(201).json({ trackingID });
         });
@@ -216,6 +463,7 @@ app.post('/api/orders', (req, res) => {
         const insertSql = `
             INSERT INTO BusinessOrders (
                 TrackingID,
+                UserID,
                 BusinessName,
                 BusinessRegistration,
                 SenderPhone,
@@ -235,13 +483,15 @@ app.post('/api/orders', (req, res) => {
                 Destination,
                 ShippingMethod,
                 ShipmentCost,
-                PaymentMethod
+                PaymentMethod,
+                OrderStatus
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
             trackingID,
+            userId,
             business.name,
             business.registration,
             sender.phone,
@@ -261,13 +511,14 @@ app.post('/api/orders', (req, res) => {
             route.destination,
             route.shippingMethod,
             shipmentCost,
-            paymentMethod
+            paymentMethod,
+            status
         ];
 
         con.query(insertSql, values, (err) => {
             if (err) {
                 console.error(err);
-                return res.status(500).send('Failed to save business order.');
+                return res.status(500).send(err.sqlMessage || 'Failed to save business order.');
             }
             res.status(201).json({ trackingID });
         });
@@ -296,6 +547,7 @@ app.get('/api/orders', (req, res) => {
                 Weight AS weight,
                 ShipmentCost AS shipmentCost,
                 PaymentMethod AS paymentMethod,
+                OrderStatus AS status,
                 OrderDate AS orderDate
             FROM IndividualOrders
             ORDER BY OrderDate DESC
@@ -314,6 +566,7 @@ app.get('/api/orders', (req, res) => {
                 Weight AS weight,
                 ShipmentCost AS shipmentCost,
                 PaymentMethod AS paymentMethod,
+                OrderStatus AS status,
                 OrderDate AS orderDate
             FROM BusinessOrders
             ORDER BY OrderDate DESC
@@ -334,6 +587,7 @@ app.get('/api/orders', (req, res) => {
                     Weight AS weight,
                     ShipmentCost AS shipmentCost,
                     PaymentMethod AS paymentMethod,
+                    OrderStatus AS status,
                     OrderDate AS orderDate
                 FROM IndividualOrders
                 UNION ALL
@@ -349,6 +603,7 @@ app.get('/api/orders', (req, res) => {
                     Weight AS weight,
                     ShipmentCost AS shipmentCost,
                     PaymentMethod AS paymentMethod,
+                    OrderStatus AS status,
                     OrderDate AS orderDate
                 FROM BusinessOrders
             ) AS combined
@@ -359,7 +614,7 @@ app.get('/api/orders', (req, res) => {
     con.query(query, (err, results) => {
         if (err) {
             console.error(err);
-            return res.status(500).send('Failed to fetch orders.');
+            return res.status(500).send(err.sqlMessage || 'Failed to fetch orders.');
         }
 
         const serialized = results.map(row => ({
@@ -374,6 +629,7 @@ app.get('/api/orders', (req, res) => {
             weight: row.weight != null ? Number(row.weight) : null,
             shipmentCost: row.shipmentCost != null ? Number(row.shipmentCost) : null,
             paymentMethod: row.paymentMethod,
+            status: row.status,
             orderDate: row.orderDate
         }));
 
@@ -411,6 +667,7 @@ app.get('/api/orders/:trackingID', (req, res) => {
             ShippingMethod,
             ShipmentCost,
             PaymentMethod,
+            OrderStatus,
             OrderDate
         FROM IndividualOrders
         WHERE TrackingID = ?
@@ -456,6 +713,7 @@ app.get('/api/orders/:trackingID', (req, res) => {
                 },
                 shipmentCost: order.ShipmentCost,
                 paymentMethod: order.PaymentMethod,
+                status: order.OrderStatus,
                 orderDate: order.OrderDate
             });
         }
@@ -483,6 +741,7 @@ app.get('/api/orders/:trackingID', (req, res) => {
                 ShippingMethod,
                 ShipmentCost,
                 PaymentMethod,
+                OrderStatus,
                 OrderDate
             FROM BusinessOrders
             WHERE TrackingID = ?
@@ -530,6 +789,7 @@ app.get('/api/orders/:trackingID', (req, res) => {
                     },
                     shipmentCost: order.ShipmentCost,
                     paymentMethod: order.PaymentMethod,
+                    status: order.OrderStatus,
                     orderDate: order.OrderDate
                 });
             }

@@ -53,6 +53,10 @@
     .btn-cancel:hover{background:rgba(244,67,54,.2);border-color:rgba(244,67,54,.5);color:#ffb3b3}
     .action-cell{display:flex;gap:10px;align-items:center}
     .muted{opacity:.7}
+    .profile-card{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.08);border-radius:18px;border:1px solid rgba(255,255,255,.15);padding:24px 28px;margin-bottom:28px;box-shadow:0 18px 36px rgba(12,32,73,.28);flex-wrap:wrap;gap:18px}
+    .profile-heading{margin:0 0 6px;font-size:1.6rem;letter-spacing:.3px;color:#61d3f9}
+    .profile-meta{margin:4px 0;color:rgba(255,255,255,.75);font-size:.95rem}
+    .profile-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
     @media (max-width:900px){
       .dashboard-container{padding:32px 18px 60px}
       table{min-width:100%}
@@ -65,17 +69,25 @@
   <main class="dashboard-container">
     <header>
       <div class="header-content">
-        <h1>User Dashboard</h1>
-        <p class="subtitle">View your delivered orders and shipments currently on the way.</p>
+        <h1>Account</h1>
+        <p class="subtitle">Review your details and keep track of every shipment in one place.</p>
       </div>
-      <div class="header-actions">
-        <button class="search-btn" onclick="openTrackingPanel()">Track Order</button>
-        <button class="btn-cancel" onclick="handleLogout()">Logout</button>
-      </div>
+      <div class="header-actions"></div>
     </header>
 
     <section id="success-banner" class="success-state"></section>
     <section id="error-banner" class="error-state" style="display:none;"></section>
+
+    <section class="profile-card">
+      <div>
+        <h2 class="profile-heading" id="profileName">Your Account</h2>
+        <p class="profile-meta" id="profileEmail">Email: —</p>
+        <p class="profile-meta" id="profilePhone">Phone: —</p>
+      </div>
+      <div class="profile-actions">
+        <a href="Orders.html" class="search-btn" style="text-decoration:none;">View Orders</a>
+      </div>
+    </section>
 
     <section class="overview-grid">
       <article class="overview-card">
@@ -126,34 +138,70 @@
       </div>
     </section>
 
-    <section id="trackingPanel" class="track-search-container" style="display:none;">
-      <div class="search-input-group">
-        <label for="trackingInput">Enter Tracking ID</label>
-        <input id="trackingInput" type="text" placeholder="e.g., TRK-001-2025" onkeypress="if(event.key==='Enter') searchTracking()">
-      </div>
-      <button class="search-btn" onclick="searchTracking()">Search</button>
-      <button class="search-btn" onclick="closeTrackingPanel()" style="background:rgba(255,255,255,.1);margin-left:auto;">Close</button>
-    </section>
-
+    <section id="trackingPanel" class="track-search-container" style="display:none;"></section>
     <section id="trackingResults" style="display:none;margin-bottom:32px;"></section>
   </main>
 
   <div id="footer"></div>
 
   <script>
+    function loadFragment(targetId, url) {
+      return fetch(url)
+        .then(response => response.text())
+        .then(html => {
+          const container = document.getElementById(targetId);
+          if (!container) return;
+          container.innerHTML = html;
+          container.querySelectorAll('script').forEach(oldScript => {
+            const newScript = document.createElement('script');
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = oldScript.textContent;
+            }
+            document.body.appendChild(newScript);
+            oldScript.remove();
+          });
+        })
+        .catch(err => console.error(`Failed to load ${url}`, err));
+    }
+
     const countryLabels={bhr:'Bahrain',egy:'Egypt',irn:'Iran',irq:'Iraq',jor:'Jordan',kwt:'Kuwait',lbn:'Lebanon',omn:'Oman',pse:'Palestine',qat:'Qatar',sau:'Saudi Arabia',syr:'Syria',are:'United Arab Emirates',yem:'Yemen'};
     let allOrders=[]; let activeFilter='all';
     const ORDERS_ENDPOINT='/api/my/orders';
+    const PROFILE_ENDPOINT='/api/me';
 
     document.addEventListener('DOMContentLoaded',()=>{
-      loadSharedPartials();
+      loadFragment('header','header.html');
+      loadFragment('footer','footer.html');
+      loadProfile();
       attachFilterHandlers();
       loadOrders();
     });
 
-    function loadSharedPartials(){
-      fetch('header.html').then(r=>r.text()).then(html=>{document.getElementById('header').innerHTML=html;}).catch(()=>{});
-      fetch('footer.html').then(r=>r.text()).then(html=>{document.getElementById('footer').innerHTML=html;}).catch(()=>{});
+    async function loadProfile(){
+      try{
+        const res=await fetch(PROFILE_ENDPOINT);
+        if(res.status===401){
+          window.location.href='signIn.html';
+          return;
+        }
+        const data=await res.json();
+        if(data.role==='admin'){
+          window.location.href='AdminDashboard.html';
+          return;
+        }
+        const nameEl=document.getElementById('profileName');
+        const emailEl=document.getElementById('profileEmail');
+        const phoneEl=document.getElementById('profilePhone');
+        const fullName=[data.firstName,data.lastName].filter(Boolean).join(' ')||'Your Account';
+        if(nameEl) nameEl.textContent=fullName;
+        if(emailEl) emailEl.textContent=`Email: ${data.email || '—'}`;
+        if(phoneEl) phoneEl.textContent=`Phone: ${data.phone || '—'}`;
+      }catch(err){
+        console.error(err);
+        showError('Unable to load your account details right now.');
+      }
     }
 
     function attachFilterHandlers(){
@@ -256,19 +304,6 @@
     function hideError(){const b=document.getElementById('error-banner');b.style.display='none';b.textContent='';}
     function showSuccess(msg){const s=document.getElementById('success-banner');s.textContent=msg;s.style.display='block';}
     function hideSuccess(){const s=document.getElementById('success-banner');s.style.display='none';s.textContent='';}
-    function openTrackingPanel(){document.getElementById('trackingPanel').style.display='flex';document.getElementById('trackingInput').focus();}
-    function closeTrackingPanel(){document.getElementById('trackingPanel').style.display='none';document.getElementById('trackingResults').style.display='none';document.getElementById('trackingInput').value='';}
-    function searchTracking(){
-      const id=document.getElementById('trackingInput').value.trim();
-      const panel=document.getElementById('trackingResults');
-      if(!id){alert('Please enter a tracking ID');return;}
-      const order=allOrders.find(o=>(o.trackingID||'').toLowerCase()===id.toLowerCase());
-      if(!order){panel.innerHTML=`<div class="error-state">No order found with tracking ID: <strong>${id}</strong></div>`;panel.style.display='block';return;}
-      const route=formatRoute(order.origin,order.destination,order.shippingMethod);
-      panel.innerHTML=`<div class="success-state" style="display:block;">${order.trackingID}: ${route} — ${capitalize(order.status||'pending')}</div>`;
-      panel.style.display='block';
-    }
-    function handleLogout(){localStorage.removeItem('userToken');window.location.href='home.html';}
   </script>
 </body>
 </html>

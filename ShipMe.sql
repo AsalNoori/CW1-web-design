@@ -6,6 +6,7 @@ INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES ('A
 CREATE TABLE IndividualOrders (
     IndividualID INT AUTO_INCREMENT PRIMARY KEY, 
     TrackingID VARCHAR(20) UNIQUE NOT NULL,
+    UserID INT,
     SenderFirstName VARCHAR(50) NOT NULL,     
     SenderLastName VARCHAR(50) NOT NULL,     
     SenderPhone VARCHAR(15) NOT NULL,     
@@ -26,11 +27,13 @@ CREATE TABLE IndividualOrders (
     ShippingMethod ENUM('Air', 'Sea') NOT NULL,     
     ShipmentCost DECIMAL(10,2) NOT NULL,
     PaymentMethod ENUM('Credit/Debit Card', 'Cash on Delivery') NOT NULL,
+    OrderStatus ENUM('Pending', 'In-Transit', 'Delivered', 'Cancelled') DEFAULT 'Pending',
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE TABLE BusinessOrders (
     BusinessID INT AUTO_INCREMENT PRIMARY KEY,
     TrackingID VARCHAR(20) UNIQUE NOT NULL,
+    UserID INT,
     BusinessName VARCHAR(100) NOT NULL,
     BusinessRegistration VARCHAR(50) NOT NULL,
     SenderPhone VARCHAR(15) NOT NULL,
@@ -51,5 +54,6 @@ CREATE TABLE BusinessOrders (
     ShippingMethod ENUM('Air', 'Sea') NOT NULL,
     ShipmentCost DECIMAL(10,2) NOT NULL,
     PaymentMethod ENUM('Credit/Debit Card', 'Cash on Delivery') NOT NULL,
+    OrderStatus ENUM('Pending', 'In-Transit', 'Delivered', 'Cancelled') DEFAULT 'Pending',
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

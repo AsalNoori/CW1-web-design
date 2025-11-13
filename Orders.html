@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ship Me · Orders</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a1a3f;color:#fff}
+    a{color:inherit}
+    .page{max-width:1200px;margin:0 auto;padding:40px 24px 80px}
+    h1{font-size:2.2rem;margin:0 0 8px;letter-spacing:.4px}
+    .subtitle{color:#c9d3ea;margin-bottom:28px}
+    .filters{display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+    .filters button{padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-weight:600;cursor:pointer;transition:all .2s}
+    .filters button.active,.filters button:hover{background:linear-gradient(135deg,#1c6bff 0%,#4090ff 100%);border-color:transparent;box-shadow:0 16px 32px rgba(28,107,255,.32)}
+    .table-wrapper{background:rgba(255,255,255,.05);border-radius:18px;border:1px solid rgba(255,255,255,.12);overflow:hidden;box-shadow:0 18px 36px rgba(12,32,73,.32)}
+    table{width:100%;border-collapse:collapse;min-width:760px}
+    thead{background:rgba(255,255,255,.08)}
+    th,td{padding:18px 20px;text-align:left;font-size:.95rem}
+    th{text-transform:uppercase;letter-spacing:.6px;font-size:.8rem;color:#c9d3ea}
+    tbody tr{border-top:1px solid rgba(255,255,255,.08)}
+    tbody tr:hover{background:rgba(255,255,255,.04)}
+    .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:600;letter-spacing:.3px}
+    .badge.individual{background:rgba(97,211,249,.2);color:#61d3f9}
+    .badge.business{background:rgba(168,132,255,.2);color:#c9a6ff}
+    .status-badge{display:inline-flex;align-items:center;padding:6px 12px;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.3px}
+    .status-badge.pending{background:rgba(255,193,7,.2);color:#ffc107}
+    .status-badge.in-transit{background:rgba(33,150,243,.2);color:#2196f3}
+    .status-badge.delivered{background:rgba(76,175,80,.2);color:#4caf50}
+    .status-badge.cancelled{background:rgba(244,67,54,.2);color:#f44336}
+    .empty-state{padding:36px 0;text-align:center;color:#c9d3ea}
+    .error-state{background:rgba(255,82,82,.18);border:1px solid rgba(255,82,82,.32);padding:18px 20px;border-radius:14px;color:#ffb3b3;margin-bottom:22px;display:none}
+    @media(max-width:900px){.page{padding:32px 18px 60px}table{min-width:100%}}
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+
+  <main class="page">
+    <header>
+      <h1>Your Orders</h1>
+      <p class="subtitle">Review every shipment you've placed with Ship Me.</p>
+    </header>
+
+    <section id="orders-error" class="error-state"></section>
+
+    <nav class="filters">
+      <span style="color:#c9d3ea;font-weight:600;">Filter:</span>
+      <button type="button" class="active" data-filter="all">All</button>
+      <button type="button" data-filter="in-transit">On the way</button>
+      <button type="button" data-filter="delivered">Delivered</button>
+      <button type="button" data-filter="cancelled">Cancelled</button>
+    </nav>
+
+    <div class="table-wrapper">
+      <table aria-label="Orders">
+        <thead>
+          <tr>
+            <th>Tracking ID</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Route</th>
+            <th>Weight</th>
+            <th>Amount</th>
+            <th>Payment</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="orders-table-body">
+          <tr><td colspan="8" class="empty-state">Loading orders…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    function loadFragment(targetId, url) {
+      return fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const container = document.getElementById(targetId);
+          if (!container) return;
+          container.innerHTML = html;
+          container.querySelectorAll('script').forEach(oldScript => {
+            const newScript = document.createElement('script');
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = oldScript.textContent;
+            }
+            document.body.appendChild(newScript);
+            oldScript.remove();
+          });
+        })
+        .catch(err => console.error(`Failed to load ${url}`, err));
+    }
+
+    const ORDERS_ENDPOINT='/api/my/orders';
+    const PROFILE_ENDPOINT='/api/me';
+    let allOrders=[];
+    let activeFilter='all';
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      loadFragment('header','header.html');
+      loadFragment('footer','footer.html');
+      guardSession();
+      attachFilterHandlers();
+      loadOrders();
+    });
+
+    async function guardSession(){
+      try{
+        const res=await fetch(PROFILE_ENDPOINT);
+        if(res.status===401){
+          window.location.href='signIn.html';
+          return;
+        }
+        const data=await res.json();
+        if(data.role==='admin'){
+          window.location.href='AdminDashboard.html';
+        }
+      }catch(err){
+        console.error(err);
+      }
+    }
+
+    function attachFilterHandlers(){
+      document.querySelectorAll('.filters button[data-filter]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter=btn.dataset.filter;
+          renderTable();
+        });
+      });
+    }
+
+    async function loadOrders(){
+      setTableLoading();
+      hideError();
+      try{
+        const res=await fetch(ORDERS_ENDPOINT);
+        if(res.status===401){
+          window.location.href='signIn.html';
+          return;
+        }
+        if(!res.ok) throw new Error(await res.text());
+        const data=await res.json();
+        allOrders=Array.isArray(data)?data:[];
+        renderTable();
+      }catch(err){
+        console.error(err);
+        allOrders=[];
+        setTableError('Unable to load orders right now.');
+        showError(err.message||'Failed to load orders.');
+      }
+    }
+
+    function setTableLoading(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="8" class="empty-state">Loading orders…</td></tr>`;}
+    function setTableEmpty(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="8" class="empty-state">No orders found for this filter.</td></tr>`;}
+    function setTableError(msg){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="8" class="empty-state">${msg}</td></tr>`;}
+
+    function renderTable(){
+      const tbody=document.getElementById('orders-table-body');
+      const filtered=allOrders.filter(o=>{
+        if(activeFilter==='all') return true;
+        return (o.status||'').toLowerCase()===activeFilter;
+      });
+      if(!filtered.length){setTableEmpty();return;}
+      const rows=filtered.map(o=>{
+        const typeBadge=`<span class="badge ${o.orderType}">${capitalize(o.orderType||'order')}</span>`;
+        const statusClass=getStatusClass(o.status||'pending');
+        const statusBadge=`<span class="status-badge ${statusClass}">${formatStatus(o.status)}</span>`;
+        const route=formatRoute(o.origin,o.destination,o.shippingMethod);
+        const weight=o.weight!=null?`${Number(o.weight).toFixed(1)} kg`:'—';
+        const amount=o.shipmentCost!=null?`$${Number(o.shipmentCost).toFixed(2)}`:'—';
+        const payment=o.paymentMethod||'—';
+        const date=o.orderDate?formatDate(o.orderDate):'—';
+        return `<tr>
+          <td>${o.trackingID||'—'}</td>
+          <td>${typeBadge}</td>
+          <td>${statusBadge}</td>
+          <td>${route}</td>
+          <td>${weight}</td>
+          <td>${amount}</td>
+          <td>${payment}</td>
+          <td>${date}</td>
+        </tr>`;
+      }).join('');
+      tbody.innerHTML=rows;
+    }
+
+    function showError(msg){const el=document.getElementById('orders-error');if(!el)return;el.textContent=msg;el.style.display='block';}
+    function hideError(){const el=document.getElementById('orders-error');if(!el)return;el.style.display='none';el.textContent='';}
+
+    function getStatusClass(status){switch((status||'').toLowerCase()){case'delivered':return'delivered';case'in-transit':return'in-transit';case'cancelled':return'cancelled';default:return'pending';}}
+    function formatStatus(status){if(!status)return'Pending';const formatted=status.replace(/_/g,' ');return formatted.charAt(0).toUpperCase()+formatted.slice(1);}    
+    function formatRoute(origin,destination,method){const o=origin||'—';const d=destination||'—';const base=`${o} → ${d}`;return method?`${base} (${method})`:base;}
+    function formatDate(value){const d=new Date(value);if(Number.isNaN(d.getTime()))return'—';return d.toLocaleString(undefined,{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+    function capitalize(value){if(!value)return value;return value.charAt(0).toUpperCase()+value.slice(1);}
+  </script>
+</body>
+</html>

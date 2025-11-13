@@ -116,10 +116,29 @@
     <div id="header"></div>
 
     <script>
-      fetch("header.html")
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById("header").innerHTML = data;
+      function loadFragment(targetId, url) {
+        return fetch(url)
+          .then(response => response.text())
+          .then(html => {
+            const container = document.getElementById(targetId);
+            if (!container) return;
+            container.innerHTML = html;
+            container.querySelectorAll('script').forEach(oldScript => {
+              const newScript = document.createElement('script');
+              if (oldScript.src) {
+                newScript.src = oldScript.src;
+              } else {
+                newScript.textContent = oldScript.textContent;
+              }
+              document.body.appendChild(newScript);
+              oldScript.remove();
+            });
+          })
+          .catch(err => console.error(`Failed to load ${url}`, err));
+      }
+
+      loadFragment("header", "header.html")
+        .then(() => {
           const registerBtn = document.getElementById("registerBtn");
           if (registerBtn) {
             registerBtn.style.display = "none";
@@ -133,7 +152,7 @@
 
     <div class="main-content">
         <div class="container">
-            <form class="login-form" id="loginForm">
+            <form class="login-form" id="loginForm" method="POST" action="/SignIn">
                 <h2>Welcome Back!</h2>
 
                 <div class="input-group">
@@ -160,51 +179,7 @@
     <div id="footer"></div>
 
     <script>
-      fetch("footer.html")
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById("footer").innerHTML = data;
-        });
-    </script>
-
-    <script>
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-    
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-
-        const adminEmail = "admin@ShipMe.com";
-        const adminPassword = "admin123";
-
-        if (email === adminEmail && password === adminPassword) {
-            localStorage.setItem("loggedInEmail", email);
-            window.location.href = "AdminDashboard.html";
-            return;
-        }
-    
-        fetch("/SignIn", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                localStorage.setItem("loggedInEmail", email);
-                window.location.href = "Account.html";
-                const loginBtn = document.getElementById("loginBtn");
-                if (loginBtn) loginBtn.textContent = "Logout";
-    
-            } else {
-                alert("Invalid email or password. Please try again.");
-            }
-        })
-        .catch(error => {
-            console.error("Error during login:", error);
-            alert("Something went wrong. Please try again later.");
-        });
-    });
+      loadFragment("footer", "footer.html");
     </script>
 </body>
 </html>

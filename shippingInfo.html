@@ -22,11 +22,28 @@
         <div id="header"></div>
 
         <script>
-          fetch("header.html")
-            .then(response => response.text())
-            .then(data => {
-              document.getElementById("header").innerHTML = data;
-            });
+          function loadFragment(targetId, url) {
+            return fetch(url)
+              .then(response => response.text())
+              .then(html => {
+                const container = document.getElementById(targetId);
+                if (!container) return;
+                container.innerHTML = html;
+                container.querySelectorAll('script').forEach(oldScript => {
+                  const newScript = document.createElement('script');
+                  if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                  } else {
+                    newScript.textContent = oldScript.textContent;
+                  }
+                  document.body.appendChild(newScript);
+                  oldScript.remove();
+                });
+              })
+              .catch(err => console.error(`Failed to load ${url}`, err));
+          }
+
+          loadFragment("header", "header.html");
         </script>
 
         <div class="main-content">
@@ -36,11 +53,7 @@
         <div id="footer"></div>
 
         <script>
-          fetch("footer.html")
-            .then(response => response.text())
-            .then(data => {
-              document.getElementById("footer").innerHTML = data;
-            });
+          loadFragment("footer", "footer.html");
         </script>
     </body>
 </html>
