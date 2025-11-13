@@ -178,7 +178,6 @@
         const adminPassword = "admin123";
 
         if (email === adminEmail && password === adminPassword) {
-            alert("Welcome, Admin!");
             localStorage.setItem("loggedInEmail", email);
             window.location.href = "AdminDashboard.html";
             return;

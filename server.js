@@ -40,16 +40,22 @@ app.get("/SignIn", (req, res) => {
 app.post("/SignIn", function(req, res) {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+        return res.status(400).json({ success: false, message: "Missing fields" });
+    }
     const sql = "SELECT FirstName FROM Users WHERE Email = ? AND Password = ?";
     con.query(sql, [email, password], (err, results) => {
-        if (err) throw err;
+        if (err) {
+            console.error("Database Error", err);
+            return res.status(500).json({ success: false, message: "Database error" });
+        }
 
         if (results.length > 0) {
             const firstName = results[0].FirstName;
             res.cookie("firstName", firstName, { maxAge: 24*60*60*1000 });
-            res.send(`Welcome, ${firstName}`);
+            return res.json({ success: true, firstName, message: `Welcome, ${firstName}` });
         } else {
-            res.send("Invalid email or password.");
+            return res.status(401).json({ success: false, message: "Invalid email or password" });
         }
     });
 });
