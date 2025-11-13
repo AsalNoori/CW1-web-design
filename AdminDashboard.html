@@ -268,9 +268,43 @@
             margin-bottom: 20px;
         }
 
-        .track-order-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 28px rgba(28, 107, 255, 0.4);
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--brand-white);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.4);
+            color: #ff8a7f;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
         }
 
         .track-search-container {
@@ -562,12 +596,16 @@
     <div id="header"></div>
     <main class="dashboard-container">
         <header>
-            <h1>Admin Dashboard</h1>
-            <p class="subtitle">Monitor live bookings, payments, and shipment details.</p>
-            <button class="track-order-btn" onclick="openTrackingPanel()">
-                <span>🔍</span>
-                <span>Track Order</span>
-            </button>
+            <div class="header-content">
+                <h1>Admin Dashboard</h1>
+                <p class="subtitle">Monitor live bookings, payments, and shipment details.</p>
+            </div>
+            <div class="header-actions">
+                <button class="logout-btn" onclick="handleLogout()">
+                    
+                    <span>Logout</span>
+                </button>
+            </div>
         </header>
 
         <section id="trackingPanel" class="track-search-container" style="display: none;">
@@ -595,29 +633,20 @@
                 <div class="metric" id="metric-total-orders">0</div>
                 <div class="meta" id="metric-total-orders-meta">No orders yet</div>
             </article>
-            <article class="overview-card">
-                <h3>Total Revenue</h3>
-                <div class="metric" id="metric-total-revenue">$0.00</div>
-                <div class="meta">Sum of confirmed shipments</div>
-            </article>
-            <article class="overview-card">
-                <h3>Average Weight</h3>
-                <div class="metric" id="metric-average-weight">0 kg</div>
-                <div class="meta">Across all recorded shipments</div>
-            </article>
-            <article class="overview-card">
-                <h3>Last Order</h3>
-                <div class="metric" id="metric-last-order">—</div>
-                <div class="meta" id="metric-last-order-meta">Awaiting first booking</div>
-            </article>
         </section>
 
         <section>
-            <div class="filters">
-                <span style="color: var(--brand-muted); font-weight: 600;">Filter:</span>
-                <button type="button" class="active" data-filter="all">All</button>
-                <button type="button" data-filter="individual">Individual</button>
-                <button type="button" data-filter="business">Business</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                <div class="filters" style="margin-bottom: 0;">
+                    <span style="color: var(--brand-muted); font-weight: 600;">Filter:</span>
+                    <button type="button" class="active" data-filter="all">All</button>
+                    <button type="button" data-filter="individual">Individual</button>
+                    <button type="button" data-filter="business">Business</button>
+                </div>
+                <button class="track-order-btn" onclick="openTrackingPanel()">
+                    <span>🔍</span>
+                    <span>Track Order</span>
+                </button>
             </div>
 
             <div class="table-wrapper">
@@ -785,29 +814,10 @@
 
         function updateMetrics() {
             const totalOrders = allOrders.length;
-            const totalRevenue = allOrders.reduce((sum, order) => sum + (Number(order.shipmentCost) || 0), 0);
-            const weights = allOrders.map(order => Number(order.weight)).filter(weight => !Number.isNaN(weight));
-            const averageWeight = weights.length ? weights.reduce((a, b) => a + b, 0) / weights.length : 0;
-            const lastOrder = allOrders
-                .slice()
-                .sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate))[0];
 
             document.getElementById('metric-total-orders').textContent = totalOrders.toString();
             document.getElementById('metric-total-orders-meta').textContent =
                 `${countOrdersByType('individual')} individual · ${countOrdersByType('business')} business`;
-
-            document.getElementById('metric-total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
-
-            document.getElementById('metric-average-weight').textContent = `${averageWeight.toFixed(1)} kg`;
-
-            if (lastOrder) {
-                document.getElementById('metric-last-order').textContent = lastOrder.trackingID;
-                document.getElementById('metric-last-order-meta').textContent =
-                    `Received ${formatDate(lastOrder.orderDate)}`;
-            } else {
-                document.getElementById('metric-last-order').textContent = '—';
-                document.getElementById('metric-last-order-meta').textContent = 'Awaiting first booking';
-            }
         }
 
         function countOrdersByType(type) {
@@ -1022,6 +1032,17 @@
             loadSharedPartials();
             loadOrders();
             attachFilterHandlers();
-        });</script>
+        });
+
+        function handleLogout() {
+            // Clear any stored data
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('pendingOrder');
+            localStorage.removeItem('shipmentWeight');
+            localStorage.removeItem('shipmentCost');
+            
+            // Redirect to home page
+            window.location.href = 'home.html';
+        }</script>
 </body>
 </html>
