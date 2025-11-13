@@ -90,7 +90,7 @@ app.post("/SignIn", (req, res) => {
 
     const normalizedEmail = String(email).trim().toLowerCase();
     const isAdminLogin =
-        (normalizedEmail === ADMIN_CREDENTIALS.email || normalizedEmail === 'admin@shipme.com') &&
+        (normalizedEmail === ADMIN_CREDENTIALS.email || normalizedEmail === 'admin@ShipMe.com') &&
         password === ADMIN_CREDENTIALS.password;
 
     if (isAdminLogin) {
