@@ -47,7 +47,7 @@ app.post("/SignIn", function(req, res) {
         if (results.length > 0) {
             const firstName = results[0].FirstName;
             res.cookie("firstName", firstName, { maxAge: 24*60*60*1000 });
-            res.send('Welcome, + ${firstName}');
+            res.send(`Welcome, ${firstName}`);
         } else {
             res.send("Invalid email or password.");
         }
