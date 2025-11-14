@@ -253,8 +253,8 @@
             </div>
 
             <div class="tracking-container">
-                <input type="text" class="tracking-input" placeholder="Tracking ID" aria-label="Tracking ID">
-                <button type="button" class="pill-button pill-button--outline submit-trackingID">
+                <input type="text" id="trackingIdInput" class="tracking-input" placeholder="Tracking ID" aria-label="Tracking ID">
+                <button type="button" class="pill-button pill-button--outline submit-trackingID" id="trackButton">
                     <span class="pill-icon">🔍</span>
                     <span>Track</span>
                 </button>
@@ -301,29 +301,28 @@
         </script>
 
         <script>
-            document.getElementById('shippingForm').addEventListener('submit', function(e) {
-                e.preventDefault(); 
-            
-                const formData = new FormData(this);
-                const data = new URLSearchParams();
-                for (const pair of formData) {
-                    data.append(pair[0], pair[1]);
+            // Track order functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                const trackButton = document.getElementById('trackButton');
+                const trackingInput = document.getElementById('trackingIdInput');
+                
+                if (trackButton && trackingInput) {
+                    trackButton.addEventListener('click', function() {
+                        const trackingId = trackingInput.value.trim();
+                        if (trackingId) {
+                            window.location.href = `trackorder.html?trackingID=${encodeURIComponent(trackingId)}`;
+                        } else {
+                            alert('Please enter a tracking ID');
+                        }
+                    });
+                    
+                    // Allow Enter key to trigger track
+                    trackingInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            trackButton.click();
+                        }
+                    });
                 }
-            
-                fetch('/calculate-cost', {
-                    method: 'POST',
-                    body: data
-                })
-                .then(response => response.json())
-                .then(result => {
-                    document.getElementById('result').innerHTML =
-                        `<p>Weight: ${result.weight} kg</p>
-                         <p>Total Cost: $${result.cost.toFixed(2)}</p>`;
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('result').textContent = "Error calculating cost";
-                });
             });
             </script>
     </body>

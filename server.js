@@ -205,6 +205,10 @@ app.get("/AboutUs", (req, res) => {
     res.sendFile(path.join(__dirname, "AboutUs.html"));
 });
 
+app.get("/trackorder", (req, res) => {
+    res.sendFile(path.join(__dirname, "trackorder.html"));
+});
+
 const PAYMENT_METHODS = new Set(['Credit/Debit Card', 'Cash on Delivery']);
 
 app.get('/api/session', (req, res) => {

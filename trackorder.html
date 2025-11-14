@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ship Me · Track Order</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a1a3f;
+      color: #fff;
+    }
+    a { color: inherit; text-decoration: none; }
+    
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    
+    h1 {
+      font-size: 2.2rem;
+      margin: 0 0 8px;
+      letter-spacing: 0.4px;
+    }
+    
+    .subtitle {
+      color: #c9d3ea;
+      margin-bottom: 28px;
+    }
+    
+    .tracking-search {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 24px;
+      margin-bottom: 32px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .tracking-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 14px 18px;
+      border: 2px solid #5397ff;
+      border-radius: 999px;
+      font-size: 16px;
+      background-color: #ffffff;
+      color: #102347;
+      box-shadow: 0 8px 16px rgba(83, 151, 255, 0.2);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .tracking-input:focus {
+      outline: none;
+      border-color: #1c6bff;
+      box-shadow: 0 0 0 4px rgba(83, 151, 255, 0.3);
+    }
+    
+    .track-button {
+      padding: 14px 26px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: linear-gradient(135deg, #1c6bff 0%, #4293ff 100%);
+      color: #ffffff;
+      box-shadow: 0 16px 28px rgba(83, 151, 255, 0.4);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    
+    .track-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 32px rgba(28, 107, 255, 0.5);
+    }
+    
+    .order-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 32px;
+      box-shadow: 0 18px 36px rgba(12, 32, 73, 0.32);
+    }
+    
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    
+    .order-title {
+      font-size: 1.8rem;
+      margin: 0 0 8px;
+    }
+    
+    .tracking-id {
+      font-size: 1.2rem;
+      color: #61d3f9;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    
+    .status-badge.pending {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+    }
+    
+    .status-badge.in-transit {
+      background: rgba(33, 150, 243, 0.2);
+      color: #2196f3;
+    }
+    
+    .status-badge.delivered {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
+    }
+    
+    .status-badge.cancelled {
+      background: rgba(244, 67, 54, 0.2);
+      color: #f44336;
+    }
+    
+    .order-type-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-left: 12px;
+    }
+    
+    .order-type-badge.individual {
+      background: rgba(97, 211, 249, 0.2);
+      color: #61d3f9;
+    }
+    
+    .order-type-badge.business {
+      background: rgba(168, 132, 255, 0.2);
+      color: #c9a6ff;
+    }
+    
+    .order-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    
+    .detail-section {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .detail-section h3 {
+      font-size: 1.1rem;
+      margin: 0 0 16px;
+      color: #61d3f9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.85rem;
+    }
+    
+    .detail-item {
+      margin-bottom: 12px;
+    }
+    
+    .detail-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .detail-label {
+      font-size: 0.85rem;
+      color: #c9d3ea;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    
+    .detail-value {
+      font-size: 1rem;
+      color: #ffffff;
+      font-weight: 500;
+    }
+    
+    .loading-state,
+    .error-state,
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #c9d3ea;
+    }
+    
+    .error-state {
+      background: rgba(255, 82, 82, 0.18);
+      border: 1px solid rgba(255, 82, 82, 0.32);
+      border-radius: 14px;
+      color: #ffb3b3;
+    }
+    
+    .empty-state {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    
+    @media (max-width: 768px) {
+      .page {
+        padding: 32px 18px 60px;
+      }
+      
+      .order-header {
+        flex-direction: column;
+      }
+      
+      .order-details {
+        grid-template-columns: 1fr;
+      }
+      
+      .tracking-search {
+        flex-direction: column;
+      }
+      
+      .tracking-input {
+        width: 100%;
+      }
+      
+      .track-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="header"></div>
+
+  <main class="page">
+    <header>
+      <h1>Track Your Order</h1>
+      <p class="subtitle">Enter your tracking ID to view order details and status.</p>
+    </header>
+
+    <div class="tracking-search">
+      <input 
+        type="text" 
+        id="trackingIdInput" 
+        class="tracking-input" 
+        placeholder="Enter Tracking ID"
+        aria-label="Tracking ID"
+      >
+      <button type="button" class="track-button" id="trackButton">
+        🔍 Track
+      </button>
+    </div>
+
+    <div id="order-container">
+      <div class="loading-state">Loading order information...</div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    function loadFragment(targetId, url) {
+      return fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const container = document.getElementById(targetId);
+          if (!container) return;
+          container.innerHTML = html;
+          container.querySelectorAll('script').forEach(oldScript => {
+            const newScript = document.createElement('script');
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = oldScript.textContent;
+            }
+            document.body.appendChild(newScript);
+            oldScript.remove();
+          });
+        })
+        .catch(err => console.error(`Failed to load ${url}`, err));
+    }
+
+    function getTrackingIdFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('trackingID') || '';
+    }
+
+    function getStatusClass(status) {
+      if (!status) return 'pending';
+      const normalized = status.toLowerCase().replace('_', '-');
+      switch (normalized) {
+        case 'delivered': return 'delivered';
+        case 'in-transit': return 'in-transit';
+        case 'cancelled': return 'cancelled';
+        default: return 'pending';
+      }
+    }
+
+    function formatStatus(status) {
+      if (!status) return 'Pending';
+      return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return '—';
+      return d.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function formatCurrency(value) {
+      if (value == null) return '—';
+      return `$${Number(value).toFixed(2)}`;
+    }
+
+    function renderOrder(order) {
+      const statusClass = getStatusClass(order.status);
+      const orderTypeClass = order.orderType || 'individual';
+
+      return `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <h2 class="order-title">Order Details</h2>
+              <div class="tracking-id">Tracking ID: ${order.trackingID || '—'}</div>
+            </div>
+            <div>
+              <span class="status-badge ${statusClass}">${formatStatus(order.status)}</span>
+              <span class="order-type-badge ${orderTypeClass}">${orderTypeClass.charAt(0).toUpperCase() + orderTypeClass.slice(1)}</span>
+            </div>
+          </div>
+          
+          <div class="order-details">
+            <div class="detail-section">
+              <h3>Shipping Details</h3>
+              <div class="detail-item">
+                <div class="detail-label">Origin</div>
+                <div class="detail-value">${order.route?.origin || '—'}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Destination</div>
+                <div class="detail-value">${order.route?.destination || '—'}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Method</div>
+                <div class="detail-value">${order.route?.shippingMethod || '—'}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Order Date</div>
+                <div class="detail-value">${formatDate(order.orderDate)}</div>
+              </div>
+            </div>
+            
+            <div class="detail-section">
+              <h3>Package Information</h3>
+              <div class="detail-item">
+                <div class="detail-label">Weight</div>
+                <div class="detail-value">${order.package?.weight ? `${order.package.weight} kg` : '—'}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Dimensions</div>
+                <div class="detail-value">
+                  ${order.package?.length && order.package?.width && order.package?.height 
+                    ? `${order.package.length} × ${order.package.width} × ${order.package.height} cm`
+                    : '—'}
+                </div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Shipment Cost</div>
+                <div class="detail-value">${formatCurrency(order.shipmentCost)}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Payment Method</div>
+                <div class="detail-value">${order.paymentMethod || '—'}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadOrder(trackingID) {
+      const container = document.getElementById('order-container');
+      
+      if (!trackingID) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>Enter a Tracking ID</h3>
+            <p>Please enter a tracking ID above to view order information.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '<div class="loading-state">Loading order information...</div>';
+
+      try {
+        const res = await fetch(`/api/orders/${encodeURIComponent(trackingID)}`);
+        
+        if (res.status === 404) {
+          container.innerHTML = `
+            <div class="error-state">
+              <h3>Order Not Found</h3>
+              <p>The tracking ID "${trackingID}" does not exist. Please check and try again.</p>
+            </div>
+          `;
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error(await res.text() || 'Failed to load order');
+        }
+
+        const order = await res.json();
+        container.innerHTML = renderOrder(order);
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = `
+          <div class="error-state">
+            <h3>Error Loading Order</h3>
+            <p>${err.message || 'Unable to load order information. Please try again later.'}</p>
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadFragment('header', 'header.html');
+      loadFragment('footer', 'footer.html');
+
+      const trackingInput = document.getElementById('trackingIdInput');
+      const trackButton = document.getElementById('trackButton');
+
+      // Load order from URL parameter
+      const trackingID = getTrackingIdFromURL();
+      if (trackingID) {
+        trackingInput.value = trackingID;
+        loadOrder(trackingID);
+      } else {
+        loadOrder('');
+      }
+
+      // Handle track button click
+      if (trackButton && trackingInput) {
+        trackButton.addEventListener('click', () => {
+          const id = trackingInput.value.trim();
+          if (id) {
+            window.location.href = `trackorder.html?trackingID=${encodeURIComponent(id)}`;
+          } else {
+            alert('Please enter a tracking ID');
+          }
+        });
+
+        // Allow Enter key to trigger track
+        trackingInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            trackButton.click();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+

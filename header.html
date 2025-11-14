@@ -35,6 +35,15 @@
         gap: 16px;
     }
 
+    .nav-links.right-aligned {
+        flex: 1;
+        justify-content: flex-end !important;
+    }
+    
+    .nav-links.right-aligned #servicesBtn {
+        margin-left: auto !important;
+    }
+
     .nav-button {
         display: inline-flex;
         align-items: center;
@@ -106,7 +115,7 @@
             <a href="AboutUs.html" class="nav-button" id="aboutLink">About Us</a>
             <a href="Services.html" class="nav-button" id="servicesBtn">Services</a>
             <a href="Account.html" class="nav-button nav-button--account" id="accountLink" style="display: none;">Account</a>
-            <a href="AdminDashboard.html" class="nav-button" id="settingsLink" style="display: none;">Settings</a>
+            <a href="AdminDashboard.html" class="nav-button" id="settingsLink" style="display: none;">Dashboard</a>
             <a href="signUp.html" class="nav-button" id="registerBtn">Register</a>
             <a href="signIn.html" class="nav-button nav-button--primary" id="loginBtn">Login</a>
 
@@ -123,13 +132,21 @@
         const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const aboutLink = document.getElementById('aboutLink');
+        const servicesBtn = document.getElementById('servicesBtn');
         const currentPath = window.location.pathname.toLowerCase();
 
         const show = (el, display='inline-flex') => el && (el.style.display = display);
         const hide = (el) => el && (el.style.display = 'none');
 
+        const onServicesPage = currentPath.includes('/services') || currentPath.includes('services.html');
+
         function setGuestView() {
             show(aboutLink);
+            if (onServicesPage) {
+                hide(servicesBtn);
+            } else {
+                show(servicesBtn);
+            }
             hide(accountLink);
             hide(settingsLink);
             show(registerBtn);
@@ -154,32 +171,79 @@
 
                 const onAccountPage = currentPath === '/account' || currentPath === '/account.html';
                 const onAdminPage = currentPath === '/admindashboard' || currentPath === '/admindashboard.html';
+                const navLinks = document.querySelector('.nav-links');
 
                 if (session.role === 'admin') {
                     hide(aboutLink);
+                    if (onServicesPage) {
+                        hide(servicesBtn);
+                    } else {
+                        show(servicesBtn);
+                    }
                     hide(accountLink);
                     hide(registerBtn);
                     hide(loginBtn);
-                    show(settingsLink);
+                    // Hide Dashboard button when on AdminDashboard page
                     if (onAdminPage) {
-                        show(logoutBtn, 'inline-flex');
-                        if (logoutBtn) logoutBtn.style.marginLeft = 'auto';
+                        hide(settingsLink);
+                        // Align remaining buttons to the right on AdminDashboard
+                        if (navLinks) {
+                            navLinks.classList.add('right-aligned');
+                        }
+                        // Push Services button to the right
+                        if (servicesBtn && !onServicesPage) {
+                            servicesBtn.style.marginLeft = 'auto';
+                        }
                     } else {
-                        hide(logoutBtn);
-                        if (logoutBtn) logoutBtn.style.marginLeft = '';
+                        show(settingsLink);
+                        // Reset alignment when not on AdminDashboard
+                        if (navLinks) {
+                            navLinks.classList.remove('right-aligned');
+                        }
+                        if (servicesBtn) {
+                            servicesBtn.style.marginLeft = '';
+                        }
                     }
+                    // Always hide logout button in header for admin (logout is outside header in AdminDashboard)
+                    hide(logoutBtn);
+                    if (logoutBtn) logoutBtn.style.marginLeft = '';
                 } else {
                     hide(settingsLink);
 
                     if (onAccountPage) {
                         hide(aboutLink);
+                        if (onServicesPage) {
+                            hide(servicesBtn);
+                        } else {
+                            show(servicesBtn);
+                        }
                         hide(accountLink);
                         hide(registerBtn);
                         hide(loginBtn);
                         show(logoutBtn, 'inline-flex');
                         if (logoutBtn) logoutBtn.style.marginLeft = 'auto';
+                        // Align Services button to the right on Account page
+                        if (navLinks) {
+                            navLinks.classList.add('right-aligned');
+                        }
+                        // Push Services button to the right
+                        if (servicesBtn && !onServicesPage) {
+                            servicesBtn.style.marginLeft = 'auto';
+                        }
                     } else {
+                        // Reset alignment when not on Account page
+                        if (navLinks) {
+                            navLinks.classList.remove('right-aligned');
+                        }
+                        if (servicesBtn) {
+                            servicesBtn.style.marginLeft = '';
+                        }
                         show(aboutLink);
+                        if (onServicesPage) {
+                            hide(servicesBtn);
+                        } else {
+                            show(servicesBtn);
+                        }
                         show(accountLink);
                         hide(logoutBtn);
                         if (logoutBtn) logoutBtn.style.marginLeft = '';
