@@ -9,9 +9,11 @@
 <style>
     body { margin:0; padding:0; }
     #map { position:absolute; top:0; bottom:0; width:100%; }
+
     .mapboxgl-popup {
       padding-bottom: 8px;
     }
+
     .mapboxgl-popup-content {
       font: 600 12px/1.2 "Helvetica Neue", Arial, sans-serif;
       padding: 6px 8px;
@@ -20,8 +22,15 @@
       color: #00e5ff;
       box-shadow: 0 6px 18px rgba(0,0,0,.35);
     }
+
     .mapboxgl-popup-tip {
       border-top-color: rgba(10,26,63,0.92) !important;
+    }
+
+    /* hide mapbox logo and attribution */
+    .mapboxgl-ctrl-logo,
+    .mapboxgl-ctrl-attrib {
+      display: none !important;
     }
 </style>
 </head>
@@ -45,8 +54,9 @@
   var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9',
-    center: [20, 20], 
-    zoom: 0.8
+    center: [20, 20],
+    zoom: 0.8,
+    attributionControl: false   // this disables the bottom-right attribution
   });
  
   var didLockBounds = false;
@@ -69,23 +79,13 @@
       setTimeout(function () {
         if (!didLockBounds) {
           didLockBounds = true;
-          try {
-            var expandLng = 8;
-            var expandLat = 8;
-            var expanded = [
-              [ME_BOUNDS[0][0] - expandLng, ME_BOUNDS[0][1] - expandLat],
-              [ME_BOUNDS[1][0] + expandLng, ME_BOUNDS[1][1] + expandLat]
-            ];
-            map.setMaxBounds(expanded);
-          } catch (e) {
-            var expandLng = 8;
-            var expandLat = 8;
-            var expanded = [
-              [ME_BOUNDS[0][0] - expandLng, ME_BOUNDS[0][1] - expandLat],
-              [ME_BOUNDS[1][0] + expandLng, ME_BOUNDS[1][1] + expandLat]
-            ];
-            map.setMaxBounds(expanded);
-          }
+          var expandLng = 8;
+          var expandLat = 8;
+          var expanded = [
+            [ME_BOUNDS[0][0] - expandLng, ME_BOUNDS[0][1] - expandLat],
+            [ME_BOUNDS[1][0] + expandLng, ME_BOUNDS[1][1] + expandLat]
+          ];
+          map.setMaxBounds(expanded);
         }
       }, 4000);
     }, 150);
@@ -120,16 +120,16 @@
       if (id.indexOf('water') > -1) {
         if (layer.type === 'fill') {
           map.setPaintProperty(id, 'fill-color', NAVY);
-          if (map.getPaintProperty(id, 'fill-opacity') == null) map.setPaintProperty(id, 'fill-opacity', 1);
+          map.setPaintProperty(id, 'fill-opacity', 1);
         }
         if (layer.type === 'line') {
           map.setPaintProperty(id, 'line-color', NAVY);
-          if (map.getPaintProperty(id, 'line-opacity') == null) map.setPaintProperty(id, 'line-opacity', 1);
+          map.setPaintProperty(id, 'line-opacity', 1);
         }
       }
       if ((id.indexOf('admin-0-boundary') > -1 || id.indexOf('admin-1-boundary') > -1) && layer.type === 'line') {
         map.setPaintProperty(id, 'line-color', NAVY);
-        if (map.getPaintProperty(id, 'line-width') == null) map.setPaintProperty(id, 'line-width', 1.2);
+        map.setPaintProperty(id, 'line-width', 1.2);
       }
     });
  
@@ -171,7 +171,7 @@
         'fill-color': '#66f0ff',
         'fill-opacity': 0.9
       },
-      filter: ['all', ['in', 'name_en'].concat(ME_COUNTRIES), ['==', 'name_en', '']] // empty until we hover
+      filter: ['all', ['in', 'name_en'].concat(ME_COUNTRIES), ['==', 'name_en', '']]
     });
  
     var popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
@@ -201,7 +201,6 @@
       map.setFilter('country-fills-hover', ['==', 'name_en', '']);
       popup.remove();
     });
- 
  
     function getTopWaterLayerId() {
       var waterLayers = (map.getStyle().layers || []).filter(function (l) {
