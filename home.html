@@ -163,6 +163,50 @@
      .place_order_button {
          z-index: 2;
      }
+     .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.value-card {
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    backdrop-filter: blur(6px);
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.value-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.value-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.value-card h3 {
+    font-size: 1.6em;
+    margin-bottom: 10px;
+    color: #61D3F9;
+}
+
+.value-card p {
+    font-size: 1.05em;
+    color: #ffffff;
+}
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 35px;
+    margin-top: 60px;
+    padding: 20px;
+}
+
         
     </style>
     <head>
@@ -224,6 +268,32 @@
         </div>
         </div>
 
+<div>
+
+    <div class="stats-container">
+        <div class="value-card">
+            <div class="value-icon">📦</div>
+            <h3>12,450+</h3>
+            <p>Shipments Delivered</p>
+        </div>
+    
+        <div class="value-card">
+            <div class="value-icon">⏱️</div>
+            <h3>5 Years</h3>
+            <p>Trusted Experience</p>
+        </div>
+    
+        <div class="value-card">
+            <div class="value-icon">⭐</div>
+            <h3>98%</h3>
+            <p>Customer Satisfaction</p>
+        </div>
+    </div>
+    
+  
+    
+    
+</div>
         <div id="footer"></div>
 
         <script>
