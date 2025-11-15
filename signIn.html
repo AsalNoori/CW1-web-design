@@ -165,6 +165,10 @@
                     <input type="password" id="password" name="password" required>
                 </div>
 
+
+                <div id="errorMsg" style="color: red; margin-bottom: 15px; display: none;"></div>
+
+                
                 <button type="submit" class="submit-btn">Sign In</button>
                 
                 <p class="switch-link">
@@ -177,7 +181,65 @@
     </div>
 
     <div id="footer"></div>
-
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const errorMsg = document.getElementById("errorMsg");
+        const emailField = document.getElementById("email");
+        const passwordField = document.getElementById("password");
+        
+        // Reset borders when the user types
+        [emailField, passwordField].forEach(field => {
+            field.addEventListener("input", () => {
+                field.style.borderColor = "#ccc";
+                errorMsg.style.display = "none";
+                errorMsg.textContent = "";
+            });
+        });
+        
+        loginForm.addEventListener("submit", function(e) {
+            e.preventDefault(); // stop normal form submission
+        
+            const email = emailField.value.trim();
+            const password = passwordField.value;
+        
+            // Hide previous error
+            errorMsg.style.display = "none";
+            errorMsg.textContent = "";
+            emailField.style.borderColor = "#ccc";
+            passwordField.style.borderColor = "#ccc";
+        
+            fetch("/SignIn", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Login successful, redirect
+                    window.location.href = data.redirect || "/";
+                } else {
+                    // Show error on the same page
+                    errorMsg.textContent = data.message;
+                    errorMsg.style.display = "block";
+        
+                    // Highlight the input fields
+                    emailField.style.borderColor = "#dc3545";
+                    passwordField.style.borderColor = "#dc3545";
+                }
+            })
+            .catch(err => {
+                errorMsg.textContent = "Server error. Try again later.";
+                errorMsg.style.display = "block";
+                console.error(err);
+        
+                // Highlight the input fields on error
+                emailField.style.borderColor = "#dc3545";
+                passwordField.style.borderColor = "#dc3545";
+            });
+        });
+        </script>
+        
     <script>
       loadFragment("footer", "footer.html");
     </script>
