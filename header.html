@@ -195,6 +195,14 @@
         navLinks.classList.toggle("show");
     });
 
+    navLinks.querySelectorAll("a, button").forEach(link => {
+        link.addEventListener("click", () => {
+            if (window.innerWidth <= 850) {
+                navLinks.classList.remove("show");
+            }
+        });
+    });
+
     (function () {
         const accountLink = document.getElementById('accountLink');
         const settingsLink = document.getElementById('settingsLink');
@@ -207,20 +215,12 @@
 
         const show = (el) => {
             if (!el) return;
-            if (window.innerWidth <= 850) {
-                el.classList.add("show");
-            } else {
-                el.style.display = 'inline-flex';
-            }
+            el.style.display = 'inline-flex';   // always set display for all links
         }
 
         const hide = (el) => {
             if (!el) return;
-            if (window.innerWidth <= 850) {
-                el.classList.remove("show");
-            } else {
-                el.style.display = 'none';
-            }
+            el.style.display = 'none';
         }
 
         const onServicesPage = currentPath.includes('/services') || currentPath.includes('services.html');
@@ -228,25 +228,36 @@
 
 
         function setGuestView() {
-         
-            if (onServicesPage) {
-                hide(servicesBtn);
-            } else {
-                show(servicesBtn);
-            }
-                        
-            if (onAboutPage) {
-                hide(aboutLink);
-            } else {
-                show(aboutLink);
-            }
+            // Hide all conditional links first
+            [accountLink, settingsLink, logoutBtn].forEach(hide);
 
-            hide(accountLink);
-            hide(settingsLink);
+            // Show guest links
             show(registerBtn);
             show(loginBtn);
-            hide(logoutBtn);
-            if (logoutBtn) logoutBtn.style.marginLeft = '';
+
+            // Show/Hide About and Services depending on page
+            if (onServicesPage) hide(servicesBtn); else show(servicesBtn);
+            if (onAboutPage) hide(aboutLink); else show(aboutLink);
+        }
+
+        function setUserView() {
+            hide(registerBtn);
+            hide(loginBtn);
+            show(logoutBtn);
+
+            if (session.role === 'admin') {
+                hide(accountLink);
+                hide(settingsLink);
+                hide(registerBtn);
+                hide(loginBtn);
+            } else {
+                hide(settingsLink);
+                show(accountLink);
+            }
+
+            // About & Services
+            if (onServicesPage) hide(servicesBtn); else show(servicesBtn);
+            if (onAboutPage) hide(aboutLink); else show(aboutLink);
         }
 
         setGuestView();
