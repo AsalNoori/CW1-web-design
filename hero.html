@@ -22,13 +22,11 @@
   }
   .mapboxgl-popup-tip { border-top-color: rgba(10,26,63,0.92) !important; }
 
-  /* hide mapbox logo + attribution */
   .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
 </style>
 </head>
 <body>
 <div id="map"></div>
-<!-- click shield during intro so animation never stops on click -->
 <div id="intro-shield" style="position:fixed;inset:0;z-index:999999;background:transparent;"></div>
 
 <script>
@@ -55,16 +53,21 @@
     pitch: 30
   });
 
-  var didLockBounds = false;
-
-  function setInteractivity(enabled){
-    if(enabled){
-      map.dragPan.enable(); map.scrollZoom.enable(); map.boxZoom.enable();
-      map.keyboard.enable(); map.doubleClickZoom.enable(); map.touchZoomRotate.enable();
-    }else{
-      map.dragPan.disable(); map.scrollZoom.disable(); map.boxZoom.disable();
-      map.keyboard.disable(); map.doubleClickZoom.disable(); map.touchZoomRotate.disable();
-    }
+  function disableAllInteractions(){
+    map.dragPan.disable();
+    map.scrollZoom.disable();
+    map.boxZoom.disable();
+    map.keyboard.disable();
+    map.doubleClickZoom.disable();
+    map.touchZoomRotate.disable();
+  }
+  function enablePanOnly(){
+    map.dragPan.enable();      // allow dragging to pan
+    map.scrollZoom.disable();  // mouse wheel won't zoom (page will scroll)
+    map.boxZoom.disable();
+    map.keyboard.disable();    // arrow keys won't hijack page scroll
+    map.doubleClickZoom.disable();
+    map.touchZoomRotate.disable(); // disables pinch/rotate zoom on touch
   }
   function installShieldHandlers(){
     var s = document.getElementById('intro-shield');
@@ -78,11 +81,10 @@
   }
 
   map.on('load', function () {
-    var introDuration = 4300;
-
+    disableAllInteractions();
     installShieldHandlers();
-    setInteractivity(false);
 
+    var introDuration = 4300;
     setTimeout(function () {
       var targetBounds = new mapboxgl.LngLatBounds(ME_BOUNDS);
       var targetCenter = targetBounds.getCenter();
@@ -101,15 +103,12 @@
 
       setTimeout(function(){
         removeShield();
-        setInteractivity(true);
-        if (!didLockBounds) {
-          didLockBounds = true;
-          var expandLng = 8, expandLat = 8;
-          map.setMaxBounds([
-            [ME_BOUNDS[0][0]-expandLng, ME_BOUNDS[0][1]-expandLat],
-            [ME_BOUNDS[1][0]+expandLng, ME_BOUNDS[1][1]+expandLat]
-          ]);
-        }
+        enablePanOnly();  // keep pan, let page scroll pass through
+        var expandLng = 8, expandLat = 8;
+        map.setMaxBounds([
+          [ME_BOUNDS[0][0]-expandLng, ME_BOUNDS[0][1]-expandLat],
+          [ME_BOUNDS[1][0]+expandLng, ME_BOUNDS[1][1]+expandLat]
+        ]);
       }, introDuration + 150);
     }, 150);
 
@@ -181,7 +180,7 @@
       source: 'countries',
       'source-layer': 'country_boundaries',
       paint: { 'fill-color': HOVER, 'fill-opacity': 0.9 },
-      filter: ['all', ['in','name_en'].concat(ME_COUNTRIES), ['==','name_en','']]
+      filter: ['==','name_en','']
     });
 
     var popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
@@ -191,8 +190,9 @@
       var name = f.properties && (f.properties.name_en || f.properties.name);
       var lngLat = e.lngLat;
 
-      map.setFilter('country-fills-hover', ['all', ['in','name_en'].concat(ME_COUNTRIES), ['==','name_en', name]]);
-      if (lngLat.lng < ME_BOUNDS[0][0] || lngLat.lng > ME_BOUNDS[1][0] || lngLat.lat < ME_BOUNDS[0][1] || lngLat.lat > ME_BOUNDS[1][1]) {
+      map.setFilter('country-fills-hover', ['==','name_en', name]);
+      if (lngLat.lng < ME_BOUNDS[0][0] || lngLat.lng > ME_BOUNDS[1][0] ||
+          lngLat.lat < ME_BOUNDS[0][1] || lngLat.lat > ME_BOUNDS[1][1]) {
         popup.remove(); return;
       }
       popup.setLngLat(lngLat).setHTML(name || 'Country').addTo(map);
@@ -201,83 +201,6 @@
       map.setFilter('country-fills-hover', ['==', 'name_en', '']);
       popup.remove();
     });
-
-    /* AIR + OCEAN ROUTES (both kinds) */
-    var routes = {
-      "type":"FeatureCollection",
-      "features":[
-        /* Air routes */
-        {"type":"Feature","properties":{"label":"DXB → CAI (Air)","mode":"air"},"geometry":{"type":"LineString","coordinates":[[55.2708,25.2048],[31.2357,30.0444]]}},
-        {"type":"Feature","properties":{"label":"DOH → MCT (Air)","mode":"air"},"geometry":{"type":"LineString","coordinates":[[51.5310,25.2854],[58.4059,23.5880]]}},
-        {"type":"Feature","properties":{"label":"RUH → AMM (Air)","mode":"air"},"geometry":{"type":"LineString","coordinates":[[46.7219,24.7136],[35.9306,31.9539]]}},
-
-        /* Ocean routes (kept straight for performance; labelled as sea lanes) */
-        {"type":"Feature","properties":{"label":"Jebel Ali → Jeddah (Ocean)","mode":"ocean"},"geometry":{"type":"LineString","coordinates":[[55.114,25.015],[39.197,21.543]]}},
-        {"type":"Feature","properties":{"label":"Sohar → Port Said (Ocean)","mode":"ocean"},"geometry":{"type":"LineString","coordinates":[[56.734,24.340],[32.301,31.265]]}},
-        {"type":"Feature","properties":{"label":"Dammam → Shuwaikh (Ocean)","mode":"ocean"},"geometry":{"type":"LineString","coordinates":[[50.100,26.420],[47.933,29.360]]}}
-      ]
-    };
-
-    map.addSource('routes', { type:'geojson', data: routes });
-
-    /* Ocean: solid neon line + subtle glow (same palette) */
-    map.addLayer({
-      id:'routes-ocean-core',
-      type:'line',
-      source:'routes',
-      filter:['==',['get','mode'],'ocean'],
-      paint:{
-        'line-color': NEON,
-        'line-width': 3.2,
-        'line-opacity': 0.9
-      }
-    });
-    map.addLayer({
-      id:'routes-ocean-glow',
-      type:'line',
-      source:'routes',
-      filter:['==',['get','mode'],'ocean'],
-      paint:{
-        'line-color': NEON,
-        'line-width': 7,
-        'line-opacity': 0.16
-      }
-    });
-
-    /* Air: animated dashed white over neon theme */
-    map.addLayer({
-      id:'routes-air-core',
-      type:'line',
-      source:'routes',
-      filter:['==',['get','mode'],'air'],
-      paint:{
-        'line-color': '#ffffff',
-        'line-width': 2.4,
-        'line-opacity': 0.85,
-        'line-dasharray':[0,4, 1.5,4]
-      }
-    });
-
-    /* Hover tooltip for any route */
-    var routePopup = new mapboxgl.Popup({ closeButton:false, closeOnClick:false });
-    ['routes-ocean-core','routes-air-core'].forEach(function(layerId){
-      map.on('mousemove', layerId, function(e){
-        var f = e.features && e.features[0];
-        if(!f) return;
-        var text = f.properties && f.properties.label;
-        if(!text) return;
-        routePopup.setLngLat(e.lngLat).setHTML(text).addTo(map);
-      });
-      map.on('mouseleave', layerId, function(){ routePopup.remove(); });
-    });
-
-    /* Air dash animation */
-    var phase = 0;
-    setInterval(function(){
-      phase = (phase+1)%8;
-      var a = 1.5 + (phase*0.2);
-      map.setPaintProperty('routes-air-core','line-dasharray',[0,4, a,4]);
-    }, 120);
 
     function getTopWaterLayerId() {
       var waterLayers = (map.getStyle().layers || []).filter(function (l) {

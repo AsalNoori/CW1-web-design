@@ -14,6 +14,7 @@
     --glass:rgba(255,255,255,.06);
     --stroke:rgba(255,255,255,.18);
     --muted:#c9d3ea;
+    --white:#ffffff;
   }
   *{box-sizing:border-box}
   body{font-family:'Segoe UI', Arial, sans-serif;background-color:var(--navy);margin:0;color:#fff}
@@ -24,35 +25,70 @@
   .section-title{font-size:2rem;margin:0 0 12px}
   .section-sub{color:var(--muted);margin:0 0 26px}
 
-  .pill-button{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:999px;font-size:18px;
-    font-weight:600;letter-spacing:.2px;cursor:pointer;border:2px solid transparent;transition:transform .18s,box-shadow .18s,background-color .18s,border-color .18s}
-  .pill-icon{font-size:20px;line-height:1}
-  .pill-button--outline{background-color:#fff;color:#0f1f3c;border-color:#5397ff;box-shadow:0 10px 18px #5fa8ff}
-  .pill-button--outline:hover{background-color:#e6efff;border-color:var(--brand);transform:translateY(-1px);box-shadow:0 16px 28px #5fa8ff}
-  .pill-button--primary{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);color:#fff;border-color:transparent;box-shadow:0 16px 28px #5fa8ff}
-  .pill-button--primary:hover{background:linear-gradient(135deg,#0d3ec9 0%,var(--brand) 100%);transform:translateY(-2px);box-shadow:0 20px 32px #0d3ec9}
+  .pill-button{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 26px;border-radius:999px;font-size:16px;
+    font-weight:700;letter-spacing:.2px;cursor:pointer;
+    border:1px solid transparent;transition:box-shadow .18s,filter .18s,background .18s,border-color .18s;
+    will-change:box-shadow,filter;
+  }
+  .pill-button svg{width:18px;height:18px;stroke-width:2}
+  .pill-button--outline{
+    background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.06));
+    border-color:var(--stroke);
+    color:#eaf3ff;
+    backdrop-filter:blur(8px);
+    box-shadow:0 10px 22px rgba(28,107,255,.18), inset 0 0 0 1px rgba(255,255,255,.05);
+  }
+  .pill-button--outline:hover{box-shadow:0 14px 28px rgba(28,107,255,.28), inset 0 0 0 1px rgba(255,255,255,.08);filter:brightness(1.05)}
+  .pill-button--primary{
+    background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
+    color:var(--white);
+    border-color:transparent;
+    box-shadow:0 16px 28px rgba(28,107,255,.30);
+  }
+  .pill-button--primary:hover{box-shadow:0 22px 36px rgba(28,107,255,.42);filter:brightness(1.03)}
+  .pill-button--primary:active,
+  .pill-button--outline:active{filter:brightness(0.98)}
 
-  .tracking-input{width:230px;padding:14px 18px;border:2px solid #5397ff;border-radius:999px;font-size:18px;background:#fff;color:#102347;
-    box-shadow:0 12px 24px #5fa8ff;transition:border-color .2s,box-shadow .2s}
-  .tracking-input::placeholder{color:rgba(16,35,71,.6);font-weight:600;letter-spacing:.2px}
-  .tracking-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px #5397ff}
+  .tracking-input{
+    width:230px;padding:14px 18px;border:1px solid var(--stroke);
+    border-radius:999px;font-size:16px;background:#0f1f3c;color:#eaf3ff;
+    box-shadow:0 8px 18px rgba(28,107,255,.18), inset 0 0 0 1px rgba(255,255,255,.05);
+    transition:border-color .2s,box-shadow .2s,background .2s;
+  }
+  .tracking-input::placeholder{color:rgba(234,243,255,.55);font-weight:600;letter-spacing:.2px}
+  .tracking-input:focus{outline:none;border-color:#4c97ff;box-shadow:0 0 0 4px rgba(83,151,255,.25), 0 12px 24px rgba(28,107,255,.26);background:#11244a}
 
   .main-content{display:flex;justify-content:center;align-items:center;padding:0}
   .hero-container{position:relative;width:100%;height:90vh;max-height:900px;overflow:hidden}
   .hero-iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;display:block}
-  .tracking-container{position:absolute;display:flex;align-items:center;gap:15px;top:40%;left:50%;transform:translate(-50%,-50%)}
+  .tracking-container{position:absolute;display:flex;align-items:center;gap:14px;top:40%;left:50%;transform:translate(-50%,-50%)}
   .place_order_button{position:absolute;top:78%;left:50%;transform:translate(-50%,-50%);text-align:center}
   .tracking-container,.place_order_button{z-index:2}
+  .place_order_button{transform:translate(-50%,-50%)}
+  .place_order_button.pill-button--primary:hover,
+  .place_order_button.pill-button--primary:active,
+  .place_order_button.pill-button--primary:focus-visible{transform:translate(-50%,-50%)}
 
   .band{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0) 60%)}
   .values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
-  .value-card{position:relative;padding:28px;background:var(--glass);border:1px solid var(--stroke);border-radius:18px;backdrop-filter:blur(8px);
-    transition:transform .25s, box-shadow .25s;overflow:hidden}
+  .value-card{
+    position:relative;padding:28px;background:var(--glass);border:1px solid var(--stroke);border-radius:18px;backdrop-filter:blur(8px);
+    transition:transform .25s, box-shadow .25s;overflow:hidden
+  }
   .value-card:hover{transform:translateY(-6px);box-shadow:0 18px 36px rgba(12,32,73,.35)}
-  .value-card:before{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;background:linear-gradient(135deg,rgba(97,211,249,.6),rgba(28,107,255,.6));mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;opacity:.25}
-  .value-icon{font-size:42px;margin-bottom:10px}
-  .value-title{font-size:1.35rem;margin:6px 0;color:#61d3f9}
-  .value-metric{font-size:2rem;font-weight:800;letter-spacing:.5px}
+  .value-card:before{
+    content:"";position:absolute;inset:0;border-radius:18px;padding:1px;
+    background:linear-gradient(135deg,rgba(97,211,249,.6),rgba(28,107,255,.6));
+    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    mask-composite:exclude;-webkit-mask-composite:xor;opacity:.22
+  }
+  .value-icon{display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
+  .value-icon svg{width:38px;height:38px;stroke:#61d3f9;stroke-width:2;fill:none}
+  .value-title{font-size:1.1rem;margin:6px 0;color:#61d3f9}
+  .value-metric{font-size:1.9rem;font-weight:800;letter-spacing:.5px}
 
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
   .card{background:var(--glass);border:1px solid var(--stroke);border-radius:16px;padding:24px;transition:transform .22s, box-shadow .22s}
@@ -77,12 +113,6 @@
   .faq-item.active .faq-a{max-height:240px;padding:0 18px 16px}
   .faq-item .plus{transition:transform .3s}
   .faq-item.active .plus{transform:rotate(45deg)}
-
-  /* Fix: keep the absolute CTA centered even on hover/focus/active */
-  .place_order_button { transform: translate(-50%, -50%); }
-  .place_order_button.pill-button--primary:hover,
-  .place_order_button.pill-button--primary:active,
-  .place_order_button.pill-button--primary:focus-visible { transform: translate(-50%, -50%); }
 </style>
 </head>
 <body>
@@ -105,12 +135,20 @@
       </div>
       <div class="tracking-container">
         <input type="text" id="trackingIdInput" class="tracking-input" placeholder="Tracking ID" aria-label="Tracking ID">
-        <button type="button" class="pill-button pill-button--outline submit-trackingID" id="trackButton">
-          <span class="pill-icon">🔍</span><span>Track</span>
+        <button type="button" class="pill-button pill-button--outline submit-trackingID" id="trackButton" aria-label="Track shipment">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor"></circle>
+            <path d="M20 20L16.6 16.6" stroke="currentColor" stroke-linecap="round"></path>
+          </svg>
+          <span>Track</span>
         </button>
       </div>
-      <a href="ChooseType.html" class="pill-button pill-button--primary place_order_button">
-        <span class="pill-icon">✈️</span><span>Book Shipment</span>
+      <a href="ChooseType.html" class="pill-button pill-button--primary place_order_button" aria-label="Book shipment">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 12h7l2-3 2 6 2-3h5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M3 16h6M3 8h4" stroke="currentColor" stroke-linecap="round"></path>
+        </svg>
+        <span>Book Shipment</span>
       </a>
     </div>
   </div>
@@ -121,25 +159,45 @@
       <p class="section-sub">Air and ocean freight from the Gulf to the world—live tracking and clear pricing.</p>
       <div class="values-grid">
         <div class="value-card">
-          <div class="value-icon">📦</div>
+          <div class="value-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 7h18v10H3z"></path>
+              <path d="M7 7v-2h10v2"></path>
+              <path d="M3 12h18"></path>
+            </svg>
+          </div>
           <div class="value-metric" data-count="12450">0</div>
           <div class="value-title">Shipments Delivered</div>
           <div style="color:var(--muted)">On-time delivery across 40+ corridors</div>
         </div>
         <div class="value-card">
-          <div class="value-icon">⚡</div>
+          <div class="value-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M13 3L4 14h6l-1 7 9-11h-6l1-7z"></path>
+            </svg>
+          </div>
           <div class="value-metric" data-count="98">0</div>
           <div class="value-title">Satisfaction Score</div>
           <div style="color:var(--muted)">Fast responses and proactive updates</div>
         </div>
         <div class="value-card">
-          <div class="value-icon">⏱️</div>
+          <div class="value-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 7v6l4 2" stroke-linecap="round"></path>
+            </svg>
+          </div>
           <div class="value-metric" data-count="5">0</div>
           <div class="value-title">Years Operating</div>
           <div style="color:var(--muted)">Born in the Middle East, scaling globally</div>
         </div>
         <div class="value-card">
-          <div class="value-icon">🛰️</div>
+          <div class="value-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M19.1 4.9l-2.8 2.8M6.9 16.3l-2.8 2.8"></path>
+            </svg>
+          </div>
           <div class="value-metric" data-count="12">0</div>
           <div class="value-title">Live Hubs</div>
           <div style="color:var(--muted)">UAE, KSA, Qatar, Oman and more</div>
