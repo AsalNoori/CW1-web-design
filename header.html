@@ -139,14 +139,23 @@
         const hide = (el) => el && (el.style.display = 'none');
 
         const onServicesPage = currentPath.includes('/services') || currentPath.includes('services.html');
+        const onAboutPage = currentPath.includes('/aboutus') || currentPath.includes('aboutus.html');
+
 
         function setGuestView() {
-            show(aboutLink);
+         
             if (onServicesPage) {
                 hide(servicesBtn);
             } else {
                 show(servicesBtn);
             }
+                        
+            if (onAboutPage) {
+                hide(aboutLink);
+            } else {
+                show(aboutLink);
+            }
+
             hide(accountLink);
             hide(settingsLink);
             show(registerBtn);
@@ -174,12 +183,17 @@
                 const navLinks = document.querySelector('.nav-links');
 
                 if (session.role === 'admin') {
-                    hide(aboutLink);
                     if (onServicesPage) {
                         hide(servicesBtn);
                     } else {
                         show(servicesBtn);
                     }
+                    if (onAboutPage) {
+                        hide(aboutLink);
+                    } else {
+                        show(aboutLink);
+                    }
+
                     hide(accountLink);
                     hide(registerBtn);
                     hide(loginBtn);
@@ -217,6 +231,12 @@
                         } else {
                             show(servicesBtn);
                         }
+                        if (onAboutPage) {
+                            hide(aboutLink);
+                        } else {
+                            show(aboutLink);
+                        }
+
                         hide(accountLink);
                         hide(registerBtn);
                         hide(loginBtn);
@@ -244,6 +264,12 @@
                         } else {
                             show(servicesBtn);
                         }
+                        if (onAboutPage) {
+                            hide(aboutLink);
+                        } else {
+                            show(aboutLink);
+                        }
+
                         show(accountLink);
                         hide(logoutBtn);
                         if (logoutBtn) logoutBtn.style.marginLeft = '';
