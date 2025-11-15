@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Page</title>
-     <link rel="icon" href="logo.png" type="image/png">
+    <link rel="icon" href="logo.png" type="image/png">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
     <style>
         :root {
@@ -241,31 +242,6 @@
 <body>
     <div id="header"></div>
 
-    <script>
-      function loadFragment(targetId, url) {
-        return fetch(url)
-          .then(response => response.text())
-          .then(html => {
-            const container = document.getElementById(targetId);
-            if (!container) return;
-            container.innerHTML = html;
-            container.querySelectorAll('script').forEach(oldScript => {
-              const newScript = document.createElement('script');
-              if (oldScript.src) {
-                newScript.src = oldScript.src;
-              } else {
-                newScript.textContent = oldScript.textContent;
-              }
-              document.body.appendChild(newScript);
-              oldScript.remove();
-            });
-          })
-          .catch(err => console.error(`Failed to load ${url}`, err));
-      }
-
-      loadFragment("header", "header.html");
-    </script>
-
     <div class="main-content">
         <div class="container">
         <form class="payment-form" id="paymentForm" novalidate>
@@ -277,8 +253,8 @@
             </div>
 
             <div class="payment-tabs">
-                <button class="tab active" data-payment="card">💳 Card</button>
-                <button class="tab" data-payment="cod">🚚 Cash on Delivery</button>
+                <button type="button" class="tab active" data-payment="card">Card</button>
+                <button type="button" class="tab" data-payment="cod">Cash on Delivery</button>
             </div>
 
             <div id="cardForm">
@@ -326,435 +302,126 @@
         </div>
     </div>
 
-    <script>
-        let currentPaymentMethod = 'card';
-        let isSwitchingTabs = false;
-        let pendingOrder = null;
-        let sessionInfo = null;
-        const countryMap = {
-            bhr: 'Bahrain',
-            egy: 'Egypt',
-            irn: 'Iran',
-            irq: 'Iraq',
-            jor: 'Jordan',
-            kwt: 'Kuwait',
-            lbn: 'Lebanon',
-            omn: 'Oman',
-            pse: 'Palestine',
-            qat: 'Qatar',
-            sau: 'Saudi Arabia',
-            syr: 'Syria',
-            are: 'United Arab Emirates',
-            yem: 'Yemen'
-        };
+<script>
+    $(document).ready(function() {
 
-        function generateTrackingID() {
-            const prefix = 'SM';
-            const timestamp = Date.now().toString().slice(-6);
-            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-            return `${prefix}${timestamp}${random}`;
-        }
-
-        function switchPaymentMethod(method) {
-            isSwitchingTabs = true;
-            currentPaymentMethod = method;
-            
-            document.getElementById('cardForm').classList.add('hidden');
-            document.getElementById('codForm').classList.add('hidden');
-            
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            if (method === 'card') {
-                document.getElementById('cardForm').classList.remove('hidden');
-                document.querySelector('[data-payment="card"]').classList.add('active');
-            } else if (method === 'cod') {
-                document.getElementById('codForm').classList.remove('hidden');
-                document.querySelector('[data-payment="cod"]').classList.add('active');
-            }
-            
-            setTimeout(() => {
-                isSwitchingTabs = false;
-            }, 100);
-        }
-
-        function validateCardForm() {
-            if (isSwitchingTabs) return false;
-            
-            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
-            const expiryDate = document.getElementById('expiryDate').value;
-            const cvv = document.getElementById('cvv').value;
-            const cardName = document.getElementById('cardName').value;
-            
-            if (!cardNumber || cardNumber.length < 13 || cardNumber.length > 19) {
-                alert('Please enter a valid card number');
-                return false;
-            }
-            
-            if (!expiryDate || !/^\d{2}\/\d{2}$/.test(expiryDate)) {
-                alert('Please enter expiry date in MM/YY format');
-                return false;
-            }
-            
-            if (!cvv || cvv.length < 3 || cvv.length > 4) {
-                alert('Please enter a valid CVV');
-                return false;
-            }
-            
-            if (!cardName.trim()) {
-                alert('Please enter the name on card');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        function validateCODForm() {
-            if (isSwitchingTabs) return false;
-            
-            const deliveryAddress = document.getElementById('deliveryAddress').value;
-            const contactNumber = document.getElementById('contactNumber').value;
-            
-            if (!deliveryAddress.trim()) {
-                alert('Please enter delivery address');
-                return false;
-            }
-            
-            if (!contactNumber.trim()) {
-                alert('Please enter contact number');
-                return false;
-            }
-            
-            return true;
-        }
-
-        async function processPayment(event) {
-            event.preventDefault();
-            
-            if (isSwitchingTabs) {
-                return;
-            }
-            
-            let isValid = false;
-            if (currentPaymentMethod === 'card') {
-                isValid = validateCardForm();
-            } else if (currentPaymentMethod === 'cod') {
-                isValid = validateCODForm();
-            }
-            
-            if (!isValid) {
-                return;
-            }
-
-            if (!pendingOrder) {
-                alert('We could not find your order details. Please go back and fill the form again.');
-                return;
-            }
-            
-            const payButton = document.querySelector('.pay-button');
-            const buttonText = payButton.querySelector('.button-text');
-            const originalText = buttonText.textContent;
-            
-            payButton.classList.add('loading');
-            buttonText.textContent = 'Processing...';
-            payButton.disabled = true;
-
-            try {
-                const trackingID = generateTrackingID();
-                const costValue = typeof pendingOrder.shipmentCost === 'number'
-                    ? pendingOrder.shipmentCost
-                    : parseFloat(localStorage.getItem('shipmentCost') || '0');
-                const weightValue = pendingOrder?.package?.weight
-                    || parseFloat(localStorage.getItem('shipmentWeight') || '0');
-                const amount = parseFloat(costValue || 0).toFixed(2);
-                const paymentMethod = currentPaymentMethod === 'card'
-                    ? 'Credit/Debit Card'
-                    : 'Cash on Delivery';
-
-                const normalizedOrder = normalizeOrder(pendingOrder);
-                if (!normalizedOrder.userId && sessionInfo && sessionInfo.role === 'user') {
-                    normalizedOrder.userId = sessionInfo.userId;
-                }
-                if (!normalizedOrder.status) {
-                    normalizedOrder.status = 'Pending';
-                }
-
-                const payload = {
-                    trackingID,
-                    paymentMethod,
-                    amount,
-                    orderType: pendingOrder.orderType,
-                    order: normalizedOrder
-                };
-
-                const response = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const message = await response.text();
-                    throw new Error(message || 'Unable to save order. Please try again.');
-                }
-
-                const orderSummary = {
-                    trackingID,
-                    amount,
-                    paymentMethod,
-                    weight: weightValue,
-                    orderType: pendingOrder.orderType,
-                    timestamp: new Date().toISOString()
-                };
-
-                localStorage.setItem('lastOrderSummary', JSON.stringify(orderSummary));
-                localStorage.removeItem('pendingOrder');
-                localStorage.removeItem('shipmentWeight');
-                localStorage.removeItem('shipmentCost');
-
-                window.location.href = 'Confirmation.html';
-            } catch (error) {
-                console.error(error);
-                alert(error.message || 'There was a problem processing your payment. Please try again.');
-            } finally {
-                payButton.classList.remove('loading');
-                buttonText.textContent = originalText;
-                payButton.disabled = false;
-            }
-        }
-
-        function formatCardNumber(input) {
-            let value = input.value.replace(/\s/g, '');
-            let formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
-            if (formattedValue.length > 19) {
-                formattedValue = formattedValue.substring(0, 19);
-            }
-            input.value = formattedValue;
-        }
-        
-        function formatExpiryDate(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length >= 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2, 4);
-            }
-            input.value = value;
-        }
-        
-        function formatCVV(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 4) {
-                value = value.substring(0, 4);
-            }
-            input.value = value;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    const paymentMethod = this.getAttribute('data-payment');
-                    switchPaymentMethod(paymentMethod);
-                });
-            });
-            
-            document.getElementById('paymentForm').addEventListener('submit', processPayment);
-            
-            const cardNumberInput = document.getElementById('cardNumber');
-            if (cardNumberInput) {
-                cardNumberInput.addEventListener('input', function() {
-                    formatCardNumber(this);
-                });
-            }
-            
-            const expiryInput = document.getElementById('expiryDate');
-            if (expiryInput) {
-                expiryInput.addEventListener('input', function() {
-                    formatExpiryDate(this);
-                });
-            }
-            
-            const cvvInput = document.getElementById('cvv');
-            if (cvvInput) {
-                cvvInput.addEventListener('input', function() {
-                    formatCVV(this);
-                });
-            }
-            
-            document.querySelectorAll('input').forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'scale(1.02)';
-                    this.parentElement.style.transition = 'transform 0.2s ease';
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'scale(1)';
-                });
-            });
-
-            try {
-                const orderRaw = localStorage.getItem('pendingOrder');
-                pendingOrder = orderRaw ? JSON.parse(orderRaw) : null;
-            } catch (err) {
-                console.error('Unable to parse pending order', err);
-                pendingOrder = null;
-            }
-
-            fetch('/api/session')
-                .then(res => res.ok ? res.json() : null)
-                .then(data => {
-                    sessionInfo = data;
-                })
-                .catch(() => {
-                    sessionInfo = null;
-                });
-
-            const totalAmount = document.querySelector('.total-amount');
-            const payButtonText = document.querySelector('.pay-button .button-text');
-            let amountToShow = null;
-
-            if (pendingOrder && typeof pendingOrder.shipmentCost === 'number') {
-                amountToShow = pendingOrder.shipmentCost;
-            } else {
-                const cost = parseFloat(localStorage.getItem('shipmentCost') || '0');
-                if (cost > 0) {
-                    amountToShow = cost;
-                }
-            }
-
-            if (amountToShow !== null) {
-                if (totalAmount) {
-                    totalAmount.textContent = `$${amountToShow.toFixed(2)}`;
-                }
-
-                if (payButtonText) {
-                    payButtonText.textContent = `Pay $${amountToShow.toFixed(2)}`;
-                }
-            }
+    function loadFragment(targetId, url) {
+        $.get(url, function(data) {
+            $('#' + targetId).html(data);
         });
+    }
+    loadFragment('header', 'header.html');
+    loadFragment('footer', 'footer.html');
 
-        function ensureString(value, fallback = 'N/A') {
-            if (value === null || value === undefined) {
-                return fallback;
-            }
-            const trimmed = String(value).trim();
-            return trimmed ? trimmed : fallback;
+    let currentPaymentMethod = 'card';
+    let pendingOrder = null;
+    let sessionInfo = null;
+    const countryMap = {};
+
+    try { pendingOrder = JSON.parse(localStorage.getItem('pendingOrder')) || null; } catch(e){pendingOrder=null;}
+    $.get('/api/session').done(data => sessionInfo = data).fail(() => sessionInfo = null);
+
+    function switchPaymentMethod(method) {
+        currentPaymentMethod = method;
+        if(method === 'card') {
+            $('#cardForm').show();
+            $('#codForm').hide();
+            $('#deliveryAddress, #contactNumber').val('');
+        } else {
+            $('#codForm').show();
+            $('#cardForm').hide();
+            $('#cardNumber, #expiryDate, #cvv, #cardName').val('');
         }
+        $('.tab').removeClass('active');
+        $('.tab[data-payment="' + method + '"]').addClass('active');
+    }
 
-        function ensureNumber(value, fallback = 0) {
-            const num = Number(value);
-            return Number.isFinite(num) ? num : fallback;
+    $('.tab').click(function() {
+        switchPaymentMethod($(this).data('payment'));
+    });
+
+    $('#cardNumber').on('input', function() {
+        let val = $(this).val().replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim();
+        $(this).val(val.substring(0,19));
+    });
+    $('#expiryDate').on('input', function() {
+        let val = $(this).val().replace(/\D/g,'');
+        if(val.length>=2) val = val.substring(0,2)+'/'+val.substring(2,4);
+        $(this).val(val);
+    });
+    $('#cvv').on('input', function() {
+        $(this).val($(this).val().replace(/\D/g,'').substring(0,4));
+    });
+
+    const amount = pendingOrder?.shipmentCost || parseFloat(localStorage.getItem('shipmentCost') || 0);
+    $('.total-amount').text(`$${amount.toFixed(2)}`);
+    $('.pay-button .button-text').text(`Pay $${amount.toFixed(2)}`);
+
+    function validateCardForm() {
+        const card = $('#cardNumber').val().replace(/\s/g,'');
+        const expiry = $('#expiryDate').val();
+        const cvv = $('#cvv').val();
+        const name = $('#cardName').val().trim();
+        if(!card || card.length<13 || card.length>19){alert('Invalid card'); return false;}
+        if(!/^\d{2}\/\d{2}$/.test(expiry)){alert('Invalid expiry'); return false;}
+        if(!cvv || cvv.length<3 || cvv.length>4){alert('Invalid CVV'); return false;}
+        if(!name){alert('Enter name'); return false;}
+        return true;
+    }
+    function validateCODForm() {
+        if(!$('#deliveryAddress').val().trim()){alert('Enter address'); return false;}
+        if(!$('#contactNumber').val().trim()){alert('Enter phone'); return false;}
+        return true;
+    }
+
+    $('#paymentForm').submit(async function(e){
+        e.preventDefault();
+        let valid = false;
+        if(currentPaymentMethod === 'card'){
+            valid = validateCardForm();
+        } else if(currentPaymentMethod === 'cod'){
+            valid = validateCODForm();
         }
+        if(!valid) return;
 
-        function truncate(value, maxLength, fallback = 'N/A') {
-            const str = ensureString(value, fallback);
-            return str.length > maxLength ? str.slice(0, maxLength) : str;
+        if(!pendingOrder){alert('Order not found'); return;}
+
+        const btn = $('.pay-button');
+        const txt = btn.find('.button-text');
+        const originalText = txt.text();
+        btn.prop('disabled', true).addClass('loading'); txt.text('Processing...');
+
+        try{
+            const trackingID = 'SM'+Date.now().toString().slice(-6)+Math.floor(Math.random()*1000).toString().padStart(3,'0');
+            const payload = {
+                trackingID,
+                paymentMethod: currentPaymentMethod==='card'?'Credit/Debit Card':'Cash on Delivery',
+                amount: amount,
+                orderType: pendingOrder.orderType,
+                order: pendingOrder
+            };
+            const resp = await fetch('/api/orders',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if(!resp.ok){throw new Error(await resp.text()||'Unable to save order');}
+            localStorage.setItem('lastOrderSummary', JSON.stringify({trackingID, amount, paymentMethod:payload.paymentMethod, orderType: pendingOrder.orderType, timestamp:new Date().toISOString()}));
+            localStorage.removeItem('pendingOrder');
+            localStorage.removeItem('shipmentWeight');
+            localStorage.removeItem('shipmentCost');
+            window.location.href='Confirmation.html';
+        } catch(err){
+            alert(err.message || 'Payment failed');
+        } finally{
+            btn.removeClass('loading').prop('disabled',false);
+            txt.text(originalText);
         }
-
-        function sanitizePhone(value) {
-            const fallback = '0000000000';
-            if (value === null || value === undefined) {
-                return fallback;
-            }
-            const trimmed = String(value).trim();
-            if (!trimmed) {
-                return fallback;
-            }
-            const hasPlus = trimmed.startsWith('+');
-            const digitsOnly = trimmed.replace(/[^\d]/g, '');
-            let result = hasPlus ? `+${digitsOnly}` : digitsOnly;
-            if (!result) {
-                result = fallback;
-            }
-            if (result.length > 15) {
-                result = result.slice(0, 15);
-            }
-            return result;
-        }
-
-        function sanitizeEmail(value) {
-            const email = ensureString(value, 'unknown@example.com');
-            return email.length > 100 ? email.slice(0, 100) : email;
-        }
-
-        function normalizeOrder(order) {
-            if (!order) return null;
-
-            const normalized = JSON.parse(JSON.stringify(order));
-
-            normalized.sender = normalized.sender || {};
-            const senderFirst = truncate(normalized.sender.firstName, 50);
-            const senderLast = truncate(normalized.sender.lastName, 50);
-            normalized.sender.firstName = capitalize(senderFirst);
-            normalized.sender.lastName = capitalize(senderLast);
-            normalized.sender.phone = sanitizePhone(normalized.sender.phone);
-            normalized.sender.email = sanitizeEmail(normalized.sender.email);
-
-            normalized.receiver = normalized.receiver || {};
-            const receiverFirst = truncate(normalized.receiver.firstName, 50);
-            const receiverLast = truncate(normalized.receiver.lastName, 50);
-            normalized.receiver.firstName = capitalize(receiverFirst);
-            normalized.receiver.lastName = capitalize(receiverLast);
-            normalized.receiver.phone = sanitizePhone(normalized.receiver.phone);
-            normalized.receiver.email = sanitizeEmail(normalized.receiver.email);
-            normalized.receiver.address1 = truncate(normalized.receiver.address1, 100);
-            normalized.receiver.address2 = truncate(normalized.receiver.address2, 100);
-            normalized.receiver.address3 = truncate(normalized.receiver.address3, 100);
-
-            normalized.package = normalized.package || {};
-            normalized.package.height = ensureNumber(normalized.package.height);
-            normalized.package.length = ensureNumber(normalized.package.length);
-            normalized.package.width = ensureNumber(normalized.package.width);
-            normalized.package.weight = ensureNumber(normalized.package.weight);
-
-            normalized.route = normalized.route || {};
-            const originRaw = countryMap[normalized.route.origin] || normalized.route.origin;
-            const destinationRaw = countryMap[normalized.route.destination] || normalized.route.destination;
-            normalized.route.origin = truncate(originRaw, 50, 'Unknown');
-            normalized.route.destination = truncate(destinationRaw, 50, 'Unknown');
-            const shippingMethod = normalizeShippingMethod(normalized.route.shippingMethod);
-            normalized.route.shippingMethod = shippingMethod;
-
-            normalized.shipmentCost = ensureNumber(normalized.shipmentCost);
-
-            if (normalized.business) {
-                normalized.business.name = titleCase(truncate(normalized.business.name, 100));
-                normalized.business.registration = truncate(normalized.business.registration, 50);
-            }
-
-            return normalized;
-        }
-
-        function normalizeShippingMethod(value) {
-            const method = ensureString(value, 'Air').toLowerCase();
-            if (method === 'sea') {
-                return 'Sea';
-            }
-            return 'Air';
-        }
-
-        function capitalize(value) {
-            if (!value) return value;
-            return value.charAt(0).toUpperCase() + value.slice(1);
-        }
-
-        function titleCase(value) {
-            if (!value) return value;
-            return value
-                .split(' ')
-                .filter(Boolean)
-                .map(capitalize)
-                .join(' ');
-        }
-    </script>
+    });
+});
+</script>
 
     <div id="footer"></div>
 
-    <script>
-      loadFragment("footer", "footer.html");
-    </script>
 </body>
 </html>
