@@ -13,6 +13,8 @@
         justify-content: space-between;
         align-items: center;
         padding: 18px 40px;
+        position: relative;
+        z-index: 1000;
     }
 
     .navigation .logo {
@@ -103,6 +105,61 @@
         border: none;
         cursor: pointer;
     }
+
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 5px;
+        z-index: 3000;
+    }
+
+    .hamburger div {
+        width: 28px;
+        height: 3px;
+        background: white;
+        border-radius: 3px;
+        transition: 0.3s;
+    }
+
+    @media (max-width: 850px) {
+        .nav-links {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #0a1a3f;
+            flex-direction: column;
+            padding: 20px 0;
+            gap: 12px;
+
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .nav-links.show {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .nav-links a,
+        .nav-links button {
+            width: 85%;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .hamburger {
+            display: flex;
+        }
+    }
+
 </style>
 
 <header>
@@ -110,6 +167,12 @@
         <a href="home.html" class="logo" aria-label="Home">
            <img src="logo.png" alt="Company Logo">
         </a>
+
+        <div class="hamburger" id="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
 
         <div class="nav-links">
             <a href="AboutUs.html" class="nav-button" id="aboutLink">About Us</a>
@@ -125,6 +188,13 @@
 </header>
 
 <script>
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.querySelector(".nav-links");
+
+    hamburger.addEventListener("click", () => {
+        navLinks.classList.toggle("show");
+    });
+
     (function () {
         const accountLink = document.getElementById('accountLink');
         const settingsLink = document.getElementById('settingsLink');
@@ -135,8 +205,23 @@
         const servicesBtn = document.getElementById('servicesBtn');
         const currentPath = window.location.pathname.toLowerCase();
 
-        const show = (el, display='inline-flex') => el && (el.style.display = display);
-        const hide = (el) => el && (el.style.display = 'none');
+        const show = (el) => {
+            if (!el) return;
+            if (window.innerWidth <= 850) {
+                el.classList.add("show");
+            } else {
+                el.style.display = 'inline-flex';
+            }
+        }
+
+        const hide = (el) => {
+            if (!el) return;
+            if (window.innerWidth <= 850) {
+                el.classList.remove("show");
+            } else {
+                el.style.display = 'none';
+            }
+        }
 
         const onServicesPage = currentPath.includes('/services') || currentPath.includes('services.html');
         const onAboutPage = currentPath.includes('/aboutus') || currentPath.includes('aboutus.html');
@@ -197,20 +282,19 @@
                     hide(accountLink);
                     hide(registerBtn);
                     hide(loginBtn);
-                    // Hide Dashboard button when on AdminDashboard page
+                    
                     if (onAdminPage) {
                         hide(settingsLink);
-                        // Align remaining buttons to the right on AdminDashboard
+
                         if (navLinks) {
                             navLinks.classList.add('right-aligned');
                         }
-                        // Push Services button to the right
+
                         if (servicesBtn && !onServicesPage) {
                             servicesBtn.style.marginLeft = 'auto';
                         }
                     } else {
                         show(settingsLink);
-                        // Reset alignment when not on AdminDashboard
                         if (navLinks) {
                             navLinks.classList.remove('right-aligned');
                         }
@@ -218,7 +302,6 @@
                             servicesBtn.style.marginLeft = '';
                         }
                     }
-                    // Always hide logout button in header for admin (logout is outside header in AdminDashboard)
                     hide(logoutBtn);
                     if (logoutBtn) logoutBtn.style.marginLeft = '';
                 } else {
@@ -242,16 +325,13 @@
                         hide(loginBtn);
                         show(logoutBtn, 'inline-flex');
                         if (logoutBtn) logoutBtn.style.marginLeft = 'auto';
-                        // Align Services button to the right on Account page
                         if (navLinks) {
                             navLinks.classList.add('right-aligned');
                         }
-                        // Push Services button to the right
                         if (servicesBtn && !onServicesPage) {
                             servicesBtn.style.marginLeft = 'auto';
                         }
                     } else {
-                        // Reset alignment when not on Account page
                         if (navLinks) {
                             navLinks.classList.remove('right-aligned');
                         }
