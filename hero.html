@@ -2,104 +2,125 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>Middle East — Neon Land, Navy Sea, Hover Country Names</title>
+<title>Middle East — Neon Land, Navy Sea</title>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js"></script>
 <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css" rel="stylesheet" />
 <style>
-    body { margin:0; padding:0; }
-    #map { position:absolute; top:0; bottom:0; width:100%; }
+  body { margin:0; padding:0; background:#0a1a3f; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
 
-    .mapboxgl-popup {
-      padding-bottom: 8px;
-    }
+  .mapboxgl-popup { padding-bottom: 8px; }
+  .mapboxgl-popup-content {
+    font: 600 12px/1.2 "Helvetica Neue", Arial, sans-serif;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(10,26,63,0.92);
+    color: #00e5ff;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 0 1px rgba(0,229,255,.18) inset;
+    letter-spacing: .2px;
+  }
+  .mapboxgl-popup-tip { border-top-color: rgba(10,26,63,0.92) !important; }
 
-    .mapboxgl-popup-content {
-      font: 600 12px/1.2 "Helvetica Neue", Arial, sans-serif;
-      padding: 6px 8px;
-      border-radius: 6px;
-      background: rgba(10,26,63,0.92);
-      color: #00e5ff;
-      box-shadow: 0 6px 18px rgba(0,0,0,.35);
-    }
-
-    .mapboxgl-popup-tip {
-      border-top-color: rgba(10,26,63,0.92) !important;
-    }
-
-    /* hide mapbox logo and attribution */
-    .mapboxgl-ctrl-logo,
-    .mapboxgl-ctrl-attrib {
-      display: none !important;
-    }
+  /* hide mapbox logo + attribution */
+  .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
 </style>
 </head>
 <body>
 <div id="map"></div>
- 
+<!-- click shield during intro so animation never stops on click -->
+<div id="intro-shield" style="position:fixed;inset:0;z-index:999999;background:transparent;"></div>
+
 <script>
   mapboxgl.accessToken = 'pk.eyJ1IjoieG15b290IiwiYSI6ImNqOXdhMDR2OTU4dTgycXBnejAycTc2Z3AifQ.IbKaD_XfuTq69TO9b06e6A';
- 
+
   var ME_BOUNDS = [[25, 12], [60, 38]];
- 
-  var NAVY = '#0a1a3f'; 
-  var NEON = '#00e5ff'; 
+  var NAVY = '#0a1a3f';
+  var NEON = '#00e5ff';
+  var HOVER = '#66f0ff';
 
   var ME_COUNTRIES = [
-    'Bahrain', 'Egypt', 'Iran', 'Iraq', 'Israel', 'Jordan',
-    'Kuwait', 'Lebanon', 'Oman', 'Palestine', 'Qatar', 'Saudi Arabia',
-    'Syria', 'Turkey', 'United Arab Emirates', 'Yemen'
+    'Bahrain','Egypt','Iran','Iraq','Israel','Jordan',
+    'Kuwait','Lebanon','Oman','Palestine','Qatar','Saudi Arabia',
+    'Syria','Turkey','United Arab Emirates','Yemen'
   ];
- 
+
   var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9',
     center: [20, 20],
     zoom: 0.8,
-    attributionControl: false   // this disables the bottom-right attribution
+    attributionControl: false,
+    bearing: -8,
+    pitch: 30
   });
- 
+
   var didLockBounds = false;
 
+  function setInteractivity(enabled){
+    if(enabled){
+      map.dragPan.enable(); map.scrollZoom.enable(); map.boxZoom.enable();
+      map.keyboard.enable(); map.doubleClickZoom.enable(); map.touchZoomRotate.enable();
+    }else{
+      map.dragPan.disable(); map.scrollZoom.disable(); map.boxZoom.disable();
+      map.keyboard.disable(); map.doubleClickZoom.disable(); map.touchZoomRotate.disable();
+    }
+  }
+  function installShieldHandlers(){
+    var s = document.getElementById('intro-shield');
+    ['click','mousedown','mouseup','touchstart','touchend','wheel'].forEach(function(evt){
+      s.addEventListener(evt, function(e){ e.preventDefault(); e.stopPropagation(); }, { passive:false });
+    });
+  }
+  function removeShield(){
+    var s = document.getElementById('intro-shield');
+    if(s && s.parentNode) s.parentNode.removeChild(s);
+  }
+
   map.on('load', function () {
+    var introDuration = 4300;
+
+    installShieldHandlers();
+    setInteractivity(false);
+
     setTimeout(function () {
       var targetBounds = new mapboxgl.LngLatBounds(ME_BOUNDS);
       var targetCenter = targetBounds.getCenter();
       var targetZoom = 5.4;
-      
+
       map.easeTo({
         center: targetCenter,
         zoom: targetZoom,
-        duration: 4300,
+        bearing: 8,
+        pitch: 45,
+        duration: introDuration,
         easing: function (t) {
           return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
       });
 
-      setTimeout(function () {
+      setTimeout(function(){
+        removeShield();
+        setInteractivity(true);
         if (!didLockBounds) {
           didLockBounds = true;
-          var expandLng = 8;
-          var expandLat = 8;
-          var expanded = [
-            [ME_BOUNDS[0][0] - expandLng, ME_BOUNDS[0][1] - expandLat],
-            [ME_BOUNDS[1][0] + expandLng, ME_BOUNDS[1][1] + expandLat]
-          ];
-          map.setMaxBounds(expanded);
+          var expandLng = 8, expandLat = 8;
+          map.setMaxBounds([
+            [ME_BOUNDS[0][0]-expandLng, ME_BOUNDS[0][1]-expandLat],
+            [ME_BOUNDS[1][0]+expandLng, ME_BOUNDS[1][1]+expandLat]
+          ]);
         }
-      }, 4000);
+      }, introDuration + 150);
     }, 150);
- 
+
     var layers = map.getStyle().layers || [];
- 
+
     layers.forEach(function (layer) {
-      var isSymbol = layer.type === 'symbol';
-      var hasText = layer.layout && layer.layout['text-field'];
-      if (isSymbol && hasText) {
+      if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
         try { map.setLayoutProperty(layer.id, 'visibility', 'none'); } catch(e){}
       }
     });
- 
+
     layers.forEach(function (layer) {
       var id = layer.id;
       var keep =
@@ -111,7 +132,7 @@
         try { map.setLayoutProperty(id, 'visibility', 'none'); } catch(e){}
       }
     });
- 
+
     layers.forEach(function (layer) {
       var id = layer.id;
       if (layer.type === 'background') {
@@ -130,78 +151,134 @@
       if ((id.indexOf('admin-0-boundary') > -1 || id.indexOf('admin-1-boundary') > -1) && layer.type === 'line') {
         map.setPaintProperty(id, 'line-color', NAVY);
         map.setPaintProperty(id, 'line-width', 1.2);
+        map.setPaintProperty(id, 'line-opacity', 0.6);
       }
     });
- 
-    map.addSource('countries', {
-      type: 'vector',
-      url: 'mapbox://mapbox.country-boundaries-v1'
-    });
- 
+
+    map.addSource('countries', { type:'vector', url:'mapbox://mapbox.country-boundaries-v1' });
+
     map.addLayer({
       id: 'country-fills',
       type: 'fill',
       source: 'countries',
       'source-layer': 'country_boundaries',
-      paint: {
-        'fill-color': NEON,
-        'fill-opacity': 0.92
-      },
+      paint: { 'fill-color': NEON, 'fill-opacity': 0.92 },
       filter: ['in', 'name_en'].concat(ME_COUNTRIES)
     }, getTopWaterLayerId());
- 
+
     map.addLayer({
       id: 'country-borders-navy',
       type: 'line',
       source: 'countries',
       'source-layer': 'country_boundaries',
-      paint: {
-        'line-color': NAVY,
-        'line-width': 1.6
-      },
+      paint: { 'line-color': NAVY, 'line-width': 1.8, 'line-opacity': 0.9 },
       filter: ['in', 'name_en'].concat(ME_COUNTRIES)
     });
- 
+
     map.addLayer({
       id: 'country-fills-hover',
       type: 'fill',
       source: 'countries',
       'source-layer': 'country_boundaries',
-      paint: {
-        'fill-color': '#66f0ff',
-        'fill-opacity': 0.9
-      },
-      filter: ['all', ['in', 'name_en'].concat(ME_COUNTRIES), ['==', 'name_en', '']]
+      paint: { 'fill-color': HOVER, 'fill-opacity': 0.9 },
+      filter: ['all', ['in','name_en'].concat(ME_COUNTRIES), ['==','name_en','']]
     });
- 
+
     var popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
- 
     map.on('mousemove', 'country-fills', function (e) {
       if (!e.features || !e.features.length) return;
       var f = e.features[0];
       var name = f.properties && (f.properties.name_en || f.properties.name);
-      var iso = f.properties && (f.properties.iso_3166_1_alpha_3 || '');
- 
-      map.setFilter('country-fills-hover', ['all', ['in', 'name_en'].concat(ME_COUNTRIES), ['==', 'name_en', name]]);
- 
       var lngLat = e.lngLat;
-      if (lngLat.lng < ME_BOUNDS[0][0] || lngLat.lng > ME_BOUNDS[1][0] ||
-          lngLat.lat < ME_BOUNDS[0][1] || lngLat.lat > ME_BOUNDS[1][1]) {
-        popup.remove();
-        return;
+
+      map.setFilter('country-fills-hover', ['all', ['in','name_en'].concat(ME_COUNTRIES), ['==','name_en', name]]);
+      if (lngLat.lng < ME_BOUNDS[0][0] || lngLat.lng > ME_BOUNDS[1][0] || lngLat.lat < ME_BOUNDS[0][1] || lngLat.lat > ME_BOUNDS[1][1]) {
+        popup.remove(); return;
       }
- 
-      popup
-        .setLngLat(lngLat)
-        .setHTML(name ? name : (iso || 'Country'))
-        .addTo(map);
+      popup.setLngLat(lngLat).setHTML(name || 'Country').addTo(map);
     });
- 
     map.on('mouseleave', 'country-fills', function () {
       map.setFilter('country-fills-hover', ['==', 'name_en', '']);
       popup.remove();
     });
- 
+
+    /* AIR + OCEAN ROUTES (both kinds) */
+    var routes = {
+      "type":"FeatureCollection",
+      "features":[
+        /* Air routes */
+        {"type":"Feature","properties":{"label":"DXB → CAI (Air)","mode":"air"},"geometry":{"type":"LineString","coordinates":[[55.2708,25.2048],[31.2357,30.0444]]}},
+        {"type":"Feature","properties":{"label":"DOH → MCT (Air)","mode":"air"},"geometry":{"type":"LineString","coordinates":[[51.5310,25.2854],[58.4059,23.5880]]}},
+        {"type":"Feature","properties":{"label":"RUH → AMM (Air)","mode":"air"},"geometry":{"type":"LineString","coordinates":[[46.7219,24.7136],[35.9306,31.9539]]}},
+
+        /* Ocean routes (kept straight for performance; labelled as sea lanes) */
+        {"type":"Feature","properties":{"label":"Jebel Ali → Jeddah (Ocean)","mode":"ocean"},"geometry":{"type":"LineString","coordinates":[[55.114,25.015],[39.197,21.543]]}},
+        {"type":"Feature","properties":{"label":"Sohar → Port Said (Ocean)","mode":"ocean"},"geometry":{"type":"LineString","coordinates":[[56.734,24.340],[32.301,31.265]]}},
+        {"type":"Feature","properties":{"label":"Dammam → Shuwaikh (Ocean)","mode":"ocean"},"geometry":{"type":"LineString","coordinates":[[50.100,26.420],[47.933,29.360]]}}
+      ]
+    };
+
+    map.addSource('routes', { type:'geojson', data: routes });
+
+    /* Ocean: solid neon line + subtle glow (same palette) */
+    map.addLayer({
+      id:'routes-ocean-core',
+      type:'line',
+      source:'routes',
+      filter:['==',['get','mode'],'ocean'],
+      paint:{
+        'line-color': NEON,
+        'line-width': 3.2,
+        'line-opacity': 0.9
+      }
+    });
+    map.addLayer({
+      id:'routes-ocean-glow',
+      type:'line',
+      source:'routes',
+      filter:['==',['get','mode'],'ocean'],
+      paint:{
+        'line-color': NEON,
+        'line-width': 7,
+        'line-opacity': 0.16
+      }
+    });
+
+    /* Air: animated dashed white over neon theme */
+    map.addLayer({
+      id:'routes-air-core',
+      type:'line',
+      source:'routes',
+      filter:['==',['get','mode'],'air'],
+      paint:{
+        'line-color': '#ffffff',
+        'line-width': 2.4,
+        'line-opacity': 0.85,
+        'line-dasharray':[0,4, 1.5,4]
+      }
+    });
+
+    /* Hover tooltip for any route */
+    var routePopup = new mapboxgl.Popup({ closeButton:false, closeOnClick:false });
+    ['routes-ocean-core','routes-air-core'].forEach(function(layerId){
+      map.on('mousemove', layerId, function(e){
+        var f = e.features && e.features[0];
+        if(!f) return;
+        var text = f.properties && f.properties.label;
+        if(!text) return;
+        routePopup.setLngLat(e.lngLat).setHTML(text).addTo(map);
+      });
+      map.on('mouseleave', layerId, function(){ routePopup.remove(); });
+    });
+
+    /* Air dash animation */
+    var phase = 0;
+    setInterval(function(){
+      phase = (phase+1)%8;
+      var a = 1.5 + (phase*0.2);
+      map.setPaintProperty('routes-air-core','line-dasharray',[0,4, a,4]);
+    }, 120);
+
     function getTopWaterLayerId() {
       var waterLayers = (map.getStyle().layers || []).filter(function (l) {
         return l.id.indexOf('water') > -1;
