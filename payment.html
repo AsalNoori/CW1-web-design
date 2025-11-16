@@ -249,7 +249,7 @@
             
             <div class="total-section">
                 <span class="total-label">Total Amount</span>
-                <span class="total-amount">$0.0</span>
+                <span class="total-amount">AED 0.0</span>
             </div>
 
             <div class="payment-tabs">
@@ -295,7 +295,7 @@
             </div>
 
             <button type="submit" class="pay-button">
-                <span class="button-text">Pay $0.0</span>
+                <span class="button-text">Pay AED 0.0</span>
                 <span class="button-icon">💳</span>
             </button>
         </form>
@@ -369,8 +369,8 @@
     });
 
     const amount = pendingOrder?.shipmentCost || parseFloat(localStorage.getItem('shipmentCost') || 0);
-    $('.total-amount').text(`$${amount.toFixed(2)}`);
-    $('.pay-button .button-text').text(`Pay $${amount.toFixed(2)}`);
+    $('.total-amount').text(`AED ${amount.toFixed(2)}`);
+    $('.pay-button .button-text').text(`Pay AED ${amount.toFixed(2)}`);
 
     function validateCardForm() {
         const card = $('#cardNumber').val().replace(/\s/g,'');
