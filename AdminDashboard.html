@@ -219,7 +219,7 @@
             color: #ff8a7f;
         }
 
-        header {
+        main > header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -396,6 +396,24 @@
             margin-bottom: 32px;
         }
 
+        .btn-cancel {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.5);
+            color: #ffb3b3;
+        }
+
         @media (max-width: 900px) {
             .dashboard-container {
                 padding: 32px 18px 60px;
@@ -431,11 +449,7 @@
                 <h1>Admin Dashboard</h1>
                 <p class="subtitle">Monitor live bookings, payments, and shipment details.</p>
             </div>
-            <div class="header-actions">
-                <button class="logout-btn" onclick="handleLogout()">
-                    <span>Logout</span>
-                </button>
-            </div>
+            <div class="header-actions"></div>
         </header>
 
         <section id="trackingPanel" class="track-search-container" style="display: none;">
@@ -491,11 +505,12 @@
                             <th>Status</th>
                             <th>Date</th>
                             <th>Recipient</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="orders-table-body">
                         <tr>
-                            <td colspan="9" class="empty-state">Loading orders…</td>
+                            <td colspan="10" class="empty-state">Loading orders…</td>
                         </tr>
                     </tbody>
                 </table>
@@ -595,7 +610,7 @@
             if (!tbody) {
                 return;
             }
-            tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Loading orders…</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading orders…</td></tr>';
         }
 
         function setTableEmpty() {
@@ -603,7 +618,7 @@
             if (!tbody) {
                 return;
             }
-            tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No orders found for this filter.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No orders found for this filter.</td></tr>';
         }
 
         function setTableError(message) {
@@ -611,7 +626,7 @@
             if (!tbody) {
                 return;
             }
-            tbody.innerHTML = `<tr><td colspan="9" class="empty-state">${message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="10" class="empty-state">${message}</td></tr>`;
         }
 
         function toggleError(message) {
@@ -668,6 +683,7 @@
                         <td><span class="tracking-status-badge ${statusClass}">${formatStatus(statusLabel)}</span></td>
                         <td>${dateLabel}</td>
                         <td>${recipient}</td>
+                        <td><button class="btn-cancel" onclick="adminDeleteOrder('${encodeURIComponent(order.trackingID)}')">Cancel</button></td>
                     </tr>
                 `;
             }).join('');
@@ -890,13 +906,20 @@
             `;
         }
 
-        function handleLogout() {
-            fetch('/Logout', { method: 'POST' })
-                .then(() => {
-                    window.location.href = 'home.html';
-                })
-                .catch(() => window.location.reload());
+        async function adminDeleteOrder(encodedId) {
+            const trackingID = decodeURIComponent(encodedId);
+            if (!trackingID) return;
+            if (!confirm('Delete this order permanently?')) return;
+            try {
+                const res = await fetch(`/api/orders/${encodeURIComponent(trackingID)}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error(await res.text());
+                await loadOrders();
+            } catch (err) {
+                console.error(err);
+                toggleError(err.message || 'Failed to delete order.');
+            }
         }
     </script>
 </body>
 </html>
+

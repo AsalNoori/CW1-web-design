@@ -34,7 +34,7 @@
     .empty-state{padding:36px 0;text-align:center;color:#c9d3ea}
     .error-state{background:rgba(255,82,82,.18);border:1px solid rgba(255,82,82,.32);padding:18px 20px;border-radius:14px;color:#ffb3b3;margin-bottom:22px}
     .success-state{background:rgba(76,175,80,.18);border:1px solid rgba(76,175,80,.32);padding:18px 20px;border-radius:14px;color:#b4f1b6;margin-bottom:22px;display:none}
-    header{display:flex;justify-content:space-between;align-items:flex-start}
+    main > header{display:flex;justify-content:space-between;align-items:flex-start}
     .header-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
     .track-search-container{display:flex;gap:12px;margin-bottom:20px;align-items:flex-end}
     .search-input-group{flex:1;min-width:250px}
@@ -128,11 +128,10 @@
             <th>Weight</th>
             <th>Amount</th>
             <th>Date</th>
-            <th>Action</th>
           </tr>
           </thead>
           <tbody id="orders-table-body">
-          <tr><td colspan="7" class="empty-state">Loading your orders…</td></tr>
+          <tr><td colspan="6" class="empty-state">Loading your orders…</td></tr>
           </tbody>
         </table>
       </div>
@@ -166,13 +165,14 @@
         .catch(err => console.error(`Failed to load ${url}`, err));
     }
 
+    loadFragment("header", "header.html");
+
     const countryLabels={bhr:'Bahrain',egy:'Egypt',irn:'Iran',irq:'Iraq',jor:'Jordan',kwt:'Kuwait',lbn:'Lebanon',omn:'Oman',pse:'Palestine',qat:'Qatar',sau:'Saudi Arabia',syr:'Syria',are:'United Arab Emirates',yem:'Yemen'};
     let allOrders=[]; let activeFilter='all';
     const ORDERS_ENDPOINT='/api/my/orders';
     const PROFILE_ENDPOINT='/api/me';
 
     document.addEventListener('DOMContentLoaded',()=>{
-      loadFragment('header','header.html');
       loadFragment('footer','footer.html');
       loadProfile();
       attachFilterHandlers();
@@ -231,9 +231,9 @@
       }
     }
 
-    function setTableLoading(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="7" class="empty-state">Loading your orders…</td></tr>`;}
-    function setTableEmpty(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="7" class="empty-state">No orders found for this filter.</td></tr>`;}
-    function setTableError(msg){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="7" class="empty-state">${msg}</td></tr>`;}
+    function setTableLoading(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="6" class="empty-state">Loading your orders…</td></tr>`;}
+    function setTableEmpty(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="6" class="empty-state">No orders found for this filter.</td></tr>`;}
+    function setTableError(msg){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="6" class="empty-state">${msg}</td></tr>`;}
 
     function renderTable(){
       const tbody=document.getElementById('orders-table-body');
@@ -250,8 +250,6 @@
         const date=o.orderDate?formatDate(o.orderDate):'—';
         const statusClass=getStatusClass(status);
         const idKey=orderKey(o);
-        const canCancel=status==='in-transit';
-        const actionHtml=canCancel?`<button class="btn-cancel" onclick="cancelOrder('${encodeURIComponent(idKey)}')">Cancel</button>`:`<span class="muted">—</span>`;
         return `
           <tr>
             <td>${o.trackingID||idKey}</td>
@@ -260,7 +258,6 @@
             <td>${weight}</td>
             <td>${amount}</td>
             <td>${date}</td>
-            <td class="action-cell">${actionHtml}</td>
           </tr>
         `;
       }).join('');
@@ -275,19 +272,6 @@
       document.getElementById('metric-delivered').textContent=String(delivered);
       document.getElementById('metric-intransit').textContent=String(inTransit);
       document.getElementById('metric-total-orders-meta').textContent=`${delivered} delivered · ${inTransit} in-transit`;
-    }
-
-    async function cancelOrder(encodedKey){
-      const id=decodeURIComponent(encodedKey);
-      if(!confirm('Are you sure you want to cancel this shipment?')) return;
-      hideError(); hideSuccess();
-      try{
-        const res=await fetch(`/api/orders/${encodeURIComponent(id)}/cancel`,{method:'POST'});
-        if(!res.ok) throw new Error(await res.text());
-        const idx=allOrders.findIndex(o=>orderKey(o)===id||o.trackingID===id);
-        if(idx>-1){allOrders[idx].status='cancelled';}
-        updateMetrics(); renderTable(); showSuccess('Order has been cancelled.');
-      }catch(err){console.error(err); showError(err.message||'Unable to cancel this order right now.');}
     }
 
     function orderKey(o){return o.id||o.orderId||o.trackingID;}

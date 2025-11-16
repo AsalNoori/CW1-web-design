@@ -13,8 +13,15 @@
         justify-content: space-between;
         align-items: center;
         padding: 18px 40px;
-        position: relative;
-        z-index: 1000;
+    }
+    
+    .navigation.has-right-aligned-nav {
+        justify-content: flex-start;
+    }
+    
+    .navigation.has-right-aligned-nav .nav-links {
+        margin-left: auto;
+        flex: 0 1 auto;
     }
 
     .navigation .logo {
@@ -37,13 +44,26 @@
         gap: 16px;
     }
 
-    .nav-links.right-aligned {
-        flex: 1;
+    .navigation.has-right-aligned-nav .nav-links {
         justify-content: flex-end !important;
     }
     
-    .nav-links.right-aligned #servicesBtn {
-        margin-left: auto !important;
+    .navigation.has-right-aligned-nav .nav-links #servicesBtn {
+        margin-left: 0 !important;
+    }
+    
+    .navigation.has-right-aligned-nav .nav-links #logoutBtn {
+        margin-left: 0 !important;
+        color: #ffffff !important;
+        background: linear-gradient(135deg, #1c6bff 0%, #4090ff 100%) !important;
+        border-color: transparent !important;
+        box-shadow: 0 16px 30px rgba(28, 107, 255, 0.3) !important;
+    }
+    
+    .navigation.has-right-aligned-nav .nav-links #logoutBtn:hover {
+        background: linear-gradient(135deg, #0d3ec9 0%, #1c6bff 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 20px 36px rgba(13, 62, 201, 0.35) !important;
     }
 
     .nav-button {
@@ -105,61 +125,6 @@
         border: none;
         cursor: pointer;
     }
-
-    .hamburger {
-        display: none;
-        flex-direction: column;
-        cursor: pointer;
-        gap: 5px;
-        z-index: 3000;
-    }
-
-    .hamburger div {
-        width: 28px;
-        height: 3px;
-        background: white;
-        border-radius: 3px;
-        transition: 0.3s;
-    }
-
-    @media (max-width: 850px) {
-        .nav-links {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: #0a1a3f;
-            flex-direction: column;
-            padding: 20px 0;
-            gap: 12px;
-
-            display: none;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.25s ease, transform 0.25s ease;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        .nav-links.show {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .nav-links a,
-        .nav-links button {
-            width: 85%;
-            margin: 0 auto;
-            justify-content: center;
-        }
-
-        .hamburger {
-            display: flex;
-        }
-    }
-
 </style>
 
 <header>
@@ -167,12 +132,6 @@
         <a href="home.html" class="logo" aria-label="Home">
            <img src="logo.png" alt="Company Logo">
         </a>
-
-        <div class="hamburger" id="hamburger">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
 
         <div class="nav-links">
             <a href="AboutUs.html" class="nav-button" id="aboutLink">About Us</a>
@@ -188,21 +147,6 @@
 </header>
 
 <script>
-    const hamburger = document.getElementById("hamburger");
-    const navLinks = document.querySelector(".nav-links");
-
-    hamburger.addEventListener("click", () => {
-        navLinks.classList.toggle("show");
-    });
-
-    navLinks.querySelectorAll("a, button").forEach(link => {
-        link.addEventListener("click", () => {
-            if (window.innerWidth <= 850) {
-                navLinks.classList.remove("show");
-            }
-        });
-    });
-
     (function () {
         const accountLink = document.getElementById('accountLink');
         const settingsLink = document.getElementById('settingsLink');
@@ -213,51 +157,24 @@
         const servicesBtn = document.getElementById('servicesBtn');
         const currentPath = window.location.pathname.toLowerCase();
 
-        const show = (el) => {
-            if (!el) return;
-            el.style.display = 'inline-flex';   // always set display for all links
-        }
-
-        const hide = (el) => {
-            if (!el) return;
-            el.style.display = 'none';
-        }
+        const show = (el, display='inline-flex') => el && (el.style.display = display);
+        const hide = (el) => el && (el.style.display = 'none');
 
         const onServicesPage = currentPath.includes('/services') || currentPath.includes('services.html');
-        const onAboutPage = currentPath.includes('/aboutus') || currentPath.includes('aboutus.html');
-
 
         function setGuestView() {
-            // Hide all conditional links first
-            [accountLink, settingsLink, logoutBtn].forEach(hide);
-
-            // Show guest links
+            show(aboutLink);
+            if (onServicesPage) {
+                hide(servicesBtn);
+            } else {
+                show(servicesBtn);
+            }
+            hide(accountLink);
+            hide(settingsLink);
             show(registerBtn);
             show(loginBtn);
-
-            // Show/Hide About and Services depending on page
-            if (onServicesPage) hide(servicesBtn); else show(servicesBtn);
-            if (onAboutPage) hide(aboutLink); else show(aboutLink);
-        }
-
-        function setUserView() {
-            hide(registerBtn);
-            hide(loginBtn);
-            show(logoutBtn);
-
-            if (session.role === 'admin') {
-                hide(accountLink);
-                hide(settingsLink);
-                hide(registerBtn);
-                hide(loginBtn);
-            } else {
-                hide(settingsLink);
-                show(accountLink);
-            }
-
-            // About & Services
-            if (onServicesPage) hide(servicesBtn); else show(servicesBtn);
-            if (onAboutPage) hide(aboutLink); else show(aboutLink);
+            hide(logoutBtn);
+            if (logoutBtn) logoutBtn.style.marginLeft = '';
         }
 
         setGuestView();
@@ -274,75 +191,99 @@
                 hide(loginBtn);
                 show(logoutBtn);
 
-                const onAccountPage = currentPath === '/account' || currentPath === '/account.html';
-                const onAdminPage = currentPath === '/admindashboard' || currentPath === '/admindashboard.html';
-                const navLinks = document.querySelector('.nav-links');
+        const onAccountPage = currentPath.includes('/account') || currentPath.includes('account.html');
+        const onAdminPage = currentPath.includes('/admindashboard') || currentPath.includes('admindashboard.html');
+        const navLinks = document.querySelector('.nav-links');
 
                 if (session.role === 'admin') {
+                    if (onAdminPage) {
+                        show(aboutLink);
+                    } else {
+                        hide(aboutLink);
+                    }
                     if (onServicesPage) {
                         hide(servicesBtn);
                     } else {
                         show(servicesBtn);
                     }
-                    if (onAboutPage) {
-                        hide(aboutLink);
-                    } else {
-                        show(aboutLink);
-                    }
-
                     hide(accountLink);
                     hide(registerBtn);
                     hide(loginBtn);
-                    
+                    // Hide Dashboard button when on AdminDashboard page
+                    const navigation = document.querySelector('.navigation');
                     if (onAdminPage) {
                         hide(settingsLink);
-
-                        if (navLinks) {
-                            navLinks.classList.add('right-aligned');
-                        }
-
-                        if (servicesBtn && !onServicesPage) {
-                            servicesBtn.style.marginLeft = 'auto';
-                        }
+                        show(logoutBtn, 'inline-flex');
+                        // Align remaining buttons to the right on AdminDashboard
+                        requestAnimationFrame(() => {
+                            if (navigation) {
+                                navigation.classList.add('has-right-aligned-nav');
+                            }
+                            if (navLinks) {
+                                navLinks.classList.add('right-aligned');
+                            }
+                            // Reset any margin-left on buttons since justify-content: flex-end handles alignment
+                            if (servicesBtn && !onServicesPage) {
+                                servicesBtn.style.setProperty('margin-left', '0', 'important');
+                            }
+                            if (logoutBtn) {
+                                logoutBtn.style.setProperty('margin-left', '0', 'important');
+                            }
+                        });
                     } else {
                         show(settingsLink);
+                        hide(logoutBtn);
+                        // Reset alignment when not on AdminDashboard
+                        if (navigation) {
+                            navigation.classList.remove('has-right-aligned-nav');
+                        }
                         if (navLinks) {
                             navLinks.classList.remove('right-aligned');
                         }
                         if (servicesBtn) {
                             servicesBtn.style.marginLeft = '';
                         }
+                        if (logoutBtn) {
+                            logoutBtn.style.marginLeft = '';
+                        }
                     }
-                    hide(logoutBtn);
-                    if (logoutBtn) logoutBtn.style.marginLeft = '';
                 } else {
                     hide(settingsLink);
 
                     if (onAccountPage) {
-                        hide(aboutLink);
+                        show(aboutLink);
                         if (onServicesPage) {
                             hide(servicesBtn);
                         } else {
                             show(servicesBtn);
                         }
-                        if (onAboutPage) {
-                            hide(aboutLink);
-                        } else {
-                            show(aboutLink);
-                        }
-
                         hide(accountLink);
                         hide(registerBtn);
                         hide(loginBtn);
                         show(logoutBtn, 'inline-flex');
-                        if (logoutBtn) logoutBtn.style.marginLeft = 'auto';
-                        if (navLinks) {
-                            navLinks.classList.add('right-aligned');
-                        }
-                        if (servicesBtn && !onServicesPage) {
-                            servicesBtn.style.marginLeft = 'auto';
-                        }
+                        // Align Services, About Us, and Logout buttons to the right on Account page
+                        const navigation = document.querySelector('.navigation');
+                        requestAnimationFrame(() => {
+                            if (navigation) {
+                                navigation.classList.add('has-right-aligned-nav');
+                            }
+                            if (navLinks) {
+                                navLinks.classList.add('right-aligned');
+                            }
+                            // Reset any margin-left on buttons since justify-content: flex-end handles alignment
+                            if (servicesBtn && !onServicesPage) {
+                                servicesBtn.style.setProperty('margin-left', '0', 'important');
+                            }
+                            if (logoutBtn) {
+                                logoutBtn.style.setProperty('margin-left', '0', 'important');
+                            }
+                        });
                     } else {
+                        // Reset alignment when not on Account page
+                        const navigation = document.querySelector('.navigation');
+                        if (navigation) {
+                            navigation.classList.remove('has-right-aligned-nav');
+                        }
                         if (navLinks) {
                             navLinks.classList.remove('right-aligned');
                         }
@@ -355,12 +296,6 @@
                         } else {
                             show(servicesBtn);
                         }
-                        if (onAboutPage) {
-                            hide(aboutLink);
-                        } else {
-                            show(aboutLink);
-                        }
-
                         show(accountLink);
                         hide(logoutBtn);
                         if (logoutBtn) logoutBtn.style.marginLeft = '';

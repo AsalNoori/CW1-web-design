@@ -1,351 +1,329 @@
-<!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8" />
-<title>Ship Me · Home</title>
-<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
-<link rel="icon" href="logo.png" type="image/png" />
-<style>
-  :root{
-    --navy:#0a1a3f;
-    --navy-2:#081432;
-    --brand:#1c6bff;
-    --brand-2:#4293ff;
-    --glass:rgba(255,255,255,.06);
-    --stroke:rgba(255,255,255,.18);
-    --muted:#c9d3ea;
-    --white:#ffffff;
-  }
-  *{box-sizing:border-box}
-  body{font-family:'Segoe UI', Arial, sans-serif;background-color:var(--navy);margin:0;color:#fff}
-  a{color:inherit;text-decoration:none}
+    <style>
 
-  .container{max-width:1200px;margin:0 auto;padding:48px 24px}
-  .section{padding:26px 0}
-  .section-title{font-size:2rem;margin:0 0 12px}
-  .section-sub{color:var(--muted);margin:0 0 26px}
-
-  .pill-button{
-    display:inline-flex;align-items:center;gap:10px;
-    padding:14px 26px;border-radius:999px;font-size:16px;
-    font-weight:700;letter-spacing:.2px;cursor:pointer;
-    border:1px solid transparent;transition:box-shadow .18s,filter .18s,background .18s,border-color .18s;
-    will-change:box-shadow,filter;
-  }
-  .pill-button svg{width:18px;height:18px;stroke-width:2}
-  .pill-button--outline{
-    background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.06));
-    border-color:var(--stroke);
-    color:#eaf3ff;
-    backdrop-filter:blur(8px);
-    box-shadow:0 10px 22px rgba(28,107,255,.18), inset 0 0 0 1px rgba(255,255,255,.05);
-  }
-  .pill-button--outline:hover{box-shadow:0 14px 28px rgba(28,107,255,.28), inset 0 0 0 1px rgba(255,255,255,.08);filter:brightness(1.05)}
-  .pill-button--primary{
-    background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
-    color:var(--white);
-    border-color:transparent;
-    box-shadow:0 16px 28px rgba(28,107,255,.30);
-  }
-  .pill-button--primary:hover{box-shadow:0 22px 36px rgba(28,107,255,.42);filter:brightness(1.03)}
-  .pill-button--primary:active,
-  .pill-button--outline:active{filter:brightness(0.98)}
-
-  .tracking-input{
-    width:230px;padding:14px 18px;border:1px solid var(--stroke);
-    border-radius:999px;font-size:16px;background:#0f1f3c;color:#eaf3ff;
-    box-shadow:0 8px 18px rgba(28,107,255,.18), inset 0 0 0 1px rgba(255,255,255,.05);
-    transition:border-color .2s,box-shadow .2s,background .2s;
-  }
-  .tracking-input::placeholder{color:rgba(234,243,255,.55);font-weight:600;letter-spacing:.2px}
-  .tracking-input:focus{outline:none;border-color:#4c97ff;box-shadow:0 0 0 4px rgba(83,151,255,.25), 0 12px 24px rgba(28,107,255,.26);background:#11244a}
-
-  .main-content{display:flex;justify-content:center;align-items:center;padding:0}
-  .hero-container{position:relative;width:100%;height:90vh;max-height:900px;overflow:hidden}
-  .hero-iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;display:block}
-  .tracking-container{position:absolute;display:flex;align-items:center;gap:14px;top:40%;left:50%;transform:translate(-50%,-50%)}
-  .place_order_button{position:absolute;top:78%;left:50%;transform:translate(-50%,-50%);text-align:center}
-  .tracking-container,.place_order_button{z-index:2}
-  .place_order_button{transform:translate(-50%,-50%)}
-  .place_order_button.pill-button--primary:hover,
-  .place_order_button.pill-button--primary:active,
-  .place_order_button.pill-button--primary:focus-visible{transform:translate(-50%,-50%)}
-
-  .band{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0) 60%)}
-  .values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
-  .value-card{
-    position:relative;padding:28px;background:var(--glass);border:1px solid var(--stroke);border-radius:18px;backdrop-filter:blur(8px);
-    transition:transform .25s, box-shadow .25s;overflow:hidden
-  }
-  .value-card:hover{transform:translateY(-6px);box-shadow:0 18px 36px rgba(12,32,73,.35)}
-  .value-card:before{
-    content:"";position:absolute;inset:0;border-radius:18px;padding:1px;
-    background:linear-gradient(135deg,rgba(97,211,249,.6),rgba(28,107,255,.6));
-    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    mask-composite:exclude;-webkit-mask-composite:xor;opacity:.22
-  }
-  .value-icon{display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
-  .value-icon svg{width:38px;height:38px;stroke:#61d3f9;stroke-width:2;fill:none}
-  .value-title{font-size:1.1rem;margin:6px 0;color:#61d3f9}
-  .value-metric{font-size:1.9rem;font-weight:800;letter-spacing:.5px}
-
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
-  .card{background:var(--glass);border:1px solid var(--stroke);border-radius:16px;padding:24px;transition:transform .22s, box-shadow .22s}
-  .card:hover{transform:translateY(-6px);box-shadow:0 16px 30px rgba(12,32,73,.35)}
-  .card h3{margin:0 0 10px}
-  .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--stroke);font-size:.85rem;color:var(--muted);margin-right:8px;margin-bottom: 10px}
-
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;counter-reset:step}
-  .step{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--stroke);border-radius:16px;padding:24px;position:relative}
-  .step:before{counter-increment:step;content:counter(step);position:absolute;top:-14px;left:-14px;height:44px;width:44px;border-radius:50%;
-    background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;font-weight:800;box-shadow:0 10px 20px rgba(28,107,255,.35)}
-
-  .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
-  .quote{background:var(--glass);border:1px solid var(--stroke);border-radius:16px;padding:24px}
-  .quote .who{display:flex;align-items:center;gap:12px;margin-top:14px;color:var(--muted)}
-  .avatar{height:36px;width:36px;border-radius:50%;background:#2a3e73;display:grid;place-items:center;font-weight:700}
-
-  .faq{display:grid;grid-template-columns:1fr;gap:12px}
-  .faq-item{border:1px solid var(--stroke);border-radius:14px;background:rgba(255,255,255,.04);overflow:hidden}
-  .faq-q{width:100%;text-align:left;background:transparent;color:#fff;padding:16px 18px;font-size:1rem;border:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease, padding .3s ease;color:var(--muted);padding:0 18px}
-  .faq-item.active .faq-a{max-height:240px;padding:0 18px 16px}
-  .faq-item .plus{transition:transform .3s}
-  .faq-item.active .plus{transform:rotate(45deg)}
-</style>
-</head>
-<body>
-  <div id="header"></div>
-  <script>
-    function loadFragment(targetId, url){
-      return fetch(url).then(r=>r.text()).then(html=>{
-        const el=document.getElementById(targetId); if(!el) return;
-        el.innerHTML=html;
-        el.querySelectorAll('script').forEach(s=>{const n=document.createElement('script'); if(s.src){n.src=s.src}else{n.textContent=s.textContent} document.body.appendChild(n); s.remove();});
-      }).catch(()=>{});
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background-color:  #0a1a3f;
+        margin: 0;
+        color: #ffffff;
     }
-    loadFragment("header","header.html");
-  </script>
 
-  <div class="main-content">
-    <div class="hero-container">
-      <div id="hero">
-        <iframe src="hero.html" class="hero-iframe" title="Hero" loading="eager"></iframe>
-      </div>
-      <div class="tracking-container">
-        <input type="text" id="trackingIdInput" class="tracking-input" placeholder="Tracking ID" aria-label="Tracking ID">
-        <button type="button" class="pill-button pill-button--outline submit-trackingID" id="trackButton" aria-label="Track shipment">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" stroke="currentColor"></circle>
-            <path d="M20 20L16.6 16.6" stroke="currentColor" stroke-linecap="round"></path>
-          </svg>
-          <span>Track</span>
-        </button>
-      </div>
-      <a href="ChooseType.html" class="pill-button pill-button--primary place_order_button" aria-label="Book shipment">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M3 12h7l2-3 2 6 2-3h5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
-          <path d="M3 16h6M3 8h4" stroke="currentColor" stroke-linecap="round"></path>
-        </svg>
-        <span>Book Shipment</span>
-      </a>
-    </div>
-  </div>
+    .main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
 
-  <section class="band">
-    <div class="container">
-      <h2 class="section-title">Trusted logistics, built for speed</h2>
-      <p class="section-sub">Air and ocean freight from the Gulf to the world—live tracking and clear pricing.</p>
-      <div class="values-grid">
-        <div class="value-card">
-          <div class="value-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M3 7h18v10H3z"></path>
-              <path d="M7 7v-2h10v2"></path>
-              <path d="M3 12h18"></path>
-            </svg>
-          </div>
-          <div class="value-metric" data-count="12450">0</div>
-          <div class="value-title">Shipments Delivered</div>
-          <div style="color:var(--muted)">On-time delivery across 40+ corridors</div>
-        </div>
-        <div class="value-card">
-          <div class="value-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M13 3L4 14h6l-1 7 9-11h-6l1-7z"></path>
-            </svg>
-          </div>
-          <div class="value-metric" data-count="98">0</div>
-          <div class="value-title">Satisfaction Score</div>
-          <div style="color:var(--muted)">Fast responses and proactive updates</div>
-        </div>
-        <div class="value-card">
-          <div class="value-icon">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9"></circle>
-              <path d="M12 7v6l4 2" stroke-linecap="round"></path>
-            </svg>
-          </div>
-          <div class="value-metric" data-count="5">0</div>
-          <div class="value-title">Years Operating</div>
-          <div style="color:var(--muted)">Born in the Middle East, scaling globally</div>
-        </div>
-        <div class="value-card">
-          <div class="value-icon">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M19.1 4.9l-2.8 2.8M6.9 16.3l-2.8 2.8"></path>
-            </svg>
-          </div>
-          <div class="value-metric" data-count="12">0</div>
-          <div class="value-title">Live Hubs</div>
-          <div style="color:var(--muted)">UAE, KSA, Qatar, Oman and more</div>
-        </div>
-      </div>
-    </div>
-  </section>
+        .tracking-input {
+            width: 230px;
+            padding: 14px 18px;
+            border: 2px solid #5397ff;
+            border-radius: 999px;
+            font-size: 18px;
+            background-color: #ffffff; 
+            color: #102347;
+            box-shadow: 0 12px 24px #5fa8ff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
 
-  <section class="container">
-    <h2 class="section-title">What we do</h2>
-    <p class="section-sub">We operate exclusively via Air and Ocean—pick the mode that fits your timeline and budget.</p>
-    <div class="cards">
-      <div class="card">
-        <div class="chip">Air</div>
-        <h3>Express Air Freight</h3>
-        <p style="color:var(--muted)">Priority uplift with airline partners. Ideal for urgent B2B and premium D2C with reliable ETAs.</p>
-      </div>
-      <div class="card">
-        <div class="chip">Ocean</div>
-        <h3>Ocean FCL/LCL</h3>
-        <p style="color:var(--muted)">Cost-efficient capacity with smart consolidation, dependable sailings, and easy documentation.</p>
-      </div>
-    </div>
-  </section>
+        .tracking-input::placeholder {
+            color: rgba(16, 35, 71, 0.6);
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
 
-  <section class="container">
-    <h2 class="section-title">How it works</h2>
-    <p class="section-sub">From quote to delivered—simple, transparent, fast.</p>
-    <div class="steps">
-      <div class="step">
-        <h3>Get a fast quote</h3>
-        <p style="color:var(--muted)">Enter route, weight, and mode for instant pricing.</p>
-      </div>
-      <div class="step">
-        <h3>Book and track</h3>
-        <p style="color:var(--muted)">Lock the rate, receive your tracking ID, and follow progress live.</p>
-      </div>
-      <div class="step">
-        <h3>Deliver and confirm</h3>
-        <p style="color:var(--muted)">Recipient signs off. You get a delivery confirmation and invoice.</p>
-      </div>
-    </div>
-  </section>
+        .tracking-input:focus {
+            outline: none;
+            border-color: #1c6bff;
+            box-shadow: 0 0 0 4px #5397ff;
+        }
 
-  <section class="container">
-    <h2 class="section-title">Customer support</h2>
-    <p class="section-sub">Real humans, fast replies. We keep you updated before you need to ask.</p>
-    <div class="cards">
-      <div class="card">
-        <h3>24/7 assistance</h3>
-        <p style="color:var(--muted)">Round-the-clock help for time-critical air and ocean moves.</p>
-      </div>
-      <div class="card">
-        <h3>Proactive alerts</h3>
-        <p style="color:var(--muted)">Milestone notifications for departures, arrivals, and customs events.</p>
-      </div>
-      <div class="card">
-        <h3>Single thread of truth</h3>
-        <p style="color:var(--muted)">All updates tied to your tracking ID for clean handoffs and visibility.</p>
-      </div>
-    </div>
-  </section>
+        .pill-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 26px;
+            border-radius: 999px;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+        }
 
-  <section class="container">
-    <h2 class="section-title">What customers say</h2>
-    <div class="testimonials">
-      <div class="quote">
-        <div>“The live tracking is the best we’ve used—fewer WISMO tickets and happier clients.”</div>
-        <div class="who"><div class="avatar">A</div><div>Amir · E-commerce Lead</div></div>
-      </div>
-      <div class="quote">
-        <div>“They cut our MEA transit times by 30% with reliable linehaul and customs support.”</div>
-        <div class="who"><div class="avatar">L</div><div>Lina · Ops Manager</div></div>
-      </div>
-      <div class="quote">
-        <div>“Clear pricing, on-time pickups, and great support. We scaled confidently.”</div>
-        <div class="who"><div class="avatar">S</div><div>Saleh · Founder</div></div>
-      </div>
-    </div>
-  </section>
+        .pill-button .pill-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
 
-  <section class="container">
-    <h2 class="section-title">FAQs</h2>
-    <div class="faq">
-      <div class="faq-item">
-        <button class="faq-q">How fast can you pick up?<span class="plus">＋</span></button>
-        <div class="faq-a">Same-day in major GCC cities if booked before 12:00 local time. Otherwise next-day.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q">Do you handle customs?<span class="plus">＋</span></button>
-        <div class="faq-a">Yes. We manage documentation, duties, and brokerage through our licensed partners.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q">Can I insure my shipment?<span class="plus">＋</span></button>
-        <div class="faq-a">Optional cargo insurance is available at checkout for air and ocean shipments.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q">What payment methods do you accept?<span class="plus">＋</span></button>
-        <div class="faq-a">Major cards, bank transfer, and invoicing for approved business accounts.</div>
-      </div>
-    </div>
-  </section>
+        .pill-button--outline {
+            background-color: #ffffff;
+            color: #0f1f3c;
+            border-color: #5397ff;
+            box-shadow: 0 10px 18px #5fa8ff;
+        }
 
-  <div id="footer"></div>
-  <script>loadFragment("footer","footer.html");</script>
+        .pill-button--outline:hover {
+            background-color: #e6efff;
+            border-color: #1c6bff;
+            transform: translateY(-1px);
+            box-shadow: 0 16px 28px #5fa8ff;
+        }
 
-  <script>
-    document.addEventListener('DOMContentLoaded',function(){
-      const trackButton=document.getElementById('trackButton');
-      const trackingInput=document.getElementById('trackingIdInput');
-      if(trackButton&&trackingInput){
-        trackButton.addEventListener('click',function(){
-          const id=trackingInput.value.trim();
-          if(id){window.location.href=`trackorder.html?trackingID=${encodeURIComponent(id)}`}else{alert('Please enter a tracking ID')}
-        });
-        trackingInput.addEventListener('keypress',e=>{if(e.key==='Enter'){trackButton.click()}});
-      }
+        .pill-button--primary {
+            background: linear-gradient(135deg, #1c6bff 0%, #4293ff 100%);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 16px 28px #5fa8ff;
+        }
 
-      const counters=document.querySelectorAll('.value-metric[data-count]');
-      const io=new IntersectionObserver((entries)=>{
-        entries.forEach(ent=>{
-          if(ent.isIntersecting){
-            const el=ent.target;
-            const end=parseInt(el.dataset.count,10);
-            const dur=1200;
-            const startTime=performance.now();
-            function tick(now){
-              const p=Math.min(1,(now-startTime)/dur);
-              const val=Math.floor(end*p);
-              el.textContent=end>=100?val.toLocaleString():val;
-              if(p<1){requestAnimationFrame(tick)}else{el.textContent=(end>=100?end.toLocaleString():end)+(end===98?'%':'')}
-            }
-            requestAnimationFrame(tick);
-            io.unobserve(el);
+        .pill-button--primary:hover {
+            background: linear-gradient(135deg, #0d3ec9 0%, #1c6bff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 32px #0d3ec9;
+        }
+
+        .pill-button:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px #5fa8ff;
+        }
+
+        .pill-button--primary:active,
+        .pill-button--outline:active {
+            transform: translateY(0);
+            box-shadow: 0 8px 16px #0d3ec9;
+        }
+
+         .image-container {
+            position: relative;     
+            display: flex;
+            justify-content: center;
+        }
+        .image-container img {
+            width: 700px;
+            height: auto;
+        }
+
+        .tracking-container {    
+            position: absolute;
+            display: flex;
+            align-items: center;
+            top: 40%;                
+            left: 50%;
+            transform: translate(-50%, -50%);
+            gap: 15px;   
+        }
+
+        .submit-trackingID {
+            margin-left: 4px;
+        }
+
+        .place_order_button {
+            position: absolute;     
+            top: 78%;               
+            left: 50%;              
+            transform: translate(-50%, -50%);
+            text-align: center;
+            transition: background-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        /* Override the pill-button hover translate so the CTA stays centered */
+        .place_order_button.pill-button {
+            transform: translate(-50%, -50%);
+        }
+
+        .place_order_button.pill-button:hover,
+        .place_order_button.pill-button:active,
+        .place_order_button.pill-button:focus-visible {
+            transform: translate(-50%, -50%);
+        }
+       
+        .hero-container {
+            position: relative;
+            width: 100%;
+            height: 90vh;      
+            max-height: 900px; 
+            overflow: hidden;
+        }
+
+        .hero-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+     .tracking-container,
+     .place_order_button {
+         z-index: 2;
+     }
+     .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.value-card {
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    backdrop-filter: blur(6px);
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.value-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.value-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.value-card h3 {
+    font-size: 1.6em;
+    margin-bottom: 10px;
+    color: #61D3F9;
+}
+
+.value-card p {
+    font-size: 1.05em;
+    color: #ffffff;
+}
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 35px;
+    margin-top: 60px;
+    padding: 20px;
+}
+
+        
+    </style>
+    <head>
+        <title> Home Page </title>
+        <link rel="icon" href="logo.png" type="image/png">
+    </head>
+    <body>
+        <div id="header"></div>
+
+        <script>
+          function loadFragment(targetId, url) {
+            return fetch(url)
+              .then(response => response.text())
+              .then(html => {
+                const container = document.getElementById(targetId);
+                if (!container) return;
+                container.innerHTML = html;
+                container.querySelectorAll('script').forEach(oldScript => {
+                  const newScript = document.createElement('script');
+                  if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                  } else {
+                    newScript.textContent = oldScript.textContent;
+                  }
+                  document.body.appendChild(newScript);
+                  oldScript.remove();
+                });
+              })
+              .catch(err => console.error(`Failed to load ${url}`, err));
           }
-        });
-      },{threshold:0.4});
-      counters.forEach(c=>io.observe(c));
 
-      document.querySelectorAll('.faq-item .faq-q').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-          const item=btn.parentElement;
-          const open=item.classList.contains('active');
-          document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('active'));
-          if(!open){item.classList.add('active')}
-        });
-      });
-    });
-  </script>
-</body>
+          loadFragment("header", "header.html");
+        </script>
+
+        <div class="main-content">
+        <div class="hero-container">
+            <div id="hero">
+                <iframe
+                  src="hero.html"
+                  class="hero-iframe"
+                  title="Hero"
+                  loading="eager"
+                ></iframe>
+            </div>
+
+            <div class="tracking-container">
+                <input type="text" id="trackingIdInput" class="tracking-input" placeholder="Tracking ID" aria-label="Tracking ID">
+                <button type="button" class="pill-button pill-button--outline submit-trackingID" id="trackButton">
+                    <span class="pill-icon">🔍</span>
+                    <span>Track</span>
+                </button>
+            </div>
+
+            <a href="ChooseType.html" class="pill-button pill-button--primary place_order_button">
+                <span class="pill-icon">✈️</span>
+                <span>Book Shipment</span>
+            </a>
+            
+        </div>
+        </div>
+
+<div>
+
+    <div class="stats-container">
+        <div class="value-card">
+            <div class="value-icon">📦</div>
+            <h3>12,450+</h3>
+            <p>Shipments Delivered</p>
+        </div>
+    
+        <div class="value-card">
+            <div class="value-icon">⏱️</div>
+            <h3>5 Years</h3>
+            <p>Trusted Experience</p>
+        </div>
+    
+        <div class="value-card">
+            <div class="value-icon">⭐</div>
+            <h3>98%</h3>
+            <p>Customer Satisfaction</p>
+        </div>
+    </div>
+    
+  
+    
+    
+</div>
+        <div id="footer"></div>
+
+        <script>
+          loadFragment("footer", "footer.html");
+        </script>
+
+        <script>
+            // Track order functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                const trackButton = document.getElementById('trackButton');
+                const trackingInput = document.getElementById('trackingIdInput');
+                
+                if (trackButton && trackingInput) {
+                    trackButton.addEventListener('click', function() {
+                        const trackingId = trackingInput.value.trim();
+                        if (trackingId) {
+                            window.location.href = `trackorder.html?trackingID=${encodeURIComponent(trackingId)}`;
+                        } else {
+                            alert('Please enter a tracking ID');
+                        }
+                    });
+                    
+                    // Allow Enter key to trigger track
+                    trackingInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            trackButton.click();
+                        }
+                    });
+                }
+            });
+            </script>
+    </body>
 </html>

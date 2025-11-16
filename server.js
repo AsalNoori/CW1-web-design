@@ -137,7 +137,7 @@ app.post("/SignUp", (req, res) => {
     if (!firstName || !lastName || !email || !phone || !password) {
         return res.status(400).send("All fields are required.");
     }
-
+  
     const sql = "INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES (?, ?, ?, ?, ?)";
     con.query(sql, [firstName, lastName, email, phone, password], (err, result) => {
       if (err) {
@@ -148,12 +148,12 @@ app.post("/SignUp", (req, res) => {
       setSessionCookies(res, { role: 'user', name: firstName, userId: result.insertId });
       res.redirect('/');
     });
-});
+  });
 
 app.post("/Logout", (req, res) => {
     clearSessionCookies(res);
     res.redirect('/');
-});
+  });
 
 app.get("/PrivacyPolicy", (req, res) => {
     res.sendFile(path.join(__dirname, "privacyPolicy.html"));
@@ -372,6 +372,54 @@ app.post('/api/orders/:trackingID/cancel', (req, res) => {
     });
 });
 
+// Permanently delete an order by trackingID
+app.delete('/api/orders/:trackingID', (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated) {
+        return res.status(401).send('Please sign in.');
+    }
+
+    const { trackingID } = req.params;
+    if (!trackingID) {
+        return res.status(400).send('Tracking ID is required.');
+    }
+
+    // Build conditions: admin can delete any; user can delete only their own
+    const userCondition = session.role === 'admin' ? [] : [session.userId];
+
+    const deleteIndividual = session.role === 'admin'
+        ? `DELETE FROM IndividualOrders WHERE TrackingID = ?`
+        : `DELETE FROM IndividualOrders WHERE TrackingID = ? AND UserID = ?`;
+
+    con.query(deleteIndividual, session.role === 'admin' ? [trackingID] : [trackingID, session.userId], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Unable to delete order.');
+        }
+
+        if (result.affectedRows > 0) {
+            return res.json({ trackingID, deleted: true });
+        }
+
+        const deleteBusiness = session.role === 'admin'
+            ? `DELETE FROM BusinessOrders WHERE TrackingID = ?`
+            : `DELETE FROM BusinessOrders WHERE TrackingID = ? AND UserID = ?`;
+
+        con.query(deleteBusiness, session.role === 'admin' ? [trackingID] : [trackingID, session.userId], (bizErr, bizResult) => {
+            if (bizErr) {
+                console.error(bizErr);
+                return res.status(500).send('Unable to delete order.');
+            }
+
+            if (bizResult.affectedRows > 0) {
+                return res.json({ trackingID, deleted: true });
+            }
+
+            return res.status(404).send('Order not found.');
+        });
+    });
+});
+
 app.post('/api/orders', (req, res) => {
     const { orderType, trackingID, order, paymentMethod, amount } = req.body || {};
     const session = getSession(req);
@@ -494,7 +542,7 @@ app.post('/api/orders', (req, res) => {
         `;
 
         const values = [
-            trackingID,
+        trackingID,
             userId,
             business.name,
             business.registration,

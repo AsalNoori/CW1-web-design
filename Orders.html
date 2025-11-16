@@ -66,10 +66,11 @@
             <th>Amount</th>
             <th>Payment</th>
             <th>Date</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody id="orders-table-body">
-          <tr><td colspan="8" class="empty-state">Loading orders…</td></tr>
+          <tr><td colspan="9" class="empty-state">Loading orders…</td></tr>
         </tbody>
       </table>
     </div>
@@ -160,9 +161,9 @@
       }
     }
 
-    function setTableLoading(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="8" class="empty-state">Loading orders…</td></tr>`;}
-    function setTableEmpty(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="8" class="empty-state">No orders found for this filter.</td></tr>`;}
-    function setTableError(msg){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="8" class="empty-state">${msg}</td></tr>`;}
+    function setTableLoading(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="9" class="empty-state">Loading orders…</td></tr>`;}
+    function setTableEmpty(){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="9" class="empty-state">No orders found for this filter.</td></tr>`;}
+    function setTableError(msg){document.getElementById('orders-table-body').innerHTML=`<tr><td colspan="9" class="empty-state">${msg}</td></tr>`;}
 
     function renderTable(){
       const tbody=document.getElementById('orders-table-body');
@@ -180,6 +181,7 @@
         const amount=o.shipmentCost!=null?`$${Number(o.shipmentCost).toFixed(2)}`:'—';
         const payment=o.paymentMethod||'—';
         const date=o.orderDate?formatDate(o.orderDate):'—';
+        const cancelBtn=`<button class="btn-cancel" onclick="deleteOrder('${encodeURIComponent(o.trackingID)}')">Cancel</button>`;
         return `<tr>
           <td>${o.trackingID||'—'}</td>
           <td>${typeBadge}</td>
@@ -189,6 +191,7 @@
           <td>${amount}</td>
           <td>${payment}</td>
           <td>${date}</td>
+          <td class="action-cell">${cancelBtn}</td>
         </tr>`;
       }).join('');
       tbody.innerHTML=rows;
@@ -202,6 +205,22 @@
     function formatRoute(origin,destination,method){const o=origin||'—';const d=destination||'—';const base=`${o} → ${d}`;return method?`${base} (${method})`:base;}
     function formatDate(value){const d=new Date(value);if(Number.isNaN(d.getTime()))return'—';return d.toLocaleString(undefined,{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
     function capitalize(value){if(!value)return value;return value.charAt(0).toUpperCase()+value.slice(1);}
+
+    async function deleteOrder(trackingIDEncoded){
+      const trackingID=decodeURIComponent(trackingIDEncoded);
+      if(!trackingID) return;
+      if(!confirm('Delete this order permanently?')) return;
+      try{
+        const res=await fetch(`/api/orders/${encodeURIComponent(trackingID)}`,{method:'DELETE'});
+        if(!res.ok) throw new Error(await res.text());
+        // Remove from local array and re-render
+        allOrders=allOrders.filter(o=>String(o.trackingID)!==String(trackingID));
+        renderTable();
+      }catch(err){
+        console.error(err);
+        showError(err.message||'Failed to delete order.');
+      }
+    }
   </script>
 </body>
 </html>
