@@ -4,12 +4,12 @@
 <meta charset="utf-8" />
 <title>Middle East — Neon Land, Navy Sea</title>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js"></script>
-<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css" rel="stylesheet" />
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js" (https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js%22)></script>
+<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css" (https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css%22) rel="stylesheet" />
 <style>
   body { margin:0; padding:0; background:#0a1a3f; }
   #map { position:absolute; top:0; bottom:0; width:100%; }
-
+ 
   .mapboxgl-popup { padding-bottom: 8px; }
   .mapboxgl-popup-content {
     font: 600 12px/1.2 "Helvetica Neue", Arial, sans-serif;
@@ -21,28 +21,28 @@
     letter-spacing: .2px;
   }
   .mapboxgl-popup-tip { border-top-color: rgba(10,26,63,0.92) !important; }
-
+ 
   .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
 </style>
 </head>
 <body>
 <div id="map"></div>
 <div id="intro-shield" style="position:fixed;inset:0;z-index:999999;background:transparent;"></div>
-
+ 
 <script>
   mapboxgl.accessToken = 'pk.eyJ1IjoieG15b290IiwiYSI6ImNqOXdhMDR2OTU4dTgycXBnejAycTc2Z3AifQ.IbKaD_XfuTq69TO9b06e6A';
-
+ 
   var ME_BOUNDS = [[25, 12], [60, 38]];
   var NAVY = '#0a1a3f';
   var NEON = '#00e5ff';
   var HOVER = '#66f0ff';
-
+ 
   var ME_COUNTRIES = [
     'Bahrain','Egypt','Iran','Iraq','Israel','Jordan',
     'Kuwait','Lebanon','Oman','Palestine','Qatar','Saudi Arabia',
     'Syria','Turkey','United Arab Emirates','Yemen'
   ];
-
+ 
   var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9',
@@ -52,7 +52,7 @@
     bearing: -8,
     pitch: 30
   });
-
+ 
   function disableAllInteractions(){
     map.dragPan.disable();
     map.scrollZoom.disable();
@@ -79,17 +79,17 @@
     var s = document.getElementById('intro-shield');
     if(s && s.parentNode) s.parentNode.removeChild(s);
   }
-
+ 
   map.on('load', function () {
     disableAllInteractions();
     installShieldHandlers();
-
+ 
     var introDuration = 4300;
     setTimeout(function () {
       var targetBounds = new mapboxgl.LngLatBounds(ME_BOUNDS);
       var targetCenter = targetBounds.getCenter();
       var targetZoom = 5.4;
-
+ 
       map.easeTo({
         center: targetCenter,
         zoom: targetZoom,
@@ -100,7 +100,7 @@
           return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
       });
-
+ 
       setTimeout(function(){
         removeShield();
         enablePanOnly();  // keep pan, let page scroll pass through
@@ -111,15 +111,15 @@
         ]);
       }, introDuration + 150);
     }, 150);
-
+ 
     var layers = map.getStyle().layers || [];
-
+ 
     layers.forEach(function (layer) {
       if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
         try { map.setLayoutProperty(layer.id, 'visibility', 'none'); } catch(e){}
       }
     });
-
+ 
     layers.forEach(function (layer) {
       var id = layer.id;
       var keep =
@@ -131,7 +131,7 @@
         try { map.setLayoutProperty(id, 'visibility', 'none'); } catch(e){}
       }
     });
-
+ 
     layers.forEach(function (layer) {
       var id = layer.id;
       if (layer.type === 'background') {
@@ -153,9 +153,9 @@
         map.setPaintProperty(id, 'line-opacity', 0.6);
       }
     });
-
+ 
     map.addSource('countries', { type:'vector', url:'mapbox://mapbox.country-boundaries-v1' });
-
+ 
     map.addLayer({
       id: 'country-fills',
       type: 'fill',
@@ -164,7 +164,7 @@
       paint: { 'fill-color': NEON, 'fill-opacity': 0.92 },
       filter: ['in', 'name_en'].concat(ME_COUNTRIES)
     }, getTopWaterLayerId());
-
+ 
     map.addLayer({
       id: 'country-borders-navy',
       type: 'line',
@@ -173,7 +173,7 @@
       paint: { 'line-color': NAVY, 'line-width': 1.8, 'line-opacity': 0.9 },
       filter: ['in', 'name_en'].concat(ME_COUNTRIES)
     });
-
+ 
     map.addLayer({
       id: 'country-fills-hover',
       type: 'fill',
@@ -182,14 +182,14 @@
       paint: { 'fill-color': HOVER, 'fill-opacity': 0.9 },
       filter: ['==','name_en','']
     });
-
+ 
     var popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
     map.on('mousemove', 'country-fills', function (e) {
       if (!e.features || !e.features.length) return;
       var f = e.features[0];
       var name = f.properties && (f.properties.name_en || f.properties.name);
       var lngLat = e.lngLat;
-
+ 
       map.setFilter('country-fills-hover', ['==','name_en', name]);
       if (lngLat.lng < ME_BOUNDS[0][0] || lngLat.lng > ME_BOUNDS[1][0] ||
           lngLat.lat < ME_BOUNDS[0][1] || lngLat.lat > ME_BOUNDS[1][1]) {
@@ -201,7 +201,7 @@
       map.setFilter('country-fills-hover', ['==', 'name_en', '']);
       popup.remove();
     });
-
+ 
     function getTopWaterLayerId() {
       var waterLayers = (map.getStyle().layers || []).filter(function (l) {
         return l.id.indexOf('water') > -1;
