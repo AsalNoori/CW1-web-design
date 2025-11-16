@@ -13,6 +13,8 @@
         justify-content: space-between;
         align-items: center;
         padding: 18px 40px;
+        position: relative;
+        z-index: 1000;
     }
     
     .navigation.has-right-aligned-nav {
@@ -125,6 +127,62 @@
         border: none;
         cursor: pointer;
     }
+
+    /* Hamburger (mobile) */
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 5px;
+        z-index: 3000;
+    }
+
+    .hamburger div {
+        width: 28px;
+        height: 3px;
+        background: white;
+        border-radius: 3px;
+        transition: 0.3s;
+    }
+
+    /* Mobile menu styles */
+    @media (max-width: 850px) {
+        .nav-links {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #0a1a3f;
+            flex-direction: column;
+            padding: 20px 0;
+            gap: 12px;
+
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .nav-links.show {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .nav-links a,
+        .nav-links button {
+            width: 85%;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .hamburger {
+            display: flex;
+        }
+    }
 </style>
 
 <header>
@@ -132,6 +190,12 @@
         <a href="home.html" class="logo" aria-label="Home">
            <img src="logo.png" alt="Company Logo">
         </a>
+
+        <div class="hamburger" id="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
 
         <div class="nav-links">
             <a href="AboutUs.html" class="nav-button" id="aboutLink">About Us</a>
@@ -147,6 +211,23 @@
 </header>
 
 <script>
+    // Mobile menu toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinksEl = document.querySelector('.nav-links');
+    if (hamburger && navLinksEl) {
+        hamburger.addEventListener('click', () => {
+            navLinksEl.classList.toggle('show');
+        });
+        // Close menu when a link/button is clicked on mobile
+        navLinksEl.querySelectorAll('a, button').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 850) {
+                    navLinksEl.classList.remove('show');
+                }
+            });
+        });
+    }
+
     (function () {
         const accountLink = document.getElementById('accountLink');
         const settingsLink = document.getElementById('settingsLink');
@@ -157,8 +238,25 @@
         const servicesBtn = document.getElementById('servicesBtn');
         const currentPath = window.location.pathname.toLowerCase();
 
-        const show = (el, display='inline-flex') => el && (el.style.display = display);
-        const hide = (el) => el && (el.style.display = 'none');
+        // Visibility helpers that adapt to mobile menu behavior
+        const show = (el, display='inline-flex') => {
+            if (!el) return;
+            if (window.innerWidth <= 850) {
+                el.classList.add('show');
+                el.style.display = 'inline-flex';
+            } else {
+                el.style.display = display;
+            }
+        };
+        const hide = (el) => {
+            if (!el) return;
+            if (window.innerWidth <= 850) {
+                el.classList.remove('show');
+                el.style.display = 'none';
+            } else {
+                el.style.display = 'none';
+            }
+        };
 
         const onServicesPage = currentPath.includes('/services') || currentPath.includes('services.html');
 
