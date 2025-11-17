@@ -358,28 +358,84 @@
     $('#cardNumber').on('input', function() {
         let val = $(this).val().replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim();
         $(this).val(val.substring(0,19));
+        $(this).css('border-color', '#ccc'); // Reset border color on input
     });
     $('#expiryDate').on('input', function() {
         let val = $(this).val().replace(/\D/g,'');
         if (val.length > 4) val = val.substring(0, 4);
 
         let month = val.substring(0, 2);
+        // Keep user input as-is, only format it (don't auto-correct invalid values)
         if (month.length === 2) {
-            let m = parseInt(month, 10);
-            if (m < 1) m = 1;
-            if (m > 12) m = 12;
-            month = m.toString().padStart(2, '0');
+            month = month.padStart(2, '0');
         }
+        
         if (val.length > 2) {
-        val = month + '/' + val.substring(2);
+            val = month + '/' + val.substring(2);
         } else {
             val = month;
         }
 
         $(this).val(val);
+        
+        // Validate month in real-time and show red border if invalid
+        if (val.length >= 2) {
+            const m = parseInt(val.substring(0, 2), 10);
+            if (m < 1 || m > 12) {
+                $(this).css('border-color', '#dc3545');
+            } else {
+                $(this).css('border-color', '#ccc');
+            }
+        } else {
+            $(this).css('border-color', '#ccc');
+        }
+    });
+
+    // Validate expiry date on blur
+    $('#expiryDate').on('blur', function() {
+        const expiry = $(this).val();
+        if (!expiry || !/^\d{2}\/\d{2}$/.test(expiry)) {
+            return;
+        }
+        
+        const parts = expiry.split('/');
+        const month = parseInt(parts[0], 10);
+        const year = parseInt(parts[1], 10);
+        const currentYear = new Date().getFullYear() % 100; // Last 2 digits
+        const currentMonth = new Date().getMonth() + 1;
+        const fullYear = 2000 + year; // Convert YY to YYYY
+        
+        // Validate month is 1-12
+        if (month < 1 || month > 12) {
+            $(this).css('border-color', '#dc3545');
+            alert('Invalid month. Month must be between 01 and 12.');
+            return;
+        }
+        
+        // Validate year is 2025 or later
+        if (fullYear < 2025) {
+            $(this).css('border-color', '#dc3545');
+            alert('Invalid year. Year must be 2025 or later.');
+            return;
+        }
+        
+        // Check if card is expired (if year is current year, month must be current or future)
+        if (fullYear === new Date().getFullYear() && month < currentMonth) {
+            $(this).css('border-color', '#dc3545');
+            alert('Card has expired. Please enter a valid expiry date.');
+            return;
+        }
+        
+        // Valid expiry date
+        $(this).css('border-color', '#28a745');
     });
     $('#cvv').on('input', function() {
         $(this).val($(this).val().replace(/\D/g,'').substring(0,3));
+        $(this).css('border-color', '#ccc'); // Reset border color on input
+    });
+    
+    $('#cardName').on('input', function() {
+        $(this).css('border-color', '#ccc'); // Reset border color on input
     });
 
     const amount = pendingOrder?.shipmentCost || parseFloat(localStorage.getItem('shipmentCost') || 0);
@@ -391,10 +447,60 @@
         const expiry = $('#expiryDate').val();
         const cvv = $('#cvv').val();
         const name = $('#cardName').val().trim();
-        if(!card || card.length<13 || card.length>19){alert('Invalid card'); return false;}
-        if(!/^\d{2}\/\d{2}$/.test(expiry)){alert('Invalid expiry'); return false;}
-        if(!cvv || cvv.length<3 || cvv.length>3){alert('Invalid CVV'); return false;}
-        if(!name){alert('Enter name'); return false;}
+        
+        if(!card || card.length<13 || card.length>19){
+            alert('Invalid card number');
+            $('#cardNumber').css('border-color', '#dc3545');
+            return false;
+        }
+        
+        if(!/^\d{2}\/\d{2}$/.test(expiry)){
+            alert('Invalid expiry date format. Please use MM/YY format.');
+            $('#expiryDate').css('border-color', '#dc3545');
+            return false;
+        }
+        
+        // Validate month and year
+        const parts = expiry.split('/');
+        const month = parseInt(parts[0], 10);
+        const year = parseInt(parts[1], 10);
+        const fullYear = 2000 + year; // Convert YY to YYYY
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth() + 1;
+        
+        // Check month is valid (1-12)
+        if (month < 1 || month > 12) {
+            alert('Invalid month. Month must be between 01 and 12.');
+            $('#expiryDate').css('border-color', '#dc3545');
+            return false;
+        }
+        
+        // Check year is 2025 or later
+        if (fullYear < 2025) {
+            alert('Invalid year. Year must be 2025 or later.');
+            $('#expiryDate').css('border-color', '#dc3545');
+            return false;
+        }
+        
+        // Check if card is expired
+        if (fullYear < currentYear || (fullYear === currentYear && month < currentMonth)) {
+            alert('Card has expired. Please enter a valid expiry date.');
+            $('#expiryDate').css('border-color', '#dc3545');
+            return false;
+        }
+        
+        if(!cvv || cvv.length<3 || cvv.length>3){
+            alert('Invalid CVV');
+            $('#cvv').css('border-color', '#dc3545');
+            return false;
+        }
+        
+        if(!name){
+            alert('Please enter name on card');
+            $('#cardName').css('border-color', '#dc3545');
+            return false;
+        }
+        
         return true;
     }
     function validateCODForm() {
