@@ -420,6 +420,93 @@ app.delete('/api/orders/:trackingID', (req, res) => {
     });
 });
 
+// Admin endpoints to accept/reject orders
+app.post('/api/orders/:trackingID/accept', (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated || session.role !== 'admin') {
+        return res.status(401).send('Admin access required.');
+    }
+
+    const { trackingID } = req.params;
+    if (!trackingID) {
+        return res.status(400).send('Tracking ID is required.');
+    }
+
+    // Update IndividualOrders
+    con.query(
+        `UPDATE IndividualOrders SET OrderStatus = 'Accepted' WHERE TrackingID = ?`,
+        [trackingID],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Failed to accept order.');
+            }
+            if (result.affectedRows > 0) {
+                return res.json({ trackingID, status: 'Accepted' });
+            }
+
+            // Update BusinessOrders
+            con.query(
+                `UPDATE BusinessOrders SET OrderStatus = 'Accepted' WHERE TrackingID = ?`,
+                [trackingID],
+                (bizErr, bizResult) => {
+                    if (bizErr) {
+                        console.error(bizErr);
+                        return res.status(500).send('Failed to accept order.');
+                    }
+                    if (bizResult.affectedRows > 0) {
+                        return res.json({ trackingID, status: 'Accepted' });
+                    }
+                    return res.status(404).send('Order not found.');
+                }
+            );
+        }
+    );
+});
+
+app.post('/api/orders/:trackingID/reject', (req, res) => {
+    const session = getSession(req);
+    if (!session.authenticated || session.role !== 'admin') {
+        return res.status(401).send('Admin access required.');
+    }
+
+    const { trackingID } = req.params;
+    if (!trackingID) {
+        return res.status(400).send('Tracking ID is required.');
+    }
+
+    // Update IndividualOrders
+    con.query(
+        `UPDATE IndividualOrders SET OrderStatus = 'Not Accepted' WHERE TrackingID = ?`,
+        [trackingID],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Failed to reject order.');
+            }
+            if (result.affectedRows > 0) {
+                return res.json({ trackingID, status: 'Not Accepted' });
+            }
+
+            // Update BusinessOrders
+            con.query(
+                `UPDATE BusinessOrders SET OrderStatus = 'Not Accepted' WHERE TrackingID = ?`,
+                [trackingID],
+                (bizErr, bizResult) => {
+                    if (bizErr) {
+                        console.error(bizErr);
+                        return res.status(500).send('Failed to reject order.');
+                    }
+                    if (bizResult.affectedRows > 0) {
+                        return res.json({ trackingID, status: 'Not Accepted' });
+                    }
+                    return res.status(404).send('Order not found.');
+                }
+            );
+        }
+    );
+});
+
 app.post('/api/orders', (req, res) => {
     const { orderType, trackingID, order, paymentMethod, amount } = req.body || {};
     const session = getSession(req);
@@ -435,7 +522,7 @@ app.post('/api/orders', (req, res) => {
     const shipmentCost = order.shipmentCost || parseFloat(amount) || 0;
     const sessionUserId = session.role === 'user' ? session.userId : null;
     const userId = order.userId || sessionUserId || null;
-    const status = order.status || 'Pending';
+    const status = order.status || 'Waiting for Approval';
 
     if (orderType === 'individual') {
         const sender = order.sender || {};

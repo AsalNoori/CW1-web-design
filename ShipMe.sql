@@ -26,7 +26,7 @@ CREATE TABLE IndividualOrders (
     ShippingMethod ENUM('Air', 'Sea') NOT NULL,     
     ShipmentCost DECIMAL(10,2) NOT NULL,
     PaymentMethod ENUM('Credit/Debit Card', 'Cash on Delivery') NOT NULL,
-    OrderStatus ENUM('Pending', 'In-Transit', 'Delivered', 'Cancelled') DEFAULT 'Pending',
+    OrderStatus ENUM('Waiting for Approval', 'Accepted', 'Not Accepted', 'Pending', 'In-Transit', 'Delivered', 'Cancelled') DEFAULT 'Waiting for Approval',
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE TABLE BusinessOrders (
@@ -53,6 +53,6 @@ CREATE TABLE BusinessOrders (
     ShippingMethod ENUM('Air', 'Sea') NOT NULL,
     ShipmentCost DECIMAL(10,2) NOT NULL,
     PaymentMethod ENUM('Credit/Debit Card', 'Cash on Delivery') NOT NULL,
-    OrderStatus ENUM('Pending', 'In-Transit', 'Delivered', 'Cancelled') DEFAULT 'Pending',
+    OrderStatus ENUM('Waiting for Approval', 'Accepted', 'Not Accepted', 'Pending', 'In-Transit', 'Delivered', 'Cancelled') DEFAULT 'Waiting for Approval',
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

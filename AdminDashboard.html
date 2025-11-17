@@ -314,6 +314,21 @@
             letter-spacing: 0.3px;
         }
 
+        .tracking-status-badge.waiting-for-approval {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .tracking-status-badge.accepted {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .tracking-status-badge.not-accepted {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
         .tracking-status-badge.pending {
             background: rgba(255, 193, 7, 0.2);
             color: #ffc107;
@@ -332,6 +347,48 @@
         .tracking-status-badge.cancelled {
             background: rgba(244, 67, 54, 0.2);
             color: #f44336;
+        }
+
+        .btn-accept {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.4);
+            color: #81c784;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            margin-right: 8px;
+        }
+
+        .btn-accept:hover {
+            background: rgba(76, 175, 80, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-reject {
+            background: rgba(255, 152, 0, 0.2);
+            border: 1px solid rgba(255, 152, 0, 0.4);
+            color: #ffb74d;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            margin-right: 8px;
+        }
+
+        .btn-reject:hover {
+            background: rgba(255, 152, 0, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .tracking-summary {
@@ -505,12 +562,11 @@
                             <th>Status</th>
                             <th>Date</th>
                             <th>Recipient</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="orders-table-body">
                         <tr>
-                            <td colspan="10" class="empty-state">Loading orders…</td>
+                            <td colspan="9" class="empty-state">Loading orders…</td>
                         </tr>
                     </tbody>
                 </table>
@@ -610,7 +666,7 @@
             if (!tbody) {
                 return;
             }
-            tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading orders…</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Loading orders…</td></tr>';
         }
 
         function setTableEmpty() {
@@ -618,7 +674,7 @@
             if (!tbody) {
                 return;
             }
-            tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No orders found for this filter.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No orders found for this filter.</td></tr>';
         }
 
         function setTableError(message) {
@@ -626,7 +682,7 @@
             if (!tbody) {
                 return;
             }
-            tbody.innerHTML = `<tr><td colspan="10" class="empty-state">${message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="empty-state">${message}</td></tr>`;
         }
 
         function toggleError(message) {
@@ -663,7 +719,7 @@
                 return;
             }
 
-            const rows = filtered.map(order => {
+                const rows = filtered.map(order => {
                 const routeLabel = formatRoute(order.origin, order.destination, order.shippingMethod);
                 const weightLabel = formatWeight(order.weight);
                 const amountLabel = formatAmount(order.shipmentCost);
@@ -671,6 +727,19 @@
                 const statusClass = getStatusClass(statusLabel);
                 const dateLabel = formatDate(order.orderDate);
                 const recipient = order.receiverName || order.businessName || '—';
+                
+                // Show accept/reject buttons only for "Waiting for Approval" status - display inline in status cell
+                const isWaitingForApproval = (statusLabel || '').toLowerCase().replace(/\s+/g, '-') === 'waiting-for-approval';
+                let statusCell = `<span class="tracking-status-badge ${statusClass}">${formatStatus(statusLabel)}</span>`;
+                if (isWaitingForApproval) {
+                    statusCell += `
+                        <div class="action-buttons" style="margin-top: 8px; display: flex; gap: 8px;">
+                            <button class="btn-accept" onclick="adminAcceptOrder('${encodeURIComponent(order.trackingID)}')">Accept</button>
+                            <button class="btn-reject" onclick="adminRejectOrder('${encodeURIComponent(order.trackingID)}')">Reject</button>
+                            <button class="btn-cancel" onclick="adminDeleteOrder('${encodeURIComponent(order.trackingID)}')">Delete</button>
+                        </div>
+                    `;
+                }
 
                 return `
                     <tr>
@@ -680,10 +749,9 @@
                         <td>${weightLabel}</td>
                         <td>${amountLabel}</td>
                         <td>${order.paymentMethod || '—'}</td>
-                        <td><span class="tracking-status-badge ${statusClass}">${formatStatus(statusLabel)}</span></td>
+                        <td>${statusCell}</td>
                         <td>${dateLabel}</td>
                         <td>${recipient}</td>
-                        <td><button class="btn-cancel" onclick="adminDeleteOrder('${encodeURIComponent(order.trackingID)}')">Cancel</button></td>
                     </tr>
                 `;
             }).join('');
@@ -772,12 +840,18 @@
         }
 
         function getStatusClass(status) {
-            const normalized = (status || '').toLowerCase();
+            const normalized = (status || '').toLowerCase().replace(/\s+/g, '-');
             switch (normalized) {
+                case 'waiting-for-approval':
+                    return 'waiting-for-approval';
+                case 'accepted':
+                    return 'accepted';
+                case 'not-accepted':
+                    return 'not-accepted';
                 case 'delivered':
                     return 'delivered';
                 case 'in-transit':
-                case 'in transit':
+                case 'in-transit':
                     return 'in-transit';
                 case 'cancelled':
                     return 'cancelled';
@@ -904,6 +978,34 @@
                     </div>
                 </div>
             `;
+        }
+
+        async function adminAcceptOrder(encodedId) {
+            const trackingID = decodeURIComponent(encodedId);
+            if (!trackingID) return;
+            if (!confirm('Accept this order?')) return;
+            try {
+                const res = await fetch(`/api/orders/${encodeURIComponent(trackingID)}/accept`, { method: 'POST' });
+                if (!res.ok) throw new Error(await res.text());
+                await loadOrders();
+            } catch (err) {
+                console.error(err);
+                toggleError(err.message || 'Failed to accept order.');
+            }
+        }
+
+        async function adminRejectOrder(encodedId) {
+            const trackingID = decodeURIComponent(encodedId);
+            if (!trackingID) return;
+            if (!confirm('Reject this order?')) return;
+            try {
+                const res = await fetch(`/api/orders/${encodeURIComponent(trackingID)}/reject`, { method: 'POST' });
+                if (!res.ok) throw new Error(await res.text());
+                await loadOrders();
+            } catch (err) {
+                console.error(err);
+                toggleError(err.message || 'Failed to reject order.');
+            }
         }
 
         async function adminDeleteOrder(encodedId) {
