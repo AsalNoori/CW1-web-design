@@ -369,8 +369,8 @@
     });
 
     const amount = pendingOrder?.shipmentCost || parseFloat(localStorage.getItem('shipmentCost') || 0);
-    $('.total-amount').text(`$${amount.toFixed(2)}`);
-    $('.pay-button .button-text').text(`Pay $${amount.toFixed(2)}`);
+    $('.total-amount').text(`AED ${amount.toFixed(2)}`);
+    $('.pay-button .button-text').text(`Pay AED ${amount.toFixed(2)}`);
 
     function validateCardForm() {
         const card = $('#cardNumber').val().replace(/\s/g,'');

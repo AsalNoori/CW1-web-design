@@ -155,7 +155,7 @@
         <div class="confirmation-card">
             <div class="status-icon">✅</div>
             <h1>Order Completed!</h1>
-            <p class="lead">Thank you for booking with Ship Me. Keep your tracking details handy to follow your shipment.</p>
+            <p class="lead">Thank you for booking with ShipMe. Keep your tracking details handy to follow your shipment.</p>
 
             <div class="summary">
                 <div class="summary-row">
@@ -172,7 +172,7 @@
                 </div>
                 <div class="summary-row">
                     <span>Total Amount</span>
-                    <strong id="summary-amount">$0.00</strong>
+                    <strong id="summary-amount">AED 0.00</strong>
                 </div>
                 <div class="summary-row" id="summary-weight-row" style="display: none;">
                     <span>Shipment Weight</span>
@@ -230,7 +230,7 @@
                     }
 
                     if (data.amount) {
-                        amountEl.textContent = `$${parseFloat(data.amount).toFixed(2)}`;
+                        amountEl.textContent = `AED ${parseFloat(data.amount).toFixed(2)}`;
                     }
 
                     if (data.weight) {
@@ -250,7 +250,7 @@
             } else {
                 methodEl.textContent = '—';
                 trackingEl.textContent = 'Not Available';
-                amountEl.textContent = '$0.00';
+                amountEl.textContent = 'AED 0.00';
             }
 
             async function loadOrderDetails(id) {
