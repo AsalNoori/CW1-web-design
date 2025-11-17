@@ -263,9 +263,6 @@
         function setGuestView() {
             show(aboutLink);
             if (onServicesPage) {
-                hide(servicesBtn);
-            } else {
-                show(servicesBtn);
             }
             hide(accountLink);
             hide(settingsLink);
@@ -295,14 +292,8 @@
 
                 if (session.role === 'admin') {
                     if (onAdminPage) {
-                        show(aboutLink);
-                    } else {
                         hide(aboutLink);
-                    }
-                    if (onServicesPage) {
                         hide(servicesBtn);
-                    } else {
-                        show(servicesBtn);
                     }
                     hide(accountLink);
                     hide(registerBtn);
@@ -350,11 +341,8 @@
 
                     if (onAccountPage) {
                         show(aboutLink);
-                        if (onServicesPage) {
-                            hide(servicesBtn);
-                        } else {
-                            show(servicesBtn);
-                        }
+                        show(servicesBtn);
+                        
                         hide(accountLink);
                         hide(registerBtn);
                         hide(loginBtn);
@@ -389,11 +377,8 @@
                             servicesBtn.style.marginLeft = '';
                         }
                         show(aboutLink);
-                        if (onServicesPage) {
-                            hide(servicesBtn);
-                        } else {
-                            show(servicesBtn);
-                        }
+                        show(servicesBtn);
+
                         show(accountLink);
                         hide(logoutBtn);
                         if (logoutBtn) logoutBtn.style.marginLeft = '';
