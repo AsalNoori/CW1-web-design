@@ -295,7 +295,7 @@
             </div>
 
             <button type="submit" class="pay-button">
-                <span class="button-text">Pay $0.0</span>
+                <span class="button-text">Pay AED 0.0</span>
                 <span class="button-icon">💳</span>
             </button>
         </form>
@@ -361,11 +361,25 @@
     });
     $('#expiryDate').on('input', function() {
         let val = $(this).val().replace(/\D/g,'');
-        if(val.length>=2) val = val.substring(0,2)+'/'+val.substring(2,4);
+        if (val.length > 4) val = val.substring(0, 4);
+
+        let month = val.substring(0, 2);
+        if (month.length === 2) {
+            let m = parseInt(month, 10);
+            if (m < 1) m = 1;
+            if (m > 12) m = 12;
+            month = m.toString().padStart(2, '0');
+        }
+        if (val.length > 2) {
+        val = month + '/' + val.substring(2);
+        } else {
+            val = month;
+        }
+
         $(this).val(val);
     });
     $('#cvv').on('input', function() {
-        $(this).val($(this).val().replace(/\D/g,'').substring(0,4));
+        $(this).val($(this).val().replace(/\D/g,'').substring(0,3));
     });
 
     const amount = pendingOrder?.shipmentCost || parseFloat(localStorage.getItem('shipmentCost') || 0);
@@ -379,7 +393,7 @@
         const name = $('#cardName').val().trim();
         if(!card || card.length<13 || card.length>19){alert('Invalid card'); return false;}
         if(!/^\d{2}\/\d{2}$/.test(expiry)){alert('Invalid expiry'); return false;}
-        if(!cvv || cvv.length<3 || cvv.length>4){alert('Invalid CVV'); return false;}
+        if(!cvv || cvv.length<3 || cvv.length>3){alert('Invalid CVV'); return false;}
         if(!name){alert('Enter name'); return false;}
         return true;
     }
