@@ -289,6 +289,17 @@
         const onAccountPage = currentPath.includes('/account') || currentPath.includes('account.html');
         const onAdminPage = currentPath.includes('/admindashboard') || currentPath.includes('admindashboard.html');
         const navLinks = document.querySelector('.nav-links');
+        const logoLink = document.querySelector('.logo');
+        
+        // Make logo non-clickable on admin dashboard
+        if (onAdminPage && logoLink) {
+            logoLink.removeAttribute('href');
+            logoLink.style.cursor = 'default';
+            logoLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
 
                 if (session.role === 'admin') {
                     if (onAdminPage) {
