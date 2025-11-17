@@ -143,13 +143,13 @@
                     <span>Track</span>
                 </button>
             </div>
-      <a href="ChooseType.html" class="pill-button pill-button--primary place_order_button" aria-label="Book shipment">
+      <button type="button" id="bookShipmentBtn" class="pill-button pill-button--primary place_order_button" aria-label="Book shipment">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M3 12h7l2-3 2 6 2-3h5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
           <path d="M3 16h6M3 8h4" stroke="currentColor" stroke-linecap="round"></path>
         </svg>
                 <span>Book Shipment</span>
-            </a>
+            </button>
     </div>
   </div>
  
@@ -306,6 +306,29 @@
 
         <script>
     document.addEventListener('DOMContentLoaded',function(){
+      // Book Shipment button - check authentication
+      const bookShipmentBtn = document.getElementById('bookShipmentBtn');
+      if(bookShipmentBtn){
+        bookShipmentBtn.addEventListener('click', async function(){
+          try {
+            const response = await fetch('/api/session');
+            const sessionData = await response.json();
+            
+            if(sessionData && sessionData.authenticated && sessionData.role){
+              // User is signed in, go to ChooseType page
+              window.location.href = 'ChooseType.html';
+            } else {
+              // User is not signed in, redirect to sign in page
+              window.location.href = 'signIn.html';
+            }
+          } catch(error) {
+            // If there's an error checking session, assume not signed in
+            console.error('Error checking session:', error);
+            window.location.href = 'signIn.html';
+          }
+        });
+      }
+      
       const trackButton=document.getElementById('trackButton');
       const trackingInput=document.getElementById('trackingIdInput');
       if(trackButton&&trackingInput){
