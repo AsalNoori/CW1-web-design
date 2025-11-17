@@ -140,6 +140,50 @@
             color: #0056b3;
             text-decoration: underline;
         }
+
+        .phone-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .country-code-select {
+            flex: 0 0 auto;
+            width: 100px;
+            padding: 12px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            background-color: #fff;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 30px;
+            transition: border-color 0.3s;
+        }
+
+        .country-code-select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
+
+        .phone-number-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .phone-number-input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
     </style>
 
 <body>
@@ -188,17 +232,37 @@
 
             <div class="input-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="Please enter a valid email address (e.g., example@gmail.com)" required>
             </div>
 
             <div class="input-group">
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" required>
+                <div class="phone-input-group">
+                    <select id="countryCode" name="countryCode" class="country-code-select" required>
+                        <option value="+93">+93 (AF)</option>
+                        <option value="+973">+973 (BH)</option>
+                        <option value="+20">+20 (EG)</option>
+                        <option value="+98">+98 (IR)</option>
+                        <option value="+964">+964 (IQ)</option>
+                        <option value="+962">+962 (JO)</option>
+                        <option value="+965">+965 (KW)</option>
+                        <option value="+961">+961 (LB)</option>
+                        <option value="+968">+968 (OM)</option>
+                        <option value="+970">+970 (PS)</option>
+                        <option value="+974">+974 (QA)</option>
+                        <option value="+966">+966 (SA)</option>
+                        <option value="+963">+963 (SY)</option>
+                        <option value="+90">+90 (TR)</option>
+                        <option value="+971">+971 (AE)</option>
+                        <option value="+967">+967 (YE)</option>
+                    </select>
+                    <input type="tel" id="phone" name="phone" class="phone-number-input" placeholder="9......" pattern="[0-9]*" inputmode="numeric" required>
+                </div>
             </div>
 
             <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <label for="password">Password (at least 13 characters)</label>
+                <input type="password" id="password" name="password" minlength="13" required>
             </div>
 
             <button type="submit" class="submit-btn">Register</button>
@@ -213,6 +277,170 @@
 
     <div id="footer"></div>
 
+    <script>
+        function isValidEmail(email) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+        
+        // Phone number length limits by country code (Middle East only)
+        const phoneLengths = {
+            "+93": { min: 9, max: 9 },   // Afghanistan
+            "+973": { min: 8, max: 8 },  // Bahrain
+            "+20": { min: 10, max: 10 }, // Egypt
+            "+98": { min: 10, max: 10 }, // Iran
+            "+964": { min: 10, max: 10 }, // Iraq
+            "+962": { min: 9, max: 9 },  // Jordan
+            "+965": { min: 8, max: 8 },  // Kuwait
+            "+961": { min: 8, max: 8 },  // Lebanon
+            "+968": { min: 8, max: 8 },  // Oman
+            "+970": { min: 9, max: 9 },  // Palestine
+            "+974": { min: 8, max: 8 },  // Qatar
+            "+966": { min: 9, max: 9 },  // Saudi Arabia
+            "+963": { min: 9, max: 9 },  // Syria
+            "+90": { min: 10, max: 10 }, // Turkey
+            "+971": { min: 9, max: 9 },  // UAE
+            "+967": { min: 9, max: 9 }   // Yemen
+        };
+        
+        const registrationForm = document.querySelector(".registration-form");
+        const emailField = document.getElementById("email");
+        const phoneField = document.getElementById("phone");
+        const countryCodeSelect = document.getElementById("countryCode");
+        const passwordField = document.getElementById("password");
+        
+        // Function to update phone field maxlength based on country code
+        function updatePhoneMaxLength() {
+            if (countryCodeSelect && phoneField) {
+                const selectedCode = countryCodeSelect.value;
+                const lengthInfo = phoneLengths[selectedCode];
+                if (lengthInfo) {
+                    phoneField.setAttribute("maxlength", lengthInfo.max);
+                    phoneField.setAttribute("data-min-length", lengthInfo.min);
+                    phoneField.setAttribute("data-max-length", lengthInfo.max);
+                }
+            }
+        }
+        
+        // Update maxlength when country code changes
+        if (countryCodeSelect) {
+            countryCodeSelect.addEventListener("change", function() {
+                updatePhoneMaxLength();
+                // Clear phone field when country changes
+                if (phoneField) {
+                    phoneField.value = "";
+                    phoneField.style.borderColor = "#ccc";
+                }
+            });
+            // Set initial maxlength
+            updatePhoneMaxLength();
+        }
+        
+        // Restrict phone input to numbers only
+        if (phoneField) {
+            phoneField.addEventListener("input", function(e) {
+                // Remove any non-numeric characters
+                this.value = this.value.replace(/[^0-9]/g, "");
+                
+                // Enforce maxlength
+                const maxLength = parseInt(this.getAttribute("maxlength")) || 15;
+                if (this.value.length > maxLength) {
+                    this.value = this.value.substring(0, maxLength);
+                }
+            });
+            
+            phoneField.addEventListener("keypress", function(e) {
+                // Allow only numbers
+                const char = String.fromCharCode(e.which);
+                if (!/[0-9]/.test(char)) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Enforce maxlength
+                const maxLength = parseInt(this.getAttribute("maxlength")) || 15;
+                if (this.value.length >= maxLength) {
+                    e.preventDefault();
+                }
+            });
+            
+            phoneField.addEventListener("paste", function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData("text");
+                const numbersOnly = paste.replace(/[^0-9]/g, "");
+                const maxLength = parseInt(this.getAttribute("maxlength")) || 15;
+                this.value = numbersOnly.substring(0, maxLength);
+            });
+        }
+        
+        if (registrationForm && emailField) {
+            registrationForm.addEventListener("submit", function(e) {
+                const email = emailField.value.trim();
+                
+                // Validate email format
+                if (!isValidEmail(email)) {
+                    e.preventDefault();
+                    emailField.style.borderColor = "#dc3545";
+                    emailField.focus();
+                    alert("Please enter a valid email address (e.g., example@gmail.com)");
+                    return false;
+                }
+                
+                // Validate password length (at least 13 characters)
+                if (passwordField && passwordField.value.length < 13) {
+                    e.preventDefault();
+                    passwordField.style.borderColor = "#dc3545";
+                    passwordField.focus();
+                    alert("Password must be at least 13 characters long.");
+                    return false;
+                }
+                
+                // Validate phone number based on country code
+                if (phoneField && countryCodeSelect) {
+                    const selectedCode = countryCodeSelect.value;
+                    const lengthInfo = phoneLengths[selectedCode];
+                    const phoneDigits = phoneField.value.replace(/[^0-9]/g, "");
+                    
+                    if (lengthInfo) {
+                        if (phoneDigits.length < lengthInfo.min || phoneDigits.length > lengthInfo.max) {
+                            e.preventDefault();
+                            phoneField.style.borderColor = "#dc3545";
+                            phoneField.focus();
+                            alert(`Please enter a valid phone number. For ${selectedCode}, the number must be ${lengthInfo.min} digits.`);
+                            return false;
+                        }
+                    } else if (phoneDigits.length < 7) {
+                        e.preventDefault();
+                        phoneField.style.borderColor = "#dc3545";
+                        phoneField.focus();
+                        alert("Please enter a valid phone number (at least 7 digits)");
+                        return false;
+                    }
+                }
+            });
+            
+            // Reset border color when user types
+            emailField.addEventListener("input", function() {
+                this.style.borderColor = "#ccc";
+            });
+            
+            if (phoneField) {
+                phoneField.addEventListener("input", function() {
+                    this.style.borderColor = "#ccc";
+                });
+            }
+            
+            if (passwordField) {
+                passwordField.addEventListener("input", function() {
+                    if (this.value.length >= 13) {
+                        this.style.borderColor = "#28a745";
+                    } else {
+                        this.style.borderColor = "#ccc";
+                    }
+                });
+            }
+        }
+    </script>
     <script>
       loadFragment("footer", "footer.html");
     </script>

@@ -5,7 +5,7 @@
 <title>Ship Me · Home</title>
 <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
 <link rel="icon" href="logo.png" type="image/png" />
-<style>
+    <style>
   :root{
     --navy:#0a1a3f;
     --navy-2:#081432;
@@ -48,7 +48,7 @@
     box-shadow:0 16px 28px rgba(28,107,255,.30);
   }
   .pill-button--primary:hover{box-shadow:0 22px 36px rgba(28,107,255,.42);filter:brightness(1.03)}
-  .pill-button--primary:active,
+        .pill-button--primary:active,
   .pill-button--outline:active{filter:brightness(0.98)}
  
   .tracking-input{
@@ -113,11 +113,11 @@
   .faq-item.active .faq-a{max-height:240px;padding:0 18px 16px}
   .faq-item .plus{transition:transform .3s}
   .faq-item.active .plus{transform:rotate(45deg)}
-</style>
-</head>
-<body>
-  <div id="header"></div>
-  <script>
+    </style>
+    </head>
+    <body>
+        <div id="header"></div>
+        <script>
     function loadFragment(targetId, url){
       return fetch(url).then(r=>r.text()).then(html=>{
         const el=document.getElementById(targetId); if(!el) return;
@@ -126,30 +126,30 @@
       }).catch(()=>{});
     }
     loadFragment("header","header.html");
-  </script>
- 
-  <div class="main-content">
-    <div class="hero-container">
-      <div id="hero">
+        </script>
+
+        <div class="main-content">
+        <div class="hero-container">
+            <div id="hero">
         <iframe src="hero.html" class="hero-iframe" title="Hero" loading="eager"></iframe>
-      </div>
-      <div class="tracking-container">
+            </div>
+            <div class="tracking-container">
         <input type="text" id="trackingIdInput" class="tracking-input" placeholder="Tracking ID" aria-label="Tracking ID">
         <button type="button" class="pill-button pill-button--outline submit-trackingID" id="trackButton" aria-label="Track shipment">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="11" cy="11" r="7" stroke="currentColor"></circle>
             <path d="M20 20L16.6 16.6" stroke="currentColor" stroke-linecap="round"></path>
           </svg>
-          <span>Track</span>
-        </button>
-      </div>
+                    <span>Track</span>
+                </button>
+            </div>
       <a href="ChooseType.html" class="pill-button pill-button--primary place_order_button" aria-label="Book shipment">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M3 12h7l2-3 2 6 2-3h5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
           <path d="M3 16h6M3 8h4" stroke="currentColor" stroke-linecap="round"></path>
         </svg>
-        <span>Book Shipment</span>
-      </a>
+                <span>Book Shipment</span>
+            </a>
     </div>
   </div>
  
@@ -300,11 +300,11 @@
       </div>
     </div>
   </section>
- 
-  <div id="footer"></div>
+
+        <div id="footer"></div>
   <script>loadFragment("footer","footer.html");</script>
- 
-  <script>
+
+        <script>
     document.addEventListener('DOMContentLoaded',function(){
       const trackButton=document.getElementById('trackButton');
       const trackingInput=document.getElementById('trackingIdInput');
@@ -344,8 +344,8 @@
           document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('active'));
           if(!open){item.classList.add('active')}
         });
-      });
-    });
-  </script>
-</body>
+                });
+            });
+            </script>
+    </body>
 </html>

@@ -206,7 +206,7 @@ select {
             </div>
             <div class="form-group half-width">
                 <label for="s_email">Email</label>
-                <input type="email" id="s_email" name="s_email" required>
+                <input type="email" id="s_email" name="s_email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="Please enter a valid email address (e.g., example@gmail.com)" required>
             </div>
         </div>
         
@@ -304,7 +304,7 @@ select {
             </div>
             <div class="form-group half-width">
                 <label for="r_email">Email</label>
-                <input type="email" id="r_email" name="r_email" required>
+                <input type="email" id="r_email" name="r_email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="Please enter a valid email address (e.g., example@gmail.com)" required>
             </div>
         </div>
         
@@ -456,7 +456,7 @@ select {
         }
         
         function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             return emailRegex.test(email);
         }
         
