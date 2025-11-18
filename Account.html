@@ -191,6 +191,12 @@
       });
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfile();
+      attachFilterHandlers();
+      loadOrders();
+    });
+
     async function loadOrders(){
       setTableLoading(); hideError(); hideSuccess();
       try{
