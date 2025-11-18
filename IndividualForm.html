@@ -496,7 +496,6 @@ select {
       const dest = document.getElementById("des").value;
       const sea = document.querySelector('#shipping_method option[value="sea"]');
   
-      // Landlocked countries (simple check)
       if (origin === "jor" || origin === "irq" || origin === "pse" || origin === "syr" ||
           dest === "jor" || dest === "irq" || dest === "pse" || dest === "syr") {
         sea.disabled = true;
