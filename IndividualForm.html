@@ -490,5 +490,26 @@ select {
       loadFragment("footer", "footer.html");
     </script>
 
+<script>
+    function checkSea() {
+      const origin = document.getElementById("orig").value;
+      const dest = document.getElementById("des").value;
+      const sea = document.querySelector('#shipping_method option[value="sea"]');
+  
+      // Landlocked countries (simple check)
+      if (origin === "jor" || origin === "irq" || origin === "pse" || origin === "syr" ||
+          dest === "jor" || dest === "irq" || dest === "pse" || dest === "syr") {
+        sea.disabled = true;
+        if (shipping_method.value === "sea") shipping_method.value = "";
+      } else {
+        sea.disabled = false;
+      }
+    }
+  
+    document.getElementById("orig").addEventListener("change", checkSea);
+    document.getElementById("des").addEventListener("change", checkSea);
+  </script>
+  
+
 </body>
 </html>
