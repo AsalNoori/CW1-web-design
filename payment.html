@@ -325,8 +325,7 @@
         let currentPaymentMethod = 'card';
         let pendingOrder = null;
         
-        try { pendingOrder = JSON.parse(localStorage.getItem('pendingOrder')) || null; } catch(e){pendingOrder=null;}
-        $.get('/api/session').done(data => sessionInfo = data).fail(() => sessionInfo = null);
+        try { pendingOrder = JSON.parse(localStorage.getItem('pendingOrder')) || null; } catch(e){}
 
         function switchPaymentMethod(method) {
             currentPaymentMethod = method;

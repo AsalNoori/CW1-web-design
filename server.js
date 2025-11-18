@@ -78,10 +78,7 @@ app.get("/SignIn", (req, res) => {
 
 app.post("/SignIn", (req, res) => {
     const { email, password } = req.body || {};
-    const expectsJson =
-        req.xhr ||
-        (req.headers.accept && req.headers.accept.includes("application/json")) ||
-        (req.headers['content-type'] && req.headers['content-type'].includes("application/json"));
+    const expectsJson = req.get('Accept')?.includes('application/json') || req.is('application/json');
 
     if (!email || !password) {
         const message = "Email and password are required.";
@@ -399,8 +396,6 @@ app.delete('/api/orders/:trackingID', (req, res) => {
     if (!trackingID) {
         return res.status(400).send('Tracking ID is required.');
     }
-
-    const userCondition = session.role === 'admin' ? [] : [session.userId];
 
     const deleteIndividual = session.role === 'admin'
         ? `DELETE FROM IndividualOrders WHERE TrackingID = ?`

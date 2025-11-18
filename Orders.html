@@ -6,39 +6,214 @@
   <title>Orders</title>
   <link rel="icon" href="logo.png" type="image/png">
   <style>
-    *{box-sizing:border-box}
-    body{margin:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a1a3f;color:#fff}
-    a{color:inherit}
-    .page{max-width:1200px;margin:0 auto;padding:40px 24px 80px}
-    h1{font-size:2.2rem;margin:0 0 8px;letter-spacing:.4px}
-    .subtitle{color:#c9d3ea;margin-bottom:28px}
-    .filters{display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
-    .filters button{padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-weight:600;cursor:pointer;transition:all .2s}
-    .filters button.active,.filters button:hover{background:linear-gradient(135deg,#1c6bff 0%,#4090ff 100%);border-color:transparent;box-shadow:0 16px 32px rgba(28,107,255,.32)}
-    .table-wrapper{background:rgba(255,255,255,.05);border-radius:18px;border:1px solid rgba(255,255,255,.12);overflow:hidden;box-shadow:0 18px 36px rgba(12,32,73,.32)}
-    table{width:100%;border-collapse:collapse;min-width:760px}
-    thead{background:rgba(255,255,255,.08)}
-    th,td{padding:18px 20px;text-align:left;font-size:.95rem}
-    th{text-transform:uppercase;letter-spacing:.6px;font-size:.8rem;color:#c9d3ea}
-    tbody tr{border-top:1px solid rgba(255,255,255,.08)}
-    tbody tr:hover{background:rgba(255,255,255,.04)}
-    .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:600;letter-spacing:.3px}
-    .badge.individual{background:rgba(97,211,249,.2);color:#61d3f9}
-    .badge.business{background:rgba(168,132,255,.2);color:#c9a6ff}
-    .status-badge{display:inline-flex;align-items:center;padding:6px 12px;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.3px}
-    .status-badge.waiting-for-approval{background:rgba(255,152,0,.2);color:#ff9800}
-    .status-badge.accepted{background:rgba(76,175,80,.2);color:#4caf50}
-    .status-badge.not-accepted{background:rgba(244,67,54,.2);color:#f44336}
-    .status-badge.pending{background:rgba(255,193,7,.2);color:#ffc107}
-    .status-badge.in-transit{background:rgba(33,150,243,.2);color:#2196f3}
-    .status-badge.delivered{background:rgba(76,175,80,.2);color:#4caf50}
-    .status-badge.cancelled{background:rgba(244,67,54,.2);color:#f44336}
-    .btn-cancel{background:rgba(244,67,54,.2);border:1px solid rgba(244,67,54,.4);color:#ff8a7f;padding:8px 16px;border-radius:6px;font-weight:600;cursor:pointer;transition:all .2s ease}
-    .btn-cancel:hover{background:rgba(244,67,54,.3);transform:translateY(-1px)}
-    .action-cell{text-align:center}
-    .empty-state{padding:36px 0;text-align:center;color:#c9d3ea}
-    .error-state{background:rgba(255,82,82,.18);border:1px solid rgba(255,82,82,.32);padding:18px 20px;border-radius:14px;color:#ffb3b3;margin-bottom:22px;display:none}
-    @media(max-width:900px){.page{padding:32px 18px 60px}table{min-width:100%}}
+    * {
+    box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #0a1a3f;
+        color: #fff;
+    }
+
+    a {
+        color: inherit;
+    }
+
+    .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+        margin: 0 0 8px;
+        letter-spacing: .4px;
+    }
+
+    .subtitle {
+        color: #c9d3ea;
+        margin-bottom: 28px;
+    }
+
+    .filters {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .filters button {
+        padding: 10px 20px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .18);
+        background: rgba(255, 255, 255, .06);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+    }
+
+    .filters button.active,
+    .filters button:hover {
+        background: linear-gradient(135deg, #1c6bff 0%, #4090ff 100%);
+        border-color: transparent;
+        box-shadow: 0 16px 32px rgba(28, 107, 255, .32);
+    }
+
+    .table-wrapper {
+        background: rgba(255, 255, 255, .05);
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, .12);
+        overflow: hidden;
+        box-shadow: 0 18px 36px rgba(12, 32, 73, .32);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+    }
+
+    thead {
+        background: rgba(255, 255, 255, .08);
+    }
+
+    th,
+    td {
+        padding: 18px 20px;
+        text-align: left;
+        font-size: .95rem;
+    }
+
+    th {
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        font-size: .8rem;
+        color: #c9d3ea;
+    }
+
+    tbody tr {
+        border-top: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    tbody tr:hover {
+        background: rgba(255, 255, 255, .04);
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: .75rem;
+        font-weight: 600;
+        letter-spacing: .3px;
+    }
+
+    .badge.individual {
+        background: rgba(97, 211, 249, .2);
+        color: #61d3f9;
+    }
+
+    .badge.business {
+        background: rgba(168, 132, 255, .2);
+        color: #c9a6ff;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: .8rem;
+        font-weight: 600;
+        letter-spacing: .3px;
+    }
+
+    .status-badge.waiting-for-approval {
+        background: rgba(255, 152, 0, .2);
+        color: #ff9800;
+    }
+
+    .status-badge.accepted {
+        background: rgba(76, 175, 80, .2);
+        color: #4caf50;
+    }
+
+    .status-badge.not-accepted {
+        background: rgba(244, 67, 54, .2);
+        color: #f44336;
+    }
+
+    .status-badge.pending {
+        background: rgba(255, 193, 7, .2);
+        color: #ffc107;
+    }
+
+    .status-badge.in-transit {
+        background: rgba(33, 150, 243, .2);
+        color: #2196f3;
+    }
+
+    .status-badge.delivered {
+        background: rgba(76, 175, 80, .2);
+        color: #4caf50;
+    }
+
+    .status-badge.cancelled {
+        background: rgba(244, 67, 54, .2);
+        color: #f44336;
+    }
+
+    .btn-cancel {
+        background: rgba(244, 67, 54, .2);
+        border: 1px solid rgba(244, 67, 54, .4);
+        color: #ff8a7f;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .btn-cancel:hover {
+        background: rgba(244, 67, 54, .3);
+        transform: translateY(-1px);
+    }
+
+    .action-cell {
+        text-align: center;
+    }
+
+    .empty-state {
+        padding: 36px 0;
+        text-align: center;
+        color: #c9d3ea;
+    }
+
+    .error-state {
+        background: rgba(255, 82, 82, .18);
+        border: 1px solid rgba(255, 82, 82, .32);
+        padding: 18px 20px;
+        border-radius: 14px;
+        color: #ffb3b3;
+        margin-bottom: 22px;
+        display: none;
+    }
+
+    @media (max-width: 900px) {
+        .page {
+            padding: 32px 18px 60px;
+        }
+
+        table {
+            min-width: 100%;
+        }
+    }
   </style>
 </head>
 <body>
