@@ -62,12 +62,12 @@
     map.touchZoomRotate.disable();
   }
   function enablePanOnly(){
-    map.dragPan.enable();      // allow dragging to pan
-    map.scrollZoom.disable();  // mouse wheel won't zoom (page will scroll)
+    map.dragPan.enable();
+    map.scrollZoom.disable();
     map.boxZoom.disable();
-    map.keyboard.disable();    // arrow keys won't hijack page scroll
+    map.keyboard.disable();
     map.doubleClickZoom.disable();
-    map.touchZoomRotate.disable(); // disables pinch/rotate zoom on touch
+    map.touchZoomRotate.disable();
   }
   function installShieldHandlers(){
     var s = document.getElementById('intro-shield');
@@ -103,7 +103,7 @@
  
       setTimeout(function(){
         removeShield();
-        enablePanOnly();  // keep pan, let page scroll pass through
+        enablePanOnly();
         var expandLng = 8, expandLat = 8;
         map.setMaxBounds([
           [ME_BOUNDS[0][0]-expandLng, ME_BOUNDS[0][1]-expandLat],

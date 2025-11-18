@@ -233,7 +233,6 @@
       try{
         const res=await fetch(`/api/orders/${encodeURIComponent(trackingID)}`,{method:'DELETE'});
         if(!res.ok) throw new Error(await res.text());
-        // Remove from local array and re-render
         allOrders=allOrders.filter(o=>String(o.trackingID)!==String(trackingID));
         renderTable();
       }catch(err){

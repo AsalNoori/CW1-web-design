@@ -372,7 +372,6 @@ app.post('/api/orders/:trackingID/cancel', (req, res) => {
     });
 });
 
-// Permanently delete an order by trackingID
 app.delete('/api/orders/:trackingID', (req, res) => {
     const session = getSession(req);
     if (!session.authenticated) {
@@ -384,7 +383,6 @@ app.delete('/api/orders/:trackingID', (req, res) => {
         return res.status(400).send('Tracking ID is required.');
     }
 
-    // Build conditions: admin can delete any; user can delete only their own
     const userCondition = session.role === 'admin' ? [] : [session.userId];
 
     const deleteIndividual = session.role === 'admin'
@@ -420,7 +418,6 @@ app.delete('/api/orders/:trackingID', (req, res) => {
     });
 });
 
-// Admin endpoints to accept/reject orders
 app.post('/api/orders/:trackingID/accept', (req, res) => {
     const session = getSession(req);
     if (!session.authenticated || session.role !== 'admin') {
@@ -432,7 +429,6 @@ app.post('/api/orders/:trackingID/accept', (req, res) => {
         return res.status(400).send('Tracking ID is required.');
     }
 
-    // Update IndividualOrders
     con.query(
         `UPDATE IndividualOrders SET OrderStatus = 'Accepted' WHERE TrackingID = ?`,
         [trackingID],
@@ -445,7 +441,6 @@ app.post('/api/orders/:trackingID/accept', (req, res) => {
                 return res.json({ trackingID, status: 'Accepted' });
             }
 
-            // Update BusinessOrders
             con.query(
                 `UPDATE BusinessOrders SET OrderStatus = 'Accepted' WHERE TrackingID = ?`,
                 [trackingID],
@@ -475,7 +470,6 @@ app.post('/api/orders/:trackingID/reject', (req, res) => {
         return res.status(400).send('Tracking ID is required.');
     }
 
-    // Update IndividualOrders
     con.query(
         `UPDATE IndividualOrders SET OrderStatus = 'Not Accepted' WHERE TrackingID = ?`,
         [trackingID],
@@ -488,7 +482,6 @@ app.post('/api/orders/:trackingID/reject', (req, res) => {
                 return res.json({ trackingID, status: 'Not Accepted' });
             }
 
-            // Update BusinessOrders
             con.query(
                 `UPDATE BusinessOrders SET OrderStatus = 'Not Accepted' WHERE TrackingID = ?`,
                 [trackingID],

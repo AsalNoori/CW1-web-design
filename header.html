@@ -128,7 +128,6 @@
         cursor: pointer;
     }
 
-    /* Hamburger (mobile) */
     .hamburger {
         display: none;
         flex-direction: column;
@@ -145,7 +144,6 @@
         transition: 0.3s;
     }
 
-    /* Mobile menu styles */
     @media (max-width: 850px) {
         .nav-links {
             position: absolute;
@@ -211,14 +209,12 @@
 </header>
 
 <script>
-    // Mobile menu toggle
     const hamburger = document.getElementById('hamburger');
     const navLinksEl = document.querySelector('.nav-links');
     if (hamburger && navLinksEl) {
         hamburger.addEventListener('click', () => {
             navLinksEl.classList.toggle('show');
         });
-        // Close menu when a link/button is clicked on mobile
         navLinksEl.querySelectorAll('a, button').forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 850) {
@@ -238,7 +234,6 @@
         const servicesBtn = document.getElementById('servicesBtn');
         const currentPath = window.location.pathname.toLowerCase();
 
-        // Visibility helpers that adapt to mobile menu behavior
         const show = (el, display='inline-flex') => {
             if (!el) return;
             if (window.innerWidth <= 850) {
@@ -291,7 +286,6 @@
         const navLinks = document.querySelector('.nav-links');
         const logoLink = document.querySelector('.logo');
         
-        // Make logo non-clickable on admin dashboard
         if (onAdminPage && logoLink) {
             logoLink.removeAttribute('href');
             logoLink.style.cursor = 'default';
@@ -309,12 +303,10 @@
                     hide(accountLink);
                     hide(registerBtn);
                     hide(loginBtn);
-                    // Hide Dashboard button when on AdminDashboard page
                     const navigation = document.querySelector('.navigation');
                     if (onAdminPage) {
                         hide(settingsLink);
                         show(logoutBtn, 'inline-flex');
-                        // Align remaining buttons to the right on AdminDashboard
                         requestAnimationFrame(() => {
                             if (navigation) {
                                 navigation.classList.add('has-right-aligned-nav');
@@ -322,7 +314,6 @@
                             if (navLinks) {
                                 navLinks.classList.add('right-aligned');
                             }
-                            // Reset any margin-left on buttons since justify-content: flex-end handles alignment
                             if (servicesBtn && !onServicesPage) {
                                 servicesBtn.style.setProperty('margin-left', '0', 'important');
                             }
@@ -333,7 +324,6 @@
                     } else {
                         show(settingsLink);
                         hide(logoutBtn);
-                        // Reset alignment when not on AdminDashboard
                         if (navigation) {
                             navigation.classList.remove('has-right-aligned-nav');
                         }
@@ -358,7 +348,6 @@
                         hide(registerBtn);
                         hide(loginBtn);
                         show(logoutBtn, 'inline-flex');
-                        // Align Services, About Us, and Logout buttons to the right on Account page
                         const navigation = document.querySelector('.navigation');
                         requestAnimationFrame(() => {
                             if (navigation) {
@@ -367,7 +356,6 @@
                             if (navLinks) {
                                 navLinks.classList.add('right-aligned');
                             }
-                            // Reset any margin-left on buttons since justify-content: flex-end handles alignment
                             if (servicesBtn && !onServicesPage) {
                                 servicesBtn.style.setProperty('margin-left', '0', 'important');
                             }
@@ -376,7 +364,6 @@
                             }
                         });
                     } else {
-                        // Reset alignment when not on Account page
                         const navigation = document.querySelector('.navigation');
                         if (navigation) {
                             navigation.classList.remove('has-right-aligned-nav');

@@ -358,14 +358,13 @@
     $('#cardNumber').on('input', function() {
         let val = $(this).val().replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim();
         $(this).val(val.substring(0,19));
-        $(this).css('border-color', '#ccc'); // Reset border color on input
+        $(this).css('border-color', '#ccc');
     });
     $('#expiryDate').on('input', function() {
         let val = $(this).val().replace(/\D/g,'');
         if (val.length > 4) val = val.substring(0, 4);
 
         let month = val.substring(0, 2);
-        // Keep user input as-is, only format it (don't auto-correct invalid values)
         if (month.length === 2) {
             month = month.padStart(2, '0');
         }
@@ -378,7 +377,6 @@
 
         $(this).val(val);
         
-        // Validate month in real-time and show red border if invalid
         if (val.length >= 2) {
             const m = parseInt(val.substring(0, 2), 10);
             if (m < 1 || m > 12) {
@@ -391,7 +389,6 @@
         }
     });
 
-    // Validate expiry date on blur
     $('#expiryDate').on('blur', function() {
         const expiry = $(this).val();
         if (!expiry || !/^\d{2}\/\d{2}$/.test(expiry)) {
@@ -401,41 +398,37 @@
         const parts = expiry.split('/');
         const month = parseInt(parts[0], 10);
         const year = parseInt(parts[1], 10);
-        const currentYear = new Date().getFullYear() % 100; // Last 2 digits
+        const currentYear = new Date().getFullYear() % 100;
         const currentMonth = new Date().getMonth() + 1;
-        const fullYear = 2000 + year; // Convert YY to YYYY
+        const fullYear = 2000 + year;
         
-        // Validate month is 1-12
         if (month < 1 || month > 12) {
             $(this).css('border-color', '#dc3545');
             alert('Invalid month. Month must be between 01 and 12.');
             return;
         }
         
-        // Validate year is 2025 or later
         if (fullYear < 2025) {
             $(this).css('border-color', '#dc3545');
             alert('Invalid year. Year must be 2025 or later.');
             return;
         }
         
-        // Check if card is expired (if year is current year, month must be current or future)
         if (fullYear === new Date().getFullYear() && month < currentMonth) {
             $(this).css('border-color', '#dc3545');
             alert('Card has expired. Please enter a valid expiry date.');
             return;
         }
         
-        // Valid expiry date
         $(this).css('border-color', '#28a745');
     });
     $('#cvv').on('input', function() {
         $(this).val($(this).val().replace(/\D/g,'').substring(0,3));
-        $(this).css('border-color', '#ccc'); // Reset border color on input
+        $(this).css('border-color', '#ccc');
     });
     
     $('#cardName').on('input', function() {
-        $(this).css('border-color', '#ccc'); // Reset border color on input
+        $(this).css('border-color', '#ccc');
     });
 
     const amount = pendingOrder?.shipmentCost || parseFloat(localStorage.getItem('shipmentCost') || 0);
@@ -460,29 +453,25 @@
             return false;
         }
         
-        // Validate month and year
         const parts = expiry.split('/');
         const month = parseInt(parts[0], 10);
         const year = parseInt(parts[1], 10);
-        const fullYear = 2000 + year; // Convert YY to YYYY
+        const fullYear = 2000 + year;
         const currentYear = new Date().getFullYear();
         const currentMonth = new Date().getMonth() + 1;
         
-        // Check month is valid (1-12)
         if (month < 1 || month > 12) {
             alert('Invalid month. Month must be between 01 and 12.');
             $('#expiryDate').css('border-color', '#dc3545');
             return false;
         }
         
-        // Check year is 2025 or later
         if (fullYear < 2025) {
             alert('Invalid year. Year must be 2025 or later.');
             $('#expiryDate').css('border-color', '#dc3545');
             return false;
         }
         
-        // Check if card is expired
         if (fullYear < currentYear || (fullYear === currentYear && month < currentMonth)) {
             alert('Card has expired. Please enter a valid expiry date.');
             $('#expiryDate').css('border-color', '#dc3545');

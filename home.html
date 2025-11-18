@@ -306,7 +306,6 @@
 
         <script>
     document.addEventListener('DOMContentLoaded',function(){
-      // Book Shipment button - check authentication
       const bookShipmentBtn = document.getElementById('bookShipmentBtn');
       if(bookShipmentBtn){
         bookShipmentBtn.addEventListener('click', async function(){
@@ -315,14 +314,11 @@
             const sessionData = await response.json();
             
             if(sessionData && sessionData.authenticated && sessionData.role){
-              // User is signed in, go to ChooseType page
               window.location.href = 'ChooseType.html';
             } else {
-              // User is not signed in, redirect to sign in page
               window.location.href = 'signIn.html';
             }
           } catch(error) {
-            // If there's an error checking session, assume not signed in
             console.error('Error checking session:', error);
             window.location.href = 'signIn.html';
           }

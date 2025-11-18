@@ -283,24 +283,23 @@
             return emailRegex.test(email);
         }
         
-        // Phone number length limits by country code (Middle East only)
         const phoneLengths = {
-            "+93": { min: 9, max: 9 },   // Afghanistan
-            "+973": { min: 8, max: 8 },  // Bahrain
-            "+20": { min: 10, max: 10 }, // Egypt
-            "+98": { min: 10, max: 10 }, // Iran
-            "+964": { min: 10, max: 10 }, // Iraq
-            "+962": { min: 9, max: 9 },  // Jordan
-            "+965": { min: 8, max: 8 },  // Kuwait
-            "+961": { min: 8, max: 8 },  // Lebanon
-            "+968": { min: 8, max: 8 },  // Oman
-            "+970": { min: 9, max: 9 },  // Palestine
-            "+974": { min: 8, max: 8 },  // Qatar
-            "+966": { min: 9, max: 9 },  // Saudi Arabia
-            "+963": { min: 9, max: 9 },  // Syria
-            "+90": { min: 10, max: 10 }, // Turkey
-            "+971": { min: 9, max: 9 },  // UAE
-            "+967": { min: 9, max: 9 }   // Yemen
+            "+93": { min: 9, max: 9 },
+            "+973": { min: 8, max: 8 },
+            "+20": { min: 10, max: 10 },
+            "+98": { min: 10, max: 10 },
+            "+964": { min: 10, max: 10 },
+            "+962": { min: 9, max: 9 },
+            "+965": { min: 8, max: 8 },
+            "+961": { min: 8, max: 8 },
+            "+968": { min: 8, max: 8 },
+            "+970": { min: 9, max: 9 },
+            "+974": { min: 8, max: 8 },
+            "+966": { min: 9, max: 9 },
+            "+963": { min: 9, max: 9 },
+            "+90": { min: 10, max: 10 },
+            "+971": { min: 9, max: 9 },
+            "+967": { min: 9, max: 9 }
         };
         
         const registrationForm = document.querySelector(".registration-form");
@@ -309,7 +308,6 @@
         const countryCodeSelect = document.getElementById("countryCode");
         const passwordField = document.getElementById("password");
         
-        // Function to update phone field maxlength based on country code
         function updatePhoneMaxLength() {
             if (countryCodeSelect && phoneField) {
                 const selectedCode = countryCodeSelect.value;
@@ -322,27 +320,21 @@
             }
         }
         
-        // Update maxlength when country code changes
         if (countryCodeSelect) {
             countryCodeSelect.addEventListener("change", function() {
                 updatePhoneMaxLength();
-                // Clear phone field when country changes
                 if (phoneField) {
                     phoneField.value = "";
                     phoneField.style.borderColor = "#ccc";
                 }
             });
-            // Set initial maxlength
             updatePhoneMaxLength();
         }
         
-        // Restrict phone input to numbers only
         if (phoneField) {
             phoneField.addEventListener("input", function(e) {
-                // Remove any non-numeric characters
                 this.value = this.value.replace(/[^0-9]/g, "");
                 
-                // Enforce maxlength
                 const maxLength = parseInt(this.getAttribute("maxlength")) || 15;
                 if (this.value.length > maxLength) {
                     this.value = this.value.substring(0, maxLength);
@@ -350,14 +342,12 @@
             });
             
             phoneField.addEventListener("keypress", function(e) {
-                // Allow only numbers
                 const char = String.fromCharCode(e.which);
                 if (!/[0-9]/.test(char)) {
                     e.preventDefault();
                     return;
                 }
                 
-                // Enforce maxlength
                 const maxLength = parseInt(this.getAttribute("maxlength")) || 15;
                 if (this.value.length >= maxLength) {
                     e.preventDefault();
@@ -377,7 +367,6 @@
             registrationForm.addEventListener("submit", function(e) {
                 const email = emailField.value.trim();
                 
-                // Validate email format
                 if (!isValidEmail(email)) {
                     e.preventDefault();
                     emailField.style.borderColor = "#dc3545";
@@ -386,7 +375,6 @@
                     return false;
                 }
                 
-                // Validate password length (at least 13 characters)
                 if (passwordField && passwordField.value.length < 13) {
                     e.preventDefault();
                     passwordField.style.borderColor = "#dc3545";
@@ -395,7 +383,6 @@
                     return false;
                 }
                 
-                // Validate phone number based on country code
                 if (phoneField && countryCodeSelect) {
                     const selectedCode = countryCodeSelect.value;
                     const lengthInfo = phoneLengths[selectedCode];
@@ -419,7 +406,6 @@
                 }
             });
             
-            // Reset border color when user types
             emailField.addEventListener("input", function() {
                 this.style.borderColor = "#ccc";
             });

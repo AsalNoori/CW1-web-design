@@ -185,7 +185,6 @@
         const emailField = document.getElementById("email");
         const passwordField = document.getElementById("password");
         
-        // Reset borders when the user types
         [emailField, passwordField].forEach(field => {
             field.addEventListener("input", () => {
                 field.style.borderColor = "#ccc";
@@ -200,18 +199,16 @@
         }
         
         loginForm.addEventListener("submit", function(e) {
-            e.preventDefault(); // stop normal form submission
+            e.preventDefault();
         
             const email = emailField.value.trim();
             const password = passwordField.value;
         
-            // Hide previous error
             errorMsg.style.display = "none";
             errorMsg.textContent = "";
             emailField.style.borderColor = "#ccc";
             passwordField.style.borderColor = "#ccc";
             
-            // Validate email format
             if (!isValidEmail(email)) {
                 errorMsg.textContent = "Please enter a valid email address (e.g., example@gmail.com)";
                 errorMsg.style.display = "block";
@@ -227,14 +224,11 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // Login successful, redirect
                     window.location.href = data.redirect || "/";
                 } else {
-                    // Show error on the same page
                     errorMsg.textContent = data.message;
                     errorMsg.style.display = "block";
         
-                    // Highlight the input fields
                     emailField.style.borderColor = "#dc3545";
                     passwordField.style.borderColor = "#dc3545";
                 }
@@ -244,7 +238,6 @@
                 errorMsg.style.display = "block";
                 console.error(err);
         
-                // Highlight the input fields on error
                 emailField.style.borderColor = "#dc3545";
                 passwordField.style.borderColor = "#dc3545";
             });

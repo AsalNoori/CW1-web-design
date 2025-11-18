@@ -728,7 +728,6 @@
                 const dateLabel = formatDate(order.orderDate);
                 const recipient = order.receiverName || order.businessName || '—';
                 
-                // Show accept/reject buttons only for "Waiting for Approval" status - display inline in status cell
                 const isWaitingForApproval = (statusLabel || '').toLowerCase().replace(/\s+/g, '-') === 'waiting-for-approval';
                 let statusCell = `<span class="tracking-status-badge ${statusClass}">${formatStatus(statusLabel)}</span>`;
                 if (isWaitingForApproval) {

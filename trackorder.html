@@ -464,7 +464,6 @@
       const trackingInput = document.getElementById('trackingIdInput');
       const trackButton = document.getElementById('trackButton');
 
-      // Load order from URL parameter
       const trackingID = getTrackingIdFromURL();
       if (trackingID) {
         trackingInput.value = trackingID;
@@ -473,7 +472,6 @@
         loadOrder('');
       }
 
-      // Handle track button click
       if (trackButton && trackingInput) {
         trackButton.addEventListener('click', () => {
           const id = trackingInput.value.trim();
@@ -484,7 +482,6 @@
           }
         });
 
-        // Allow Enter key to trigger track
         trackingInput.addEventListener('keypress', (e) => {
           if (e.key === 'Enter') {
             trackButton.click();
