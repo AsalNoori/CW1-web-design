@@ -150,11 +150,11 @@ app.post("/SignUp", async (req, res) => {
     try {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        
-        const sql = "INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES (?, ?, ?, ?, ?)";
+  
+    const sql = "INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES (?, ?, ?, ?, ?)";
         con.query(sql, [firstName, lastName, email, phone, hashedPassword], (err, result) => {
-            if (err) {
-                console.error(err);
+      if (err) {
+        console.error(err);
                 return res.status(500).send("Error registering user");
             }
 
