@@ -7,24 +7,14 @@
 <title>Home</title>
 <link rel="icon" href="logo.png" type="image/png"/>
     <style>
-  :root{
-    --navy:#0a1a3f;
-    --navy-2:#081432;
-    --brand:#1c6bff;
-    --brand-2:#4293ff;
-    --glass:rgba(255,255,255,.06);
-    --stroke:rgba(255,255,255,.18);
-    --muted:#c9d3ea;
-    --white:#ffffff;
-  }
   *{box-sizing:border-box}
-  body{font-family:'Segoe UI', Arial, sans-serif;background-color:var(--navy);margin:0;color:#fff}
+  body{font-family:'Segoe UI', Arial, sans-serif;background-color:#0a1a3f;margin:0;color:#fff}
   a{color:inherit;text-decoration:none}
  
   .container{max-width:1200px;margin:0 auto;padding:48px 24px}
   .section{padding:26px 0}
   .section-title{font-size:2rem;margin:0 0 12px}
-  .section-sub{color:var(--muted);margin:0 0 26px}
+  .section-sub{color:#c9d3ea;margin:0 0 26px}
  
   .pill-button{
     display:inline-flex;align-items:center;gap:10px;
@@ -36,15 +26,15 @@
   .pill-button svg{width:18px;height:18px;stroke-width:2}
   .pill-button--outline{
     background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.06));
-    border-color:var(--stroke);
+    border-color:rgba(255,255,255,.18);
     color:#eaf3ff;
     backdrop-filter:blur(8px);
     box-shadow:0 10px 22px rgba(28,107,255,.18), inset 0 0 0 1px rgba(255,255,255,.05);
   }
   .pill-button--outline:hover{box-shadow:0 14px 28px rgba(28,107,255,.28), inset 0 0 0 1px rgba(255,255,255,.08);filter:brightness(1.05)}
   .pill-button--primary{
-    background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);
-    color:var(--white);
+    background:linear-gradient(135deg,#1c6bff 0%,#4293ff 100%);
+    color:#ffffff;
     border-color:transparent;
     box-shadow:0 16px 28px rgba(28,107,255,.30);
   }
@@ -53,7 +43,7 @@
   .pill-button--outline:active{filter:brightness(0.98)}
  
   .tracking-input{
-    width:230px;padding:14px 18px;border:1px solid var(--stroke);
+    width:230px;padding:14px 18px;border:1px solid rgba(255,255,255,.18);
     border-radius:999px;font-size:16px;background:#0f1f3c;color:#eaf3ff;
     box-shadow:0 8px 18px rgba(28,107,255,.18), inset 0 0 0 1px rgba(255,255,255,.05);
     transition:border-color .2s,box-shadow .2s,background .2s;
@@ -75,7 +65,7 @@
   .band{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0) 60%)}
   .values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
   .value-card{
-    position:relative;padding:28px;background:var(--glass);border:1px solid var(--stroke);border-radius:18px;backdrop-filter:blur(8px);
+    position:relative;padding:28px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(8px);
     transition:transform .25s, box-shadow .25s;overflow:hidden
   }
   .value-card:hover{transform:translateY(-6px);box-shadow:0 18px 36px rgba(12,32,73,.35)}
@@ -92,25 +82,25 @@
   .value-metric{font-size:1.9rem;font-weight:800;letter-spacing:.5px}
  
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
-  .card{background:var(--glass);border:1px solid var(--stroke);border-radius:16px;padding:24px;transition:transform .22s, box-shadow .22s}
+  .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:24px;transition:transform .22s, box-shadow .22s}
   .card:hover{transform:translateY(-6px);box-shadow:0 16px 30px rgba(12,32,73,.35)}
   .card h3{margin:0 0 10px}
-  .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--stroke);font-size:.85rem;color:var(--muted);margin-right:8px;margin-bottom: 10px}
+  .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);font-size:.85rem;color:#c9d3ea;margin-right:8px;margin-bottom: 10px}
  
   .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;counter-reset:step}
-  .step{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--stroke);border-radius:16px;padding:24px;position:relative}
+  .step{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:24px;position:relative}
   .step:before{counter-increment:step;content:counter(step);position:absolute;top:-14px;left:-14px;height:44px;width:44px;border-radius:50%;
-    background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;font-weight:800;box-shadow:0 10px 20px rgba(28,107,255,.35)}
+    background:linear-gradient(135deg,#1c6bff,#4293ff);display:grid;place-items:center;font-weight:800;box-shadow:0 10px 20px rgba(28,107,255,.35)}
  
   .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
-  .quote{background:var(--glass);border:1px solid var(--stroke);border-radius:16px;padding:24px}
-  .quote .who{display:flex;align-items:center;gap:12px;margin-top:14px;color:var(--muted)}
+  .quote{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:24px}
+  .quote .who{display:flex;align-items:center;gap:12px;margin-top:14px;color:#c9d3ea}
   .avatar{height:36px;width:36px;border-radius:50%;background:#2a3e73;display:grid;place-items:center;font-weight:700}
  
   .faq{display:grid;grid-template-columns:1fr;gap:12px}
-  .faq-item{border:1px solid var(--stroke);border-radius:14px;background:rgba(255,255,255,.04);overflow:hidden}
+  .faq-item{border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.04);overflow:hidden}
   .faq-q{width:100%;text-align:left;background:transparent;color:#fff;padding:16px 18px;font-size:1rem;border:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease, padding .3s ease;color:var(--muted);padding:0 18px}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease, padding .3s ease;color:#c9d3ea;padding:0 18px}
   .faq-item.active .faq-a{max-height:240px;padding:0 18px 16px}
   .faq-item .plus{transition:transform .3s}
   .faq-item.active .plus{transform:rotate(45deg)}
@@ -169,7 +159,7 @@
           </div>
           <div class="value-metric" data-count="12450">0</div>
           <div class="value-title">Shipments Delivered</div>
-          <div style="color:var(--muted)">On-time delivery across 40+ corridors</div>
+          <div style="color:#c9d3ea">On-time delivery across 40+ corridors</div>
         </div>
         <div class="value-card">
           <div class="value-icon">
@@ -179,7 +169,7 @@
           </div>
           <div class="value-metric" data-count="98">0</div>
           <div class="value-title">Satisfaction Score</div>
-          <div style="color:var(--muted)">Fast responses and proactive updates</div>
+          <div style="color:#c9d3ea">Fast responses and proactive updates</div>
         </div>
         <div class="value-card">
           <div class="value-icon">
@@ -190,7 +180,7 @@
           </div>
           <div class="value-metric" data-count="5">0</div>
           <div class="value-title">Years Operating</div>
-          <div style="color:var(--muted)">Born in the Middle East, scaling globally</div>
+          <div style="color:#c9d3ea">Born in the Middle East, scaling globally</div>
         </div>
         <div class="value-card">
           <div class="value-icon">
@@ -201,7 +191,7 @@
           </div>
           <div class="value-metric" data-count="12">0</div>
           <div class="value-title">Live Hubs</div>
-          <div style="color:var(--muted)">UAE, KSA, Qatar, Oman and more</div>
+          <div style="color:#c9d3ea">UAE, KSA, Qatar, Oman and more</div>
         </div>
       </div>
     </div>
@@ -214,12 +204,12 @@
       <div class="card">
         <div class="chip">Air</div>
         <h3>Express Air Freight</h3>
-        <p style="color:var(--muted)">Priority uplift with airline partners. Ideal for urgent B2B and premium D2C with reliable ETAs.</p>
+        <p style="color:#c9d3ea">Priority uplift with airline partners. Ideal for urgent B2B and premium D2C with reliable ETAs.</p>
       </div>
       <div class="card">
         <div class="chip">Ocean</div>
         <h3>Ocean FCL/LCL</h3>
-        <p style="color:var(--muted)">Cost-efficient capacity with smart consolidation, dependable sailings, and easy documentation.</p>
+        <p style="color:#c9d3ea">Cost-efficient capacity with smart consolidation, dependable sailings, and easy documentation.</p>
       </div>
     </div>
   </section>
@@ -230,15 +220,15 @@
     <div class="steps">
       <div class="step">
         <h3>Get a fast quote</h3>
-        <p style="color:var(--muted)">Enter route, weight, and mode for instant pricing.</p>
+        <p style="color:#c9d3ea">Enter route, weight, and mode for instant pricing.</p>
       </div>
       <div class="step">
         <h3>Book and track</h3>
-        <p style="color:var(--muted)">Lock the rate, receive your tracking ID, and follow progress live.</p>
+        <p style="color:#c9d3ea">Lock the rate, receive your tracking ID, and follow progress live.</p>
       </div>
       <div class="step">
         <h3>Deliver and confirm</h3>
-        <p style="color:var(--muted)">Recipient signs off. You get a delivery confirmation and invoice.</p>
+        <p style="color:#c9d3ea">Recipient signs off. You get a delivery confirmation and invoice.</p>
       </div>
     </div>
   </section>
@@ -249,15 +239,15 @@
     <div class="cards">
       <div class="card">
         <h3>24/7 assistance</h3>
-        <p style="color:var(--muted)">Round-the-clock help for time-critical air and ocean moves.</p>
+        <p style="color:#c9d3ea">Round-the-clock help for time-critical air and ocean moves.</p>
       </div>
       <div class="card">
         <h3>Proactive alerts</h3>
-        <p style="color:var(--muted)">Milestone notifications for departures, arrivals, and customs events.</p>
+        <p style="color:#c9d3ea">Milestone notifications for departures, arrivals, and customs events.</p>
       </div>
       <div class="card">
         <h3>Single thread of truth</h3>
-        <p style="color:var(--muted)">All updates tied to your tracking ID for clean handoffs and visibility.</p>
+        <p style="color:#c9d3ea">All updates tied to your tracking ID for clean handoffs and visibility.</p>
       </div>
     </div>
   </section>
