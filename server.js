@@ -33,7 +33,7 @@ const SESSION_MAX_AGE = 24 * 60 * 60 * 1000;
 const ADMIN_CREDENTIALS = { email: 'admin', password: 'admin', name: 'Admin' };
 
 function setSessionCookies(res, { role, name, userId }) {
-    const options = { maxAge: SESSION_MAX_AGE };
+    const options = { maxAge: SESSION_MAX_AGE, httpOnly: true };
     if (role) {
         res.cookie('userRole', role, options);
     }
@@ -48,6 +48,7 @@ function setSessionCookies(res, { role, name, userId }) {
 }
 
 function clearSessionCookies(res) {
+    const options = { httpOnly: true };
     res.clearCookie('userRole');
     res.clearCookie('userName');
     res.clearCookie('userId');
