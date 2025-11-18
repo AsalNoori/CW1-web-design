@@ -268,7 +268,7 @@
             <div id="cardForm">
                 <div class="input-group">
                     <label for="cardNumber">Card Number</label>
-                    <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456">
+                    <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" inputmode="numeric" pattern="[0-9\s]{16,19}" maxlength="19">
                     <div class="error-message" id="cardNumberError"></div>
                 </div>
                 <div class="form-row">
@@ -361,18 +361,45 @@
             $('#' + errorId).removeClass('show').text('');
         }
 
+        $('#cardNumber').on('keypress', function(e) {
+            const char = String.fromCharCode(e.which);
+            if (!/[0-9]/.test(char)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         $('#cardNumber').on('input', function() {
-            let val = $(this).val().replace(/\s/g,'');
-            const digitsOnly = val.replace(/\D/g, '');
+            let val = $(this).val().replace(/\D/g, '');
             
-            if (digitsOnly.length < 13 || digitsOnly.length > 19) {
-                showError('cardNumber', 'cardNumberError', 'Card number must be between 13 and 19 digits');
+            if (val.length > 16) {
+                val = val.substring(0, 16);
+            }
+            
+            if (val.length < 16 && val.length > 0) {
+                showError('cardNumber', 'cardNumberError', 'Card number must be exactly 16 digits');
+            } else if (val.length === 16) {
+                clearError('cardNumber', 'cardNumberError');
             } else {
                 clearError('cardNumber', 'cardNumberError');
             }
             
-            val = digitsOnly.replace(/(.{4})/g,'$1 ').trim();
-            $(this).val(val.substring(0,23));
+            val = val.replace(/(.{4})/g,'$1 ').trim();
+            $(this).val(val.substring(0,19));
+        });
+
+        $('#cardNumber').on('paste', function(e) {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData).getData('text');
+            const numbersOnly = paste.replace(/\D/g, '').substring(0, 16);
+            const formatted = numbersOnly.replace(/(.{4})/g,'$1 ').trim();
+            $(this).val(formatted);
+            
+            if (numbersOnly.length === 16) {
+                clearError('cardNumber', 'cardNumberError');
+            } else if (numbersOnly.length > 0) {
+                showError('cardNumber', 'cardNumberError', 'Card number must be exactly 16 digits');
+            }
         });
         $('#expiryDate').on('input', function() {
             let val = $(this).val().replace(/\D/g,'');
@@ -467,8 +494,8 @@
             const cvv = $('#cvv').val();
             const name = $('#cardName').val().trim();
             
-            if(!card || card.length < 13 || card.length > 19){
-                showError('cardNumber', 'cardNumberError', 'Card number must be between 13 and 19 digits');
+            if(!card || card.length !== 16){
+                showError('cardNumber', 'cardNumberError', 'Card number must be exactly 16 digits');
                 isValid = false;
             } else {
                 clearError('cardNumber', 'cardNumberError');
