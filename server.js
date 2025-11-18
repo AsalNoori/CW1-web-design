@@ -4,6 +4,7 @@ const app = express();
 const path = require("path");
 const port = 8080;
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 app.use(cookieParser());
 
@@ -102,8 +103,8 @@ app.post("/SignIn", (req, res) => {
         return res.redirect('/AdminDashboard');
     }
 
-    const sql = "SELECT UserID, FirstName, LastName, Email FROM Users WHERE LOWER(Email) = ? AND Password = ?";
-    con.query(sql, [normalizedEmail, password], (err, results) => {
+    const sql = "SELECT UserID, FirstName, LastName, Email, Password FROM Users WHERE LOWER(Email) = ?";
+    con.query(sql, [normalizedEmail], async (err, results) => {
         if (err) {
             console.error(err);
             const message = "Unable to sign in right now.";
@@ -114,11 +115,18 @@ app.post("/SignIn", (req, res) => {
 
         if (results.length > 0) {
             const user = results[0];
-            setSessionCookies(res, { role: 'user', name: user.FirstName, userId: user.UserID });
-            if (expectsJson) {
-                return res.json({ success: true, redirect: '/' });
+            try {
+                const passwordMatch = await bcrypt.compare(password, user.Password);
+                if (passwordMatch) {
+                    setSessionCookies(res, { role: 'user', name: user.FirstName, userId: user.UserID });
+                    if (expectsJson) {
+                        return res.json({ success: true, redirect: '/' });
+                    }
+                    return res.redirect('/');
+                }
+            } catch (error) {
+                console.error('Error comparing password:', error);
             }
-            return res.redirect('/');
         }
 
         const message = "Invalid email or password.";
@@ -132,24 +140,32 @@ app.get("/SignUp", (req, res) => {
     res.sendFile(path.join(__dirname, "signUp.html"));
 });
 
-app.post("/SignUp", (req, res) => {
+app.post("/SignUp", async (req, res) => {
     const { firstName, lastName, email, phone, password } = req.body || {};
 
     if (!firstName || !lastName || !email || !phone || !password) {
         return res.status(400).send("All fields are required.");
     }
   
-    const sql = "INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES (?, ?, ?, ?, ?)";
-    con.query(sql, [firstName, lastName, email, phone, password], (err, result) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send("Error registering user");
-      }
+    try {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        
+        const sql = "INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Password) VALUES (?, ?, ?, ?, ?)";
+        con.query(sql, [firstName, lastName, email, phone, hashedPassword], (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send("Error registering user");
+            }
 
-      setSessionCookies(res, { role: 'user', name: firstName, userId: result.insertId });
-      res.redirect('/');
-    });
-  });
+            setSessionCookies(res, { role: 'user', name: firstName, userId: result.insertId });
+            res.redirect('/');
+        });
+    } catch (error) {
+        console.error('Error hashing password:', error);
+        return res.status(500).send("Error registering user");
+    }
+});
 
 app.post("/Logout", (req, res) => {
     clearSessionCookies(res);
