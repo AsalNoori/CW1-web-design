@@ -295,231 +295,228 @@
         </div>
     </div>
 
+    <script src="fragmentLoader.js"></script>
+
     <script>
-    $(document).ready(function() {
+        loadFragment('header', 'header.html');
+        loadFragment('footer', 'footer.html');
 
-    function loadFragment(targetId, url) {
-        $.get(url, function(data) {
-            $('#' + targetId).html(data);
+        $(document).ready(function() {
+
+        let currentPaymentMethod = 'card';
+        let pendingOrder = null;
+        
+        try { pendingOrder = JSON.parse(localStorage.getItem('pendingOrder')) || null; } catch(e){pendingOrder=null;}
+        $.get('/api/session').done(data => sessionInfo = data).fail(() => sessionInfo = null);
+
+        function switchPaymentMethod(method) {
+            currentPaymentMethod = method;
+            if(method === 'card') {
+                $('#cardForm').show();
+                $('#codForm').hide();
+                $('#deliveryAddress, #contactNumber').val('');
+            } else {
+                $('#codForm').show();
+                $('#cardForm').hide();
+                $('#cardNumber, #expiryDate, #cvv, #cardName').val('');
+            }
+            $('.tab').removeClass('active');
+            $('.tab[data-payment="' + method + '"]').addClass('active');
+        }
+
+        $('.tab').click(function() {
+            switchPaymentMethod($(this).data('payment'));
         });
-    }
-    loadFragment('header', 'header.html');
-    loadFragment('footer', 'footer.html');
 
-    let currentPaymentMethod = 'card';
-    let pendingOrder = null;
-    
-    try { pendingOrder = JSON.parse(localStorage.getItem('pendingOrder')) || null; } catch(e){pendingOrder=null;}
-    $.get('/api/session').done(data => sessionInfo = data).fail(() => sessionInfo = null);
+        $('#cardNumber').on('input', function() {
+            let val = $(this).val().replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim();
+            $(this).val(val.substring(0,19));
+            $(this).css('border-color', '#ccc');
+        });
+        $('#expiryDate').on('input', function() {
+            let val = $(this).val().replace(/\D/g,'');
+            if (val.length > 4) val = val.substring(0, 4);
 
-    function switchPaymentMethod(method) {
-        currentPaymentMethod = method;
-        if(method === 'card') {
-            $('#cardForm').show();
-            $('#codForm').hide();
-            $('#deliveryAddress, #contactNumber').val('');
-        } else {
-            $('#codForm').show();
-            $('#cardForm').hide();
-            $('#cardNumber, #expiryDate, #cvv, #cardName').val('');
-        }
-        $('.tab').removeClass('active');
-        $('.tab[data-payment="' + method + '"]').addClass('active');
-    }
+            let month = val.substring(0, 2);
+            if (month.length === 2) {
+                month = month.padStart(2, '0');
+            }
+            
+            if (val.length > 2) {
+                val = month + '/' + val.substring(2);
+            } else {
+                val = month;
+            }
 
-    $('.tab').click(function() {
-        switchPaymentMethod($(this).data('payment'));
-    });
-
-    $('#cardNumber').on('input', function() {
-        let val = $(this).val().replace(/\s/g,'').replace(/(.{4})/g,'$1 ').trim();
-        $(this).val(val.substring(0,19));
-        $(this).css('border-color', '#ccc');
-    });
-    $('#expiryDate').on('input', function() {
-        let val = $(this).val().replace(/\D/g,'');
-        if (val.length > 4) val = val.substring(0, 4);
-
-        let month = val.substring(0, 2);
-        if (month.length === 2) {
-            month = month.padStart(2, '0');
-        }
-        
-        if (val.length > 2) {
-            val = month + '/' + val.substring(2);
-        } else {
-            val = month;
-        }
-
-        $(this).val(val);
-        
-        if (val.length >= 2) {
-            const m = parseInt(val.substring(0, 2), 10);
-            if (m < 1 || m > 12) {
-                $(this).css('border-color', '#dc3545');
+            $(this).val(val);
+            
+            if (val.length >= 2) {
+                const m = parseInt(val.substring(0, 2), 10);
+                if (m < 1 || m > 12) {
+                    $(this).css('border-color', '#dc3545');
+                } else {
+                    $(this).css('border-color', '#ccc');
+                }
             } else {
                 $(this).css('border-color', '#ccc');
             }
-        } else {
-            $(this).css('border-color', '#ccc');
-        }
-    });
-
-    $('#expiryDate').on('blur', function() {
-        const expiry = $(this).val();
-        if (!expiry || !/^\d{2}\/\d{2}$/.test(expiry)) {
-            return;
-        }
-        
-        const parts = expiry.split('/');
-        const month = parseInt(parts[0], 10);
-        const year = parseInt(parts[1], 10);
-        const currentYear = new Date().getFullYear() % 100;
-        const currentMonth = new Date().getMonth() + 1;
-        const fullYear = 2000 + year;
-        
-        if (month < 1 || month > 12) {
-            $(this).css('border-color', '#dc3545');
-            alert('Invalid month. Month must be between 01 and 12.');
-            return;
-        }
-        
-        if (fullYear < 2025) {
-            $(this).css('border-color', '#dc3545');
-            alert('Invalid year. Year must be 2025 or later.');
-            return;
-        }
-        
-        if (fullYear === new Date().getFullYear() && month < currentMonth) {
-            $(this).css('border-color', '#dc3545');
-            alert('Card has expired. Please enter a valid expiry date.');
-            return;
-        }
-        
-        $(this).css('border-color', '#28a745');
-    });
-    $('#cvv').on('input', function() {
-        $(this).val($(this).val().replace(/\D/g,'').substring(0,3));
-        $(this).css('border-color', '#ccc');
-    });
-    
-    $('#cardName').on('input', function() {
-        $(this).css('border-color', '#ccc');
-    });
-
-    const amount = pendingOrder?.shipmentCost || parseFloat(localStorage.getItem('shipmentCost') || 0);
-    $('.total-amount').text(`AED ${amount.toFixed(2)}`);
-    $('.pay-button .button-text').text(`Pay AED ${amount.toFixed(2)}`);
-
-    function validateCardForm() {
-        const card = $('#cardNumber').val().replace(/\s/g,'');
-        const expiry = $('#expiryDate').val();
-        const cvv = $('#cvv').val();
-        const name = $('#cardName').val().trim();
-        
-        if(!card || card.length<13 || card.length>19){
-            alert('Invalid card number');
-            $('#cardNumber').css('border-color', '#dc3545');
-            return false;
-        }
-        
-        if(!/^\d{2}\/\d{2}$/.test(expiry)){
-            alert('Invalid expiry date format. Please use MM/YY format.');
-            $('#expiryDate').css('border-color', '#dc3545');
-            return false;
-        }
-        
-        const parts = expiry.split('/');
-        const month = parseInt(parts[0], 10);
-        const year = parseInt(parts[1], 10);
-        const fullYear = 2000 + year;
-        const currentYear = new Date().getFullYear();
-        const currentMonth = new Date().getMonth() + 1;
-        
-        if (month < 1 || month > 12) {
-            alert('Invalid month. Month must be between 01 and 12.');
-            $('#expiryDate').css('border-color', '#dc3545');
-            return false;
-        }
-        
-        if (fullYear < 2025) {
-            alert('Invalid year. Year must be 2025 or later.');
-            $('#expiryDate').css('border-color', '#dc3545');
-            return false;
-        }
-        
-        if (fullYear < currentYear || (fullYear === currentYear && month < currentMonth)) {
-            alert('Card has expired. Please enter a valid expiry date.');
-            $('#expiryDate').css('border-color', '#dc3545');
-            return false;
-        }
-        
-        if(!cvv || cvv.length<3 || cvv.length>3){
-            alert('Invalid CVV');
-            $('#cvv').css('border-color', '#dc3545');
-            return false;
-        }
-        
-        if(!name){
-            alert('Please enter name on card');
-            $('#cardName').css('border-color', '#dc3545');
-            return false;
-        }
-        
-        return true;
-    }
-    function validateCODForm() {
-        if(!$('#deliveryAddress').val().trim()){alert('Enter address'); return false;}
-        if(!$('#contactNumber').val().trim()){alert('Enter phone'); return false;}
-        return true;
-    }
-
-    $('#paymentForm').submit(async function(e){
-        e.preventDefault();
-        let valid = false;
-        if(currentPaymentMethod === 'card'){
-            valid = validateCardForm();
-        } else if(currentPaymentMethod === 'cod'){
-            valid = validateCODForm();
-        }
-        if(!valid) return;
-
-        if(!pendingOrder){alert('Order not found'); return;}
-
-        const btn = $('.pay-button');
-        const txt = btn.find('.button-text');
-        const originalText = txt.text();
-        btn.prop('disabled', true).addClass('loading'); txt.text('Processing...');
-
-        try{
-            const trackingID = 'SM'+Date.now().toString().slice(-6)+Math.floor(Math.random()*1000).toString().padStart(3,'0');
-            const payload = {
-                trackingID,
-                paymentMethod: currentPaymentMethod==='card'?'Credit/Debit Card':'Cash on Delivery',
-                amount: amount,
-                orderType: pendingOrder.orderType,
-                order: pendingOrder
-            };
-            const resp = await fetch('/api/orders',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if(!resp.ok){throw new Error(await resp.text()||'Unable to save order');}
-            localStorage.setItem('lastOrderSummary', JSON.stringify({trackingID, amount, paymentMethod:payload.paymentMethod, orderType: pendingOrder.orderType, timestamp:new Date().toISOString()}));
-            localStorage.removeItem('pendingOrder');
-            localStorage.removeItem('shipmentWeight');
-            localStorage.removeItem('shipmentCost');
-            window.location.href='Confirmation.html';
-        } catch(err){
-            alert(err.message || 'Payment failed');
-        } finally{
-            btn.removeClass('loading').prop('disabled',false);
-            txt.text(originalText);
-        }
-    });
         });
-    </script>
+
+        $('#expiryDate').on('blur', function() {
+            const expiry = $(this).val();
+            if (!expiry || !/^\d{2}\/\d{2}$/.test(expiry)) {
+                return;
+            }
+            
+            const parts = expiry.split('/');
+            const month = parseInt(parts[0], 10);
+            const year = parseInt(parts[1], 10);
+            const currentYear = new Date().getFullYear() % 100;
+            const currentMonth = new Date().getMonth() + 1;
+            const fullYear = 2000 + year;
+            
+            if (month < 1 || month > 12) {
+                $(this).css('border-color', '#dc3545');
+                alert('Invalid month. Month must be between 01 and 12.');
+                return;
+            }
+            
+            if (fullYear < 2025) {
+                $(this).css('border-color', '#dc3545');
+                alert('Invalid year. Year must be 2025 or later.');
+                return;
+            }
+            
+            if (fullYear === new Date().getFullYear() && month < currentMonth) {
+                $(this).css('border-color', '#dc3545');
+                alert('Card has expired. Please enter a valid expiry date.');
+                return;
+            }
+            
+            $(this).css('border-color', '#28a745');
+        });
+        $('#cvv').on('input', function() {
+            $(this).val($(this).val().replace(/\D/g,'').substring(0,3));
+            $(this).css('border-color', '#ccc');
+        });
+        
+        $('#cardName').on('input', function() {
+            $(this).css('border-color', '#ccc');
+        });
+
+        const amount = pendingOrder?.shipmentCost || parseFloat(localStorage.getItem('shipmentCost') || 0);
+        $('.total-amount').text(`AED ${amount.toFixed(2)}`);
+        $('.pay-button .button-text').text(`Pay AED ${amount.toFixed(2)}`);
+
+        function validateCardForm() {
+            const card = $('#cardNumber').val().replace(/\s/g,'');
+            const expiry = $('#expiryDate').val();
+            const cvv = $('#cvv').val();
+            const name = $('#cardName').val().trim();
+            
+            if(!card || card.length<13 || card.length>19){
+                alert('Invalid card number');
+                $('#cardNumber').css('border-color', '#dc3545');
+                return false;
+            }
+            
+            if(!/^\d{2}\/\d{2}$/.test(expiry)){
+                alert('Invalid expiry date format. Please use MM/YY format.');
+                $('#expiryDate').css('border-color', '#dc3545');
+                return false;
+            }
+            
+            const parts = expiry.split('/');
+            const month = parseInt(parts[0], 10);
+            const year = parseInt(parts[1], 10);
+            const fullYear = 2000 + year;
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1;
+            
+            if (month < 1 || month > 12) {
+                alert('Invalid month. Month must be between 01 and 12.');
+                $('#expiryDate').css('border-color', '#dc3545');
+                return false;
+            }
+            
+            if (fullYear < 2025) {
+                alert('Invalid year. Year must be 2025 or later.');
+                $('#expiryDate').css('border-color', '#dc3545');
+                return false;
+            }
+            
+            if (fullYear < currentYear || (fullYear === currentYear && month < currentMonth)) {
+                alert('Card has expired. Please enter a valid expiry date.');
+                $('#expiryDate').css('border-color', '#dc3545');
+                return false;
+            }
+            
+            if(!cvv || cvv.length<3 || cvv.length>3){
+                alert('Invalid CVV');
+                $('#cvv').css('border-color', '#dc3545');
+                return false;
+            }
+            
+            if(!name){
+                alert('Please enter name on card');
+                $('#cardName').css('border-color', '#dc3545');
+                return false;
+            }
+            
+            return true;
+        }
+        function validateCODForm() {
+            if(!$('#deliveryAddress').val().trim()){alert('Enter address'); return false;}
+            if(!$('#contactNumber').val().trim()){alert('Enter phone'); return false;}
+            return true;
+        }
+
+        $('#paymentForm').submit(async function(e){
+            e.preventDefault();
+            let valid = false;
+            if(currentPaymentMethod === 'card'){
+                valid = validateCardForm();
+            } else if(currentPaymentMethod === 'cod'){
+                valid = validateCODForm();
+            }
+            if(!valid) return;
+
+            if(!pendingOrder){alert('Order not found'); return;}
+
+            const btn = $('.pay-button');
+            const txt = btn.find('.button-text');
+            const originalText = txt.text();
+            btn.prop('disabled', true).addClass('loading'); txt.text('Processing...');
+
+            try{
+                const trackingID = 'SM'+Date.now().toString().slice(-6)+Math.floor(Math.random()*1000).toString().padStart(3,'0');
+                const payload = {
+                    trackingID,
+                    paymentMethod: currentPaymentMethod==='card'?'Credit/Debit Card':'Cash on Delivery',
+                    amount: amount,
+                    orderType: pendingOrder.orderType,
+                    order: pendingOrder
+                };
+                const resp = await fetch('/api/orders',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(!resp.ok){throw new Error(await resp.text()||'Unable to save order');}
+                localStorage.setItem('lastOrderSummary', JSON.stringify({trackingID, amount, paymentMethod:payload.paymentMethod, orderType: pendingOrder.orderType, timestamp:new Date().toISOString()}));
+                localStorage.removeItem('pendingOrder');
+                localStorage.removeItem('shipmentWeight');
+                localStorage.removeItem('shipmentCost');
+                window.location.href='Confirmation.html';
+            } catch(err){
+                alert(err.message || 'Payment failed');
+            } finally{
+                btn.removeClass('loading').prop('disabled',false);
+                txt.text(originalText);
+            }
+        });
+            });
+        </script>
 
     <div id="footer"></div>
 

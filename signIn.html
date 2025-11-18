@@ -8,8 +8,6 @@
  <link rel="icon" href="logo.png" type="image/png">
 </head>
     <style>
-    
-
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #0a1a3f; 
@@ -115,41 +113,6 @@
 <body>
     <div id="header"></div>
 
-    <script>
-      function loadFragment(targetId, url) {
-        return fetch(url)
-          .then(response => response.text())
-          .then(html => {
-            const container = document.getElementById(targetId);
-            if (!container) return;
-            container.innerHTML = html;
-            container.querySelectorAll('script').forEach(oldScript => {
-              const newScript = document.createElement('script');
-              if (oldScript.src) {
-                newScript.src = oldScript.src;
-              } else {
-                newScript.textContent = oldScript.textContent;
-              }
-              document.body.appendChild(newScript);
-              oldScript.remove();
-            });
-          })
-          .catch(err => console.error(`Failed to load ${url}`, err));
-      }
-
-      loadFragment("header", "header.html")
-        .then(() => {
-          const registerBtn = document.getElementById("registerBtn");
-          if (registerBtn) {
-            registerBtn.style.display = "none";
-          }
-          const loginBtn = document.getElementById("loginBtn");
-          if (loginBtn) {
-            loginBtn.style.display = "none";
-          }
-        });
-    </script>
-
     <div class="main-content">
         <div class="container">
             <form class="login-form" id="loginForm" method="POST" action="/SignIn">
@@ -179,7 +142,13 @@
     </div>
 
     <div id="footer"></div>
+
+    <script src="fragmentLoader.js"></script>
+
     <script>
+        loadFragment('header', 'header.html');
+        loadFragment('footer', 'footer.html');
+
         const loginForm = document.getElementById("loginForm");
         const errorMsg = document.getElementById("errorMsg");
         const emailField = document.getElementById("email");

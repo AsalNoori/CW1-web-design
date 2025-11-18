@@ -189,31 +189,6 @@
 <body>
     <div id="header"></div>
 
-    <script>
-      function loadFragment(targetId, url) {
-        return fetch(url)
-          .then(response => response.text())
-          .then(html => {
-            const container = document.getElementById(targetId);
-            if (!container) return;
-            container.innerHTML = html;
-            container.querySelectorAll('script').forEach(oldScript => {
-              const newScript = document.createElement('script');
-              if (oldScript.src) {
-                newScript.src = oldScript.src;
-              } else {
-                newScript.textContent = oldScript.textContent;
-              }
-              document.body.appendChild(newScript);
-              oldScript.remove();
-            });
-          })
-          .catch(err => console.error(`Failed to load ${url}`, err));
-      }
-
-      loadFragment("header", "header.html");
-    </script>
-
     <div class="main-content">
         <div class="container">
         <form class="registration-form" method="POST" action="/SignUp">
@@ -277,7 +252,12 @@
 
     <div id="footer"></div>
 
+    <script src="fragmentLoader.js"></script>
+
     <script>
+        loadFragment('header', 'header.html');
+        loadFragment('footer', 'footer.html');
+
         function isValidEmail(email) {
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             return emailRegex.test(email);
