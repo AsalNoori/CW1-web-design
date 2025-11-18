@@ -308,24 +308,7 @@
 
     let currentPaymentMethod = 'card';
     let pendingOrder = null;
-    let sessionInfo = null;
-    const countryMap = {
-        bhr: 'Bahrain',
-        egy: 'Egypt',
-        irn: 'Iran',
-        irq: 'Iraq',
-        jor: 'Jordan',
-        kwt: 'Kuwait',
-        lbn: 'Lebanon',
-        omn: 'Oman',
-        pse: 'Palestine',
-        qat: 'Qatar',
-        sau: 'Saudi Arabia',
-        syr: 'Syria',
-        are: 'United Arab Emirates',
-        yem: 'Yemen'
-    };
-
+    
     try { pendingOrder = JSON.parse(localStorage.getItem('pendingOrder')) || null; } catch(e){pendingOrder=null;}
     $.get('/api/session').done(data => sessionInfo = data).fail(() => sessionInfo = null);
 
