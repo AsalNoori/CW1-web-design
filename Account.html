@@ -64,6 +64,8 @@
   </style>
 </head>
 <body>
+  <script src="fragmentLoader.js"></script>
+
   <div id="header"></div>
 
   <main class="dashboard-container">
@@ -144,40 +146,14 @@
   <div id="footer"></div>
 
   <script>
-    function loadFragment(targetId, url) {
-      return fetch(url)
-        .then(response => response.text())
-        .then(html => {
-          const container = document.getElementById(targetId);
-          if (!container) return;
-          container.innerHTML = html;
-          container.querySelectorAll('script').forEach(oldScript => {
-            const newScript = document.createElement('script');
-            if (oldScript.src) {
-              newScript.src = oldScript.src;
-            } else {
-              newScript.textContent = oldScript.textContent;
-            }
-            document.body.appendChild(newScript);
-            oldScript.remove();
-          });
-        })
-        .catch(err => console.error(`Failed to load ${url}`, err));
-    }
 
     loadFragment("header", "header.html");
+    loadFragment('footer','footer.html');
 
     const countryLabels={bhr:'Bahrain',egy:'Egypt',irn:'Iran',irq:'Iraq',jor:'Jordan',kwt:'Kuwait',lbn:'Lebanon',omn:'Oman',pse:'Palestine',qat:'Qatar',sau:'Saudi Arabia',syr:'Syria',are:'United Arab Emirates',yem:'Yemen'};
     let allOrders=[]; let activeFilter='all';
     const ORDERS_ENDPOINT='/api/my/orders';
     const PROFILE_ENDPOINT='/api/me';
-
-    document.addEventListener('DOMContentLoaded',()=>{
-      loadFragment('footer','footer.html');
-      loadProfile();
-      attachFilterHandlers();
-      loadOrders();
-    });
 
     async function loadProfile(){
       try{
