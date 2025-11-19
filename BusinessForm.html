@@ -285,7 +285,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; gap: 20px; margin-top: 30px; flex-wrap: wrap;">
-            <button type="button" class="pill-button pill-button--ghost" onclick="window.location.href='ChooseType.html'">
+            <button type="button" class="pill-button pill-button--ghost" onclick="window.location.href='/ChooseType'">
                 <span class="pill-icon">🔄</span>
                 <span>Change Type</span>
             </button>
@@ -427,7 +427,7 @@
             localStorage.setItem('shipmentWeight', weight);
             localStorage.setItem('shipmentCost', shipmentCost);
             
-            window.location.href = 'payment.html';
+            window.location.href = '/Payment';
         }
         
         function isValidEmail(email) {
