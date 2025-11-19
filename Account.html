@@ -392,7 +392,7 @@
         <p class="profile-meta" id="profilePhone">Phone: —</p>
       </div>
       <div class="profile-actions">
-        <a href="Orders.html" class="search-btn" style="text-decoration:none;">View Orders</a>
+        <a href="/Orders" class="search-btn" style="text-decoration:none;">View Orders</a>
       </div>
     </section>
 
@@ -464,12 +464,12 @@
       try{
         const res=await fetch(PROFILE_ENDPOINT);
         if(res.status===401){
-          window.location.href='signIn.html';
+          window.location.href='/SignIn';
           return;
         }
         const data=await res.json();
         if(data.role==='admin'){
-          window.location.href='AdminDashboard.html';
+          window.location.href='/AdminDashboard';
           return;
         }
         const nameEl=document.getElementById('profileName');
