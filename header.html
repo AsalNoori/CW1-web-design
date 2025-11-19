@@ -196,12 +196,12 @@
         </div>
 
         <div class="nav-links">
-            <a href="AboutUs.html" class="nav-button" id="aboutLink">About Us</a>
-            <a href="Services.html" class="nav-button" id="servicesBtn">Services</a>
-            <a href="Account.html" class="nav-button nav-button--account" id="accountLink" style="display: none;">Account</a>
-            <a href="AdminDashboard.html" class="nav-button" id="settingsLink" style="display: none;">Dashboard</a>
-            <a href="signUp.html" class="nav-button" id="registerBtn">Register</a>
-            <a href="signIn.html" class="nav-button nav-button--primary" id="loginBtn">Login</a>
+            <a href="/AboutUs" class="nav-button" id="aboutLink">About Us</a>
+            <a href="/Services" class="nav-button" id="servicesBtn">Services</a>
+            <a href="/Account" class="nav-button nav-button--account" id="accountLink" style="display: none;">Account</a>
+            <a href="/AdminDashboard" class="nav-button" id="settingsLink" style="display: none;">Dashboard</a>
+            <a href="/SignUp" class="nav-button" id="registerBtn">Register</a>
+            <a href="/SignIn" class="nav-button nav-button--primary" id="loginBtn">Login</a>
 
             <button type="button" class="nav-button" id="logoutBtn" style="display: none;">Logout</button>
         </div>
@@ -253,7 +253,7 @@
             }
         };
 
-        const onServicesPage = currentPath.includes('/services') || currentPath.includes('services.html');
+        const onServicesPage = currentPath.includes('/services') || currentPath.includes('/Services');
 
         function setGuestView() {
             show(aboutLink);
@@ -385,7 +385,7 @@
 
                 logoutBtn.addEventListener('click', () => {
                     fetch('/Logout', { method: 'POST' })
-                        .then(() => window.location.href = 'home.html')
+                        .then(() => window.location.href = '/')
                         .catch(() => window.location.reload());
                 }, { once: true });
             })

@@ -219,6 +219,10 @@ app.get("/AboutUs", (req, res) => {
     res.sendFile(path.join(__dirname, "AboutUs.html"));
 });
 
+app.get("/Services", (req, res) => {
+    res.sendFile(path.join(__dirname, "Services.html"));
+});
+
 app.get("/trackorder", (req, res) => {
     res.sendFile(path.join(__dirname, "trackorder.html"));
 });
