@@ -173,7 +173,7 @@
         <div class="field-group">
             <div class="form-group half-width">
                 <label for="s_phone">Phone</label>
-                <input type="tel" id="s_phone" name="s_phone" required>
+                <input type="tel" id="s_phone" name="s_phone" required maxlength="16" placeholder="+971501234567">
             </div>
             <div class="form-group half-width">
                 <label for="s_email">Email</label>
@@ -269,7 +269,7 @@
         <div class="field-group">
             <div class="form-group half-width">
                 <label for="r_phone">Phone</label>
-                <input type="tel" id="r_phone" name="r_phone" required>
+                <input type="tel" id="r_phone" name="r_phone" required maxlength="16" placeholder="+971501234567">
             </div>
             <div class="form-group half-width">
                 <label for="r_email">Email</label>
@@ -436,59 +436,88 @@
         }
         
         function isValidPhone(phone) {
-            const phoneRegex = /^[\d\s\-\+\(\)]{7,}$/;
+            const phoneRegex = /^\+\d{7,15}$/;
             return phoneRegex.test(phone);
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const requiredFields = [
-                'business_name', 'tax_id', 's_phone', 's_email',
-                'height', 'length', 'width', 'weight',
-                'orig', 'des', 'shipping_method',
-                'r_fname', 'r_lname', 'r_phone', 'r_email', 'r_add1', 'r_add2', 'r_add3'
-            ];
-            
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    field.addEventListener('blur', function() {
-                        const value = this.value.trim();
-                        let isValid = value && 
-                            (this.type !== 'email' || isValidEmail(value)) &&
-                            (this.type !== 'tel' || isValidPhone(value));
+
+       function sanitizePhoneInput(input) {
+    let value = input.value;
+
+    // Remove everything except + and digits
+    value = value.replace(/[^\d+]/g, '');
+
+    // Ensure it starts with +
+    if (!value.startsWith('+')) {
+        value = '+' + value.replace(/\D/g, '');
+    } else {
+        // Keep + at start, digits only after
+        value = '+' + value.slice(1).replace(/\D/g, '');
+    }
+
+    // Limit to + plus 15 digits (16 chars total)
+    if (value.length > 16) {
+        value = value.slice(0, 16);
+    }
+
+    input.value = value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const requiredFields = [
+        'fname', 's_lname', 's_phone', 's_email',
+        'height', 'length', 'width', 'weight',
+        'orig', 'des', 'shipping_method',
+        'r_fname', 'r_lname', 'r_phone', 'r_email', 'r_add1', 'r_add2', 'r_add3'
+    ];
+    
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('blur', function() {
+                const value = this.value.trim();
+                let isValid = value && 
+                    (this.type !== 'email' || isValidEmail(value)) &&
+                    (this.type !== 'tel' || isValidPhone(value));
+                
+                if (this.id === 'weight' && value) {
+                    const weightValue = parseFloat(value);
+                    if (weightValue < 0.1 || weightValue > 100) {
+                        isValid = false;
                         
-                        if (this.id === 'weight' && value) {
-                            const weightValue = parseFloat(value);
-                            if (weightValue < 0.1 || weightValue > 200) {
-                                isValid = false;
-                                
-                                const weightError = document.getElementById('weight-error');
-                                if (weightValue > 200) {
-                                    weightError.textContent = 'Please enter a number less than 200 kg';
-                                } else if (weightValue < 0.1) {
-                                    weightError.textContent = 'Please enter a number greater than 0.1 kg';
-                                }
-                                weightError.style.display = 'block';
-                            } else {
-                                const weightError = document.getElementById('weight-error');
-                                weightError.style.display = 'none';
-                            }
-                        } else if (this.id === 'weight') {
-                            const weightError = document.getElementById('weight-error');
-                            weightError.style.display = 'none';
+                        const weightError = document.getElementById('weight-error');
+                        if (weightValue > 100) {
+                            weightError.textContent = 'Please enter a number less than 100 kg';
+                        } else if (weightValue < 0.1) {
+                            weightError.textContent = 'Please enter a number greater than 0.1 kg';
                         }
-                        
-                        if (isValid) {
-                            this.style.borderColor = '#28a745';
-                            this.style.backgroundColor = '#f8fff8';
-                        } else {
-                            this.style.borderColor = '#e0e0e0';
-                            this.style.backgroundColor = '#f7f7f9';
-                        }
-                    });
+                        weightError.style.display = 'block';
+                    } else {
+                        const weightError = document.getElementById('weight-error');
+                        weightError.style.display = 'none';
+                    }
+                } 
+                
+                if (isValid) {
+                    this.style.borderColor = '#28a745';
+                    this.style.backgroundColor = '#f8fff8';
+                } else {
+                    this.style.borderColor = '#e0e0e0';
+                    this.style.backgroundColor = '#f7f7f9';
                 }
             });
-        });
+        }
+    });
+
+    // 🔒 Enforce + and digits only on both phone fields
+    ['s_phone', 'r_phone'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', function () {
+                sanitizePhoneInput(this);
+            });
+        }
+    });
+});
         
     </script>
     
