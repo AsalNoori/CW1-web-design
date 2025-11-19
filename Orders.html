@@ -283,12 +283,12 @@
       try{
         const res=await fetch(PROFILE_ENDPOINT);
         if(res.status===401){
-          window.location.href='signIn.html';
+          window.location.href='/SignIn';
           return;
         }
         const data=await res.json();
         if(data.role==='admin'){
-          window.location.href='AdminDashboard.html';
+          window.location.href='/AdminDashboard';
         }
       }catch(err){
         console.error(err);
@@ -312,7 +312,7 @@
       try{
         const res=await fetch(ORDERS_ENDPOINT);
         if(res.status===401){
-          window.location.href='signIn.html';
+          window.location.href='/SignIn';
           return;
         }
         if(!res.ok) throw new Error(await res.text());
