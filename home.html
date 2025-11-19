@@ -597,13 +597,13 @@
             const sessionData = await response.json();
             
             if(sessionData && sessionData.authenticated && sessionData.role){
-              window.location.href = 'ChooseType.html';
+              window.location.href = '/ChooseType';
             } else {
-              window.location.href = 'signIn.html';
+              window.location.href = '/SignIn';
             }
           } catch(error) {
             console.error('Error checking session:', error);
-            window.location.href = 'signIn.html';
+            window.location.href = '/SignIn';
           }
         });
       }
