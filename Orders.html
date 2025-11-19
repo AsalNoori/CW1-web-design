@@ -344,7 +344,7 @@
         const statusBadge=`<span class="status-badge ${statusClass}">${formatStatus(o.status)}</span>`;
         const route=formatRoute(o.origin,o.destination,o.shippingMethod);
         const weight=o.weight!=null?`${Number(o.weight).toFixed(1)} kg`:'—';
-        const amount=o.shipmentCost!=null?`$${Number(o.shipmentCost).toFixed(2)}`:'—';
+        const amount=o.shipmentCost!=null?`AED ${Number(o.shipmentCost).toFixed(2)}`:'—';
         const payment=o.paymentMethod||'—';
         const date=o.orderDate?formatDate(o.orderDate):'—';
         const cancelBtn=`<button class="btn-cancel" onclick="deleteOrder('${encodeURIComponent(o.trackingID)}')">Cancel</button>`;

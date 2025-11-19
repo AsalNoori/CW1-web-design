@@ -533,7 +533,7 @@
         const status=(o.status||'pending').toLowerCase();
         const route=formatRoute(o.origin,o.destination,o.shippingMethod);
         const weight=o.weight!=null?`${Number(o.weight).toFixed(1)} kg`:'—';
-        const amount=o.shipmentCost!=null?`$${Number(o.shipmentCost).toFixed(2)}`:'—';
+        const amount=o.shipmentCost!=null?`AED ${Number(o.shipmentCost).toFixed(2)}`:'—';
         const date=o.orderDate?formatDate(o.orderDate):'—';
         const statusClass=getStatusClass(status);
         const idKey=orderKey(o);
